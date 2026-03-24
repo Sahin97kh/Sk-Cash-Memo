@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
+    <title>জমা রিসিট - সিঙ্গেল কপি</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
@@ -13,16 +13,14 @@
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
-            /* প্রতিটি রিসিট ৩.৫ ইঞ্চি ফিক্সড এবং এক পেজে মাত্র দুটি কপি */
+            /* রিসিট ঠিক ৩.৫ ইঞ্চি ফিক্সড থাকবে */
             .receipt-copy { 
                 height: 3.5in !important; 
                 padding: 10px !important; 
                 overflow: hidden; 
-                page-break-inside: avoid;
                 display: block !important;
             }
             
-            /* প্রিন্ট প্রিভিউতে ডিজাইন ও ফন্ট ফিক্স */
             #editor-container { 
                 box-shadow: none !important; 
                 border: 1.5px solid #0d9488 !important; 
@@ -31,7 +29,7 @@
                 padding: 10px !important;
             }
 
-            /* টেক্সট সাইজ ব্যাংক রিসিট স্টাইল (প্রথম রিসিটের মতো) */
+            /* টেক্সট সাইজ আপনার টিক দেওয়া রিসিটের মতো ফিক্সড */
             #editor-container h2 { font-size: 18px !important; margin-bottom: 2px !important; }
             #editor-container .text-sm { font-size: 11px !important; }
             #editor-container .text-xs { font-size: 10px !important; }
@@ -74,11 +72,11 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">......................................................</div>
                 </div>
             </div>
 
@@ -113,15 +111,13 @@
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="generateSingleCopyAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
-
+        
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
@@ -166,15 +162,11 @@
             return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
         }
 
-        function generateTwoCopiesAndPrint() {
+        function generateSingleCopyAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').outerHTML;
-            // শুধুমাত্র ২টি রিসিট থাকবে
-            printWrapper.innerHTML = `
-                <div class="receipt-copy">${editorContent}</div>
-                <div style="border-top: 1.5px dashed #000; margin: 10px auto; width: 95%;"></div>
-                <div class="receipt-copy">${editorContent}</div>
-            `;
+            // এখন শুধুমাত্র ১টি রিসিট জেনারেট হবে
+            printWrapper.innerHTML = `<div class="receipt-copy">${editorContent}</div>`;
             window.print();
             incrementReceiptNo();
         }
@@ -184,7 +176,7 @@
         function saveData(k, v) { localStorage.setItem(k, v); }
         function previewLogo(input) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('logo-preview').src = e.target.result; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); localStorage.setItem('savedLogo', e.target.result); }; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
         function loadSavedData() { document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD'); ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => { let v = localStorage.getItem(k); if (v && document.getElementById(k)) document.getElementById(k).innerText = v; }); let logo = localStorage.getItem('savedLogo'); if(logo) { document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); } if(document.getElementById('table-body').rows.length === 0) addNewRow(false); }
-        function clearAllData() { if(confirm("ক্লিয়ার করবেন?")) { document.getElementById('custName').innerText = '..................................................................'; document.getElementById('custAcc').innerText = '......................................................'; document.getElementById('table-body').innerHTML = ''; addNewRow(false); updateGrandTotal(); } }
+        function clearAllData() { if(confirm("ক্লিয়ার করবেন?")) { document.getElementById('table-body').innerHTML = ''; addNewRow(false); updateGrandTotal(); } }
     </script>
 </body>
 </html>
