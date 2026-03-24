@@ -9,38 +9,36 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
-        /* শুধুমাত্র প্রিন্ট প্রিভিউ এর জন্য টেক্সট সাইজ ফিক্স */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
-            /* রিসিট ৩.৫ ইঞ্চিতে ফিট করানোর জন্য স্কেলিং ও সাইজ */
+            /* প্রতিটি রিসিট ৩.৫ ইঞ্চি ফিক্সড এবং এক পেজে মাত্র দুটি কপি */
             .receipt-copy { 
                 height: 3.5in !important; 
                 padding: 10px !important; 
                 overflow: hidden; 
                 page-break-inside: avoid;
-                display: flex;
-                flex-direction: column;
+                display: block !important;
             }
-
-            /* হোমপেজের মেইন কন্টেইনারকে প্রিন্টে ছোট করে ফিট করা */
-            .receipt-copy #editor-container { 
+            
+            /* প্রিন্ট প্রিভিউতে ডিজাইন ও ফন্ট ফিক্স */
+            #editor-container { 
                 box-shadow: none !important; 
                 border: 1.5px solid #0d9488 !important; 
-                max-width: none !important;
                 width: 100% !important;
+                max-width: none !important;
                 padding: 10px !important;
             }
 
-            /* টেক্সট সাইজ অ্যাডজাস্টমেন্ট (ব্যাংক রিসিট স্টাইল) */
+            /* টেক্সট সাইজ ব্যাংক রিসিট স্টাইল (প্রথম রিসিটের মতো) */
             #editor-container h2 { font-size: 18px !important; margin-bottom: 2px !important; }
             #editor-container .text-sm { font-size: 11px !important; }
             #editor-container .text-xs { font-size: 10px !important; }
-            #editor-container .mt-10 { margin-top: 20px !important; } /* সিগনেচার গ্যাপ কমানো */
             #editor-container table { font-size: 11px !important; margin-bottom: 5px !important; }
             #editor-container table th, #editor-container table td { padding: 3px !important; }
-            #editor-container .w-24.h-24 { width: 60px !important; height: 60px !important; } /* লোগো ছোট করা */
+            #editor-container .mt-10 { margin-top: 20px !important; }
+            #editor-container .w-24.h-24 { width: 60px !important; height: 60px !important; }
 
             @page { size: A4; margin: 0; }
             #print-wrapper { display: block !important; }
@@ -129,13 +127,7 @@
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
             const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
-                <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
-                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
-            `;
+            newRow.innerHTML = `<td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td><td class="border border-teal-600 p-1" contenteditable="true"></td><td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td><td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td><td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>`;
             tableBody.appendChild(newRow);
             if(shouldFocus) { newRow.querySelector('.rate').focus(); document.execCommand('selectAll', false, null); }
         }
@@ -177,9 +169,10 @@
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').outerHTML;
+            // শুধুমাত্র ২টি রিসিট থাকবে
             printWrapper.innerHTML = `
                 <div class="receipt-copy">${editorContent}</div>
-                <div style="border-top: 2px dashed #000; margin: 10px 0;"></div>
+                <div style="border-top: 1.5px dashed #000; margin: 10px auto; width: 95%;"></div>
                 <div class="receipt-copy">${editorContent}</div>
             `;
             window.print();
