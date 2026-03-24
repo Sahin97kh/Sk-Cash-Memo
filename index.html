@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
+    <title>জমা রিসিট - ৩.৫ ইঞ্চি ফিক্সড</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-        
-        /* প্রিন্ট সেটিংসে ৩.৫ ইঞ্চি ফিক্সড করা হয়েছে */
+
+        /* প্রিন্ট করার সময় অটো-ফিট ম্যাজিক */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
+            /* প্রতিটি কপি ঠিক ৩.৫ ইঞ্চি হবে */
             .receipt-copy { 
-                height: 3.5in; /* আপনার চাহিদামত ৩.৫ ইঞ্চি */
-                padding: 10px; 
-                page-break-inside: avoid; 
+                height: 3.5in !important; 
+                width: 100%;
                 overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                border: 1px solid #0d9488;
-                margin-bottom: 5px;
+                border-bottom: 1px dashed #000;
+                page-break-inside: avoid;
+                position: relative;
+                padding: 0;
             }
 
-            /* ৩.৫ ইঞ্চিতে লেখা পারফেক্ট দেখানোর জন্য প্রিন্ট ফন্ট অ্যাডজাস্টমেন্ট */
-            .receipt-copy * { font-size: 11px !important; line-height: 1.2; }
-            .receipt-copy h2 { font-size: 18px !important; margin-bottom: 2px; }
-            .receipt-copy table { margin-bottom: 4px; }
-            .receipt-copy .mt-10 { mt-4 !important; } /* স্বাক্ষর অংশ একটু উপরে তোলা */
-
-            @page { size: A4; margin: 0.2in; }
+            /* আপনার বড় ডিজাইনকে ৩.৫ ইঞ্চির মধ্যে কুঁচকে (Scale) ঢুকিয়ে দেওয়া */
+            .receipt-copy > div {
+                transform: scale(0.65); /* ডিজাইন ছোট করার মাত্রা */
+                transform-origin: top center;
+                width: 153%; /* স্কেলিং ব্যালেন্স করা */
+                margin: 0 auto;
+            }
+            
+            @page { size: A4; margin: 0; }
         }
 
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -65,17 +66,11 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '......................................................')">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)">......................................................</div>
                 </div>
             </div>
 
@@ -100,7 +95,7 @@
 
             <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
 
-            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800 signature-area">
+            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800">
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
             </div>
@@ -117,10 +112,9 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) { el.innerText = ''; } }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') { el.innerText = placeholder; } }
-
-        function addNewRow(shouldFocus = false) {
+        function handleFocus(el) { if (el.innerText.includes('...')) el.innerText = ''; }
+        
+        function addNewRow() {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
@@ -128,9 +122,9 @@
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
                 <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)">0</td>
-                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
+                <td class="border border-teal-600 p-1 text-right row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
         }
@@ -147,21 +141,16 @@
             let total = 0;
             document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0);
             document.getElementById('grandTotal').innerText = total.toFixed(2);
-            document.getElementById('amountInWords').innerText = bngAmountInWords(total);
-        }
-
-        function bngAmountInWords(num) {
-            // আপনার আগের পূর্ণাঙ্গ বাংলা কথা লেখার লজিক এখানে থাকবে
-            return "টাকা মাত্র।"; 
+            document.getElementById('amountInWords').innerText = "টাকা মাত্র।"; 
         }
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
+            // দুই কপি জেনারেট করা
             printWrapper.innerHTML = `
-                <div class="receipt-copy">${editorContent}</div>
-                <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
-                <div class="receipt-copy">${editorContent}</div>
+                <div class="receipt-copy"><div>${editorContent}</div></div>
+                <div class="receipt-copy"><div>${editorContent}</div></div>
             `;
             printWrapper.classList.remove('hidden');
             window.print();
@@ -176,7 +165,6 @@
                 document.getElementById('logo-preview').src = e.target.result;
                 document.getElementById('logo-preview').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
-                localStorage.setItem('savedLogo', e.target.result);
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
@@ -184,7 +172,7 @@
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
             if(document.getElementById('table-body').rows.length === 0) {
-                for(let i=0; i<4; i++) addNewRow(); 
+                for(let i=0; i<6; i++) addNewRow();
             }
         }
 
