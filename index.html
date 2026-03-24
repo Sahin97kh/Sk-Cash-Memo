@@ -8,7 +8,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; overflow: hidden; }
@@ -18,28 +17,25 @@
                 margin: 0; 
             }
 
-            /* মেইন কন্টেইনার যা এক পেজে দুই কপি ধরে রাখবে */
+            /* ১টি পেজে ফিক্সড কন্টেইনার */
             #print-wrapper {
                 display: block !important;
                 width: 210mm;
                 height: 297mm;
-                padding: 5mm;
-                box-sizing: border-box;
             }
 
-            /* প্রতিটি কপির হাইট ফিক্সড করা হলো যাতে ২য় পেজে না যায় */
+            /* আপনার অরিজিনাল ডিজাইন যাতে ১ পেজে ২ কপি ধরে */
             .receipt-copy { 
-                height: 140mm; 
-                padding: 5mm; 
-                box-sizing: border-box;
+                height: 148mm; 
+                padding: 10mm; 
+                box-sizing: border-box; 
                 overflow: hidden;
-                position: relative;
             }
             
             .divider-line {
                 border-top: 1px dashed #000;
-                margin: 2mm 0;
                 width: 100%;
+                margin: 0;
             }
         }
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -131,7 +127,6 @@
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
-            
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
@@ -145,16 +140,6 @@
                 const rateField = newRow.querySelector('.rate');
                 rateField.focus();
                 document.execCommand('selectAll', false, null);
-            }
-        }
-
-        function checkTab(e, el) {
-            if (e.key === "Tab" || e.key === "Enter") {
-                const tableBody = document.getElementById('table-body');
-                if (el.closest('tr') === tableBody.lastElementChild) {
-                    e.preventDefault();
-                    addNewRow(true);
-                }
             }
         }
 
@@ -173,6 +158,7 @@
             document.getElementById('amountInWords').innerText = bngAmountInWords(total);
         }
 
+        /* আপনার অরিজিনাল বাংলা কনভার্টার ফাংশনটি এখানে হুবহু ফিরিয়ে আনা হয়েছে */
         function bngAmountInWords(num) {
             const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
             const tens = ['', '', 'বিশ', 'ত্রিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
@@ -195,18 +181,11 @@
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
-            
-            // একই কন্টেন্ট দুইবার দেওয়া হচ্ছে এবং মাঝখানে ড্যাশ লাইন
             printWrapper.innerHTML = `
-                <div class="receipt-copy">
-                    <div class="border border-teal-600 p-4" style="height: 100%">${editorContent}</div>
-                </div>
+                <div class="receipt-copy">${editorContent}</div>
                 <div class="divider-line"></div>
-                <div class="receipt-copy">
-                    <div class="border border-teal-600 p-4" style="height: 100%">${editorContent}</div>
-                </div>
+                <div class="receipt-copy">${editorContent}</div>
             `;
-            
             window.print();
             incrementReceiptNo();
         }
@@ -218,9 +197,7 @@
             receiptEl.innerText = nextNo;
             saveData('receiptNo', nextNo);
         }
-
         function saveData(k, v) { localStorage.setItem(k, v); }
-
         function previewLogo(input) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -231,7 +208,6 @@
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
-
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
             ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
@@ -246,7 +222,15 @@
             }
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
-
+        function checkTab(e, el) {
+            if (e.key === "Tab" || e.key === "Enter") {
+                const tableBody = document.getElementById('table-body');
+                if (el.closest('tr') === tableBody.lastElementChild) {
+                    e.preventDefault();
+                    addNewRow(true);
+                }
+            }
+        }
         function clearAllData() {
             if(confirm("সব তথ্য ক্লিয়ার করবেন?")) {
                 document.getElementById('custName').innerText = '..................................................................';
