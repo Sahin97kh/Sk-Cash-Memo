@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
+    <title>জমা রিসিট - পারফেক্ট লেআউট</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
@@ -12,37 +12,40 @@
         @media print {
             .no-print { display: none !important; }
             html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-            @page { size: A4; margin: 0; }
+            
+            /* A4 পেজ সাইজ এবং মার্জিন জিরো করা হয়েছে */
+            @page { size: A4 portrait; margin: 0; }
 
             #print-wrapper {
-                display: flex !important;
-                flex-direction: column;
+                display: block !important;
                 width: 210mm;
                 height: 297mm;
                 background: white;
             }
+
+            /* প্রতিটি রিসিটকে পেজের ঠিক অর্ধেক (১৪৮.৫ মিমি) উচ্চতায় লক করা হয়েছে */
             .receipt-copy { 
                 height: 148.5mm; 
                 width: 100%;
-                padding: 10mm;
+                padding: 10mm 12mm;
                 box-sizing: border-box;
                 display: flex;
                 flex-direction: column;
-                border-bottom: 1px dashed #000;
+                border-bottom: 1px dashed #ccc;
+                position: relative;
                 overflow: hidden;
             }
-            /* টেবিল কন্টেইনার ফ্লেক্সিবল রাখা হয়েছে */
-            .table-wrap { flex-grow: 1; min-height: 0; overflow: hidden; }
-            .footer-wrap { flex-shrink: 0; margin-top: auto; padding-top: 10px; }
-            table { font-size: 11px !important; line-height: 1; }
-            td, th { padding: 2px !important; }
+            
+            .table-wrap { flex-grow: 1; overflow: hidden; }
+            .footer-wrap { margin-top: auto; padding-top: 10px; }
+            table { font-size: 11px !important; }
         }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600">
-        <div class="p-6 md:p-10 flex flex-col h-full" id="main-design">
+        <div class="p-6 md:p-10 flex flex-col" id="main-design">
             <div class="flex justify-between items-start mb-4">
                 <div class="w-20 h-20 border-2 border-dashed border-teal-300 rounded flex items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
@@ -97,7 +100,7 @@
 
             <div class="footer-wrap">
                 <p class="text-xs italic font-bold text-teal-800">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
-                <div class="flex justify-between mt-8 text-xs font-bold">
+                <div class="flex justify-between mt-10 text-xs font-bold">
                     <div class="border-t border-black pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
                     <div class="border-t border-black pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
                 </div>
@@ -169,6 +172,7 @@
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const designHtml = document.getElementById('main-design').innerHTML;
+            /* ঠিক ২ কপি জেনারেট করা হচ্ছে */
             printWrapper.innerHTML = `
                 <div class="receipt-copy">${designHtml}</div>
                 <div class="receipt-copy">${designHtml}</div>
