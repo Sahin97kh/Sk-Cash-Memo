@@ -17,9 +17,9 @@
             @page { size: A4; margin: 0; }
         }
 
-        /* রিসিট কন্টেইনার ৪ ইঞ্চি কন্টেন্ট + ২ ইঞ্চি খালি জায়গা = মোট ৬ ইঞ্চি */
+        /* রিসিট কন্টেইনার ৫ ইঞ্চি (৪ ইঞ্চি কন্টেন্ট + ১ ইঞ্চি খালি জায়গা) */
         .receipt-copy { 
-            height: 6in; 
+            height: 5in; 
             width: 100%; 
             padding: 10px 30px; 
             box-sizing: border-box; 
@@ -30,7 +30,7 @@
             flex-direction: column;
         }
 
-        /* কন্টেন্ট এরিয়া ৪ ইঞ্চিতে সীমাবদ্ধ রাখা হয়েছে */
+        /* কন্টেন্ট এরিয়া ৪ ইঞ্চিতে ফিক্সড রাখা হয়েছে */
         .print-scaling {
             height: 4in;
             transform: scale(0.85); 
@@ -210,7 +210,7 @@
                     <div class="print-scaling">${content}</div>
                     <div class="cut-line"></div>
                 </div>
-                <div style="height: 10px;"></div>
+                <div style="height: 5px;"></div>
                 <div class="receipt-copy">
                     <div class="print-scaling">${content}</div>
                 </div>
