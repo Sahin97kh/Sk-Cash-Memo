@@ -9,31 +9,40 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
+        /* শুধুমাত্র প্রিন্ট প্রিভিউ এর জন্য টেক্সট সাইজ ফিক্স */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
-            /* প্রতিটি রিসিট ঠিক ৩.৫ ইঞ্চি হবে, এর বেশি হবে না */
+            /* রিসিট ৩.৫ ইঞ্চিতে ফিট করানোর জন্য স্কেলিং ও সাইজ */
             .receipt-copy { 
                 height: 3.5in !important; 
+                padding: 10px !important; 
                 overflow: hidden; 
                 page-break-inside: avoid;
-                margin-bottom: 5px; /* রিসিট দুটির মাঝে সামান্য গ্যাপ */
-            }
-            
-            /* মূল ডিজাইনের কোনো পরিবর্তন হবে না */
-            #editor-container { 
-                box-shadow: none !important; 
-                border: 1px solid #0d9488 !important; 
-                max-width: none !important;
-                width: 100% !important;
+                display: flex;
+                flex-direction: column;
             }
 
-            @page { 
-                size: A4; 
-                margin: 0; /* ফুল পেজ মার্জিন শূন্য */
+            /* হোমপেজের মেইন কন্টেইনারকে প্রিন্টে ছোট করে ফিট করা */
+            .receipt-copy #editor-container { 
+                box-shadow: none !important; 
+                border: 1.5px solid #0d9488 !important; 
+                max-width: none !important;
+                width: 100% !important;
+                padding: 10px !important;
             }
-            
+
+            /* টেক্সট সাইজ অ্যাডজাস্টমেন্ট (ব্যাংক রিসিট স্টাইল) */
+            #editor-container h2 { font-size: 18px !important; margin-bottom: 2px !important; }
+            #editor-container .text-sm { font-size: 11px !important; }
+            #editor-container .text-xs { font-size: 10px !important; }
+            #editor-container .mt-10 { margin-top: 20px !important; } /* সিগনেচার গ্যাপ কমানো */
+            #editor-container table { font-size: 11px !important; margin-bottom: 5px !important; }
+            #editor-container table th, #editor-container table td { padding: 3px !important; }
+            #editor-container .w-24.h-24 { width: 60px !important; height: 60px !important; } /* লোগো ছোট করা */
+
+            @page { size: A4; margin: 0; }
             #print-wrapper { display: block !important; }
         }
         
@@ -112,7 +121,6 @@
 
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
-
         function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
         function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
 
@@ -129,7 +137,7 @@
                 <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
-            if(shouldFocus) { const rateField = newRow.querySelector('.rate'); rateField.focus(); document.execCommand('selectAll', false, null); }
+            if(shouldFocus) { newRow.querySelector('.rate').focus(); document.execCommand('selectAll', false, null); }
         }
 
         function calculate(el) {
@@ -168,21 +176,18 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            // outerHTML ব্যবহার করছি যাতে আইডি এবং স্টাইলসহ হুবহু কপি হয়
             const editorContent = document.getElementById('editor-container').outerHTML;
-            
-            // লজিক: মাত্র ২টি রিসিট জেনারেট হবে
             printWrapper.innerHTML = `
                 <div class="receipt-copy">${editorContent}</div>
+                <div style="border-top: 2px dashed #000; margin: 10px 0;"></div>
                 <div class="receipt-copy">${editorContent}</div>
             `;
-            
             window.print();
             incrementReceiptNo();
         }
 
-        function checkTab(e, el) { if (e.key === "Tab" || e.key === "Enter") { const tableBody = document.getElementById('table-body'); if (el.closest('tr') === tableBody.lastElementChild) { e.preventDefault(); addNewRow(true); } } }
-        function incrementReceiptNo() { let receiptEl = document.getElementById('receiptNo'); let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0; let nextNo = currentNo + 1; receiptEl.innerText = nextNo; saveData('receiptNo', nextNo); }
+        function checkTab(e, el) { if (e.key === "Tab" || e.key === "Enter") { if (el.closest('tr') === document.getElementById('table-body').lastElementChild) { e.preventDefault(); addNewRow(true); } } }
+        function incrementReceiptNo() { let receiptEl = document.getElementById('receiptNo'); let nextNo = (parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0) + 1; receiptEl.innerText = nextNo; localStorage.setItem('receiptNo', nextNo); }
         function saveData(k, v) { localStorage.setItem(k, v); }
         function previewLogo(input) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('logo-preview').src = e.target.result; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); localStorage.setItem('savedLogo', e.target.result); }; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
         function loadSavedData() { document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD'); ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => { let v = localStorage.getItem(k); if (v && document.getElementById(k)) document.getElementById(k).innerText = v; }); let logo = localStorage.getItem('savedLogo'); if(logo) { document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); } if(document.getElementById('table-body').rows.length === 0) addNewRow(false); }
