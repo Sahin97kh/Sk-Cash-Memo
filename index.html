@@ -3,34 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ৩.৫ ইঞ্চি ফিক্সড</title>
+    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-
-        /* প্রিন্ট করার সময় অটো-ফিট ম্যাজিক */
+        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
-            /* প্রতিটি কপি ঠিক ৩.৫ ইঞ্চি হবে */
+            /* প্রতিটি রিসিট ৩.৫ ইঞ্চি ফিক্সড */
             .receipt-copy { 
                 height: 3.5in !important; 
-                width: 100%;
+                padding: 5px; 
+                page-break-inside: avoid; 
                 overflow: hidden;
-                border-bottom: 1px dashed #000;
-                page-break-inside: avoid;
-                position: relative;
-                padding: 0;
+                display: flex;
+                flex-direction: column;
             }
 
-            /* আপনার বড় ডিজাইনকে ৩.৫ ইঞ্চির মধ্যে কুঁচকে (Scale) ঢুকিয়ে দেওয়া */
+            /* অরিজিনাল ডিজাইনকে ৩.৫ ইঞ্চির মধ্যে অটো ফিট করার জন্য স্কেলিং */
             .receipt-copy > div {
-                transform: scale(0.65); /* ডিজাইন ছোট করার মাত্রা */
+                transform: scale(0.68); /* ডিজাইন ছোট করার হার (দরকার হলে ০.৬৫ বা ০.৭০ করতে পারেন) */
                 transform-origin: top center;
-                width: 153%; /* স্কেলিং ব্যালেন্স করা */
-                margin: 0 auto;
+                width: 147%; /* স্কেল অনুযায়ী উইডথ ব্যালেন্স */
             }
             
             @page { size: A4; margin: 0; }
@@ -66,11 +63,17 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
@@ -112,9 +115,10 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.includes('...')) el.innerText = ''; }
-        
-        function addNewRow() {
+        function handleFocus(el) { if (el.innerText.trim().includes('...')) { el.innerText = ''; } }
+        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') { el.innerText = placeholder; } }
+
+        function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
@@ -122,11 +126,26 @@
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)">0</td>
-                <td class="border border-teal-600 p-1 text-right row-total">0.00</td>
+                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
+            if(shouldFocus) {
+                const rateField = newRow.querySelector('.rate');
+                rateField.focus();
+                document.execCommand('selectAll', false, null);
+            }
+        }
+
+        function checkTab(e, el) {
+            if (e.key === "Tab" || e.key === "Enter") {
+                const tableBody = document.getElementById('table-body');
+                if (el.closest('tr') === tableBody.lastElementChild) {
+                    e.preventDefault();
+                    addNewRow(true);
+                }
+            }
         }
 
         function calculate(el) {
@@ -141,20 +160,48 @@
             let total = 0;
             document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0);
             document.getElementById('grandTotal').innerText = total.toFixed(2);
-            document.getElementById('amountInWords').innerText = "টাকা মাত্র।"; 
+            document.getElementById('amountInWords').innerText = bngAmountInWords(total);
+        }
+
+        function bngAmountInWords(num) {
+            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
+            const tens = ['', '', 'বিশ', 'ত্রিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
+            const teenagers = ['দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ'];
+            if (num == 0) return 'শূণ্য টাকা মাত্র।';
+            function convert(n) {
+                let word = '';
+                if (n >= 10000000) { word += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
+                if (n >= 100000) { word += convert(Math.floor(n / 100000)) + ' লাখ '; n %= 100000; }
+                if (n >= 1000) { word += convert(Math.floor(n / 1000)) + ' হাজার '; n %= 1000; }
+                if (n >= 100) { word += convert(Math.floor(n / 100)) + 'শ '; n %= 100; }
+                if (n >= 20) { word += tens[Math.floor(n / 10)]; if (n % 10 > 0) word += ' ' + units[n % 10]; }
+                else if (n >= 10) { word += teenagers[n - 10]; }
+                else if (n > 0) { word += units[n]; }
+                return word;
+            }
+            return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
         }
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
-            // দুই কপি জেনারেট করা
             printWrapper.innerHTML = `
                 <div class="receipt-copy"><div>${editorContent}</div></div>
+                <div style="border-top: 1px dashed #000; margin: 2px 0;"></div>
                 <div class="receipt-copy"><div>${editorContent}</div></div>
             `;
             printWrapper.classList.remove('hidden');
             window.print();
             printWrapper.classList.add('hidden');
+            incrementReceiptNo();
+        }
+
+        function incrementReceiptNo() {
+            let receiptEl = document.getElementById('receiptNo');
+            let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
+            let nextNo = currentNo + 1;
+            receiptEl.innerText = nextNo;
+            saveData('receiptNo', nextNo);
         }
 
         function saveData(k, v) { localStorage.setItem(k, v); }
@@ -165,18 +212,36 @@
                 document.getElementById('logo-preview').src = e.target.result;
                 document.getElementById('logo-preview').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
+                localStorage.setItem('savedLogo', e.target.result);
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
 
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
-            if(document.getElementById('table-body').rows.length === 0) {
-                for(let i=0; i<6; i++) addNewRow();
+            ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
+                let v = localStorage.getItem(k);
+                if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
+            });
+            let logo = localStorage.getItem('savedLogo');
+            if(logo) {
+                document.getElementById('logo-preview').src = logo;
+                document.getElementById('logo-preview').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
             }
+            if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
 
-        function clearAllData() { location.reload(); }
+        function clearAllData() {
+            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
+                document.getElementById('custName').innerText = '..................................................................';
+                document.getElementById('custAcc').innerText = '......................................................';
+                document.getElementById('table-body').innerHTML = '';
+                addNewRow(false);
+                document.getElementById('grandTotal').innerText = '0.00';
+                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+            }
+        }
     </script>
 </body>
 </html>
