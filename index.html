@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
+    <title>জমা রিসিট - ফিক্সড ১ পেজ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
@@ -11,39 +11,50 @@
         
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; margin: 0; }
+            html, body { 
+                height: 100%; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                overflow: hidden !important;
+            }
             
             @page { 
                 size: A4; 
-                margin: 0; /* পেজ মার্জিন জিরো */
+                margin: 0; 
             }
 
-            /* মেইন প্রিন্ট কন্টেইনার */
             #print-wrapper {
                 display: flex !important;
                 flex-direction: column;
                 width: 210mm;
                 height: 297mm;
-                justify-content: space-between; /* দুই কপিকে সমান দূরত্বে রাখবে */
-                padding: 5mm; /* হালকা বর্ডার গ্যাপ */
-                box-sizing: border-box;
-                page-break-after: avoid;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: white;
             }
 
-            /* প্রতিটি রিসিট কপির হাইট ফিক্সড */
             .receipt-copy { 
-                height: 140mm; 
+                height: 50%; /* একদম অর্ধেক */
                 width: 100%;
-                border: 1px solid #0d9488;
-                padding: 8mm;
+                padding: 8mm; /* আপনার অরিজিনাল প্যাডিং */
                 box-sizing: border-box;
-                overflow: hidden; /* কন্টেন্ট বাইরে যাবে না */
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                overflow: hidden; /* টেবিল বাড়লে ২য় পেজে যেতে দিবে না */
+            }
+
+            /* টেবিল বা কন্টেন্ট বেশি হলে তা সংকুচিত হয়ে যাবে (Scale Down) */
+            .inner-wrap {
+                transform-origin: top left;
+                width: 100%;
             }
             
-            .divider-line {
+            .divider {
                 border-top: 1px dashed #000;
-                width: 90%;
-                margin: 2mm auto;
+                height: 0;
+                width: 100%;
             }
         }
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -52,7 +63,7 @@
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
-        <div class="p-4 md:p-8" id="main-receipt-design">
+        <div class="p-4 md:p-8" id="actual-design">
             <div class="flex justify-between items-start mb-4">
                 <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
@@ -60,27 +71,27 @@
                     <span id="upload-placeholder" class="text-gray-400 text-[10px]">লোগো</span>
                 </div>
                 <div class="text-right flex-1 ml-4">
-                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
+                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true">YOUR SHOP NAME</h2>
                     <div class="flex flex-wrap gap-2 justify-end text-xs mt-2">
-                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
-                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
+                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true">ঠিকানা</span>
+                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true">মোবাইল</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-between text-sm font-bold mb-4 text-gray-700">
-                <div>রিসিট নং: <span id="receiptNo" contenteditable="true" oninput="saveData('receiptNo', this.innerText)">101</span></div>
+                <div>রিসিট নং: <span id="receiptNo" contenteditable="true">101</span></div>
                 <div>তারিখ: <span id="currentDate"></span></div>
             </div>
 
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 px-1" contenteditable="true">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 px-1" contenteditable="true">......................................................</div>
                 </div>
             </div>
 
@@ -115,27 +126,23 @@
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold">প্রিন্ট করুন</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
-
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
-            const rowCount = tableBody.rows.length;
-            if (rowCount >= noteSequence.length) return;
+            if (tableBody.rows.length >= 12) return; // সর্বোচ্চ ১২ রো যাতে ১ পেজে থাকে
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
+                <td class="border border-teal-600 p-1 text-center">${tableBody.rows.length + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[tableBody.rows.length] || ''}</td>
                 <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
-                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
+                <td class="border border-teal-600 p-1 text-right row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
             if(shouldFocus) newRow.querySelector('.rate').focus();
@@ -177,27 +184,19 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const designHtml = document.getElementById('main-receipt-design').innerHTML;
-            
+            const content = document.getElementById('actual-design').innerHTML;
             printWrapper.innerHTML = `
-                <div class="receipt-copy">${designHtml}</div>
-                <div class="divider-line"></div>
-                <div class="receipt-copy">${designHtml}</div>
+                <div class="receipt-copy"><div class="inner-wrap">${content}</div></div>
+                <div class="divider"></div>
+                <div class="receipt-copy"><div class="inner-wrap">${content}</div></div>
             `;
-            
             window.print();
-            incrementReceiptNo();
         }
 
-        function incrementReceiptNo() {
-            let receiptEl = document.getElementById('receiptNo');
-            let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
-            let nextNo = currentNo + 1;
-            receiptEl.innerText = nextNo;
-            saveData('receiptNo', nextNo);
+        function loadSavedData() {
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
+            if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
-
-        function saveData(k, v) { localStorage.setItem(k, v); }
 
         function previewLogo(input) {
             const reader = new FileReader();
@@ -205,26 +204,10 @@
                 document.getElementById('logo-preview').src = e.target.result;
                 document.getElementById('logo-preview').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
-                localStorage.setItem('savedLogo', e.target.result);
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
-
-        function loadSavedData() {
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
-            ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
-                let v = localStorage.getItem(k);
-                if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
-            });
-            let logo = localStorage.getItem('savedLogo');
-            if(logo) {
-                document.getElementById('logo-preview').src = logo;
-                document.getElementById('logo-preview').classList.remove('hidden');
-                document.getElementById('upload-placeholder').classList.add('hidden');
-            }
-            if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
-        }
-
+        
         function checkTab(e, el) {
             if (e.key === "Tab" || e.key === "Enter") {
                 const tableBody = document.getElementById('table-body');
@@ -232,16 +215,6 @@
                     e.preventDefault();
                     addNewRow(true);
                 }
-            }
-        }
-
-        function clearAllData() {
-            if(confirm("সব তথ্য ক্লিয়ার করবেন?")) {
-                document.getElementById('custName').innerText = '..................................................................';
-                document.getElementById('custAcc').innerText = '......................................................';
-                document.getElementById('table-body').innerHTML = '';
-                addNewRow(false);
-                updateGrandTotal();
             }
         }
     </script>
