@@ -3,48 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল সিঙ্গেল কপি</title>
+    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
-            
-            /* রিসিট ঠিক ৩.৫ ইঞ্চি ফিক্সড */
-            .receipt-copy { 
-                height: 3.5in !important; 
-                padding: 0 !important;
-                margin: 0 !important;
-                overflow: hidden; 
-                display: block !important;
-                page-break-after: avoid;
-            }
-            
-            #editor-container { 
-                box-shadow: none !important; 
-                border: 1.5px solid #0d9488 !important; 
-                width: 100% !important;
-                max-width: none !important;
-                padding: 10px !important;
-                margin: 0 !important;
-            }
-
-            /* টেক্সট সাইজ ব্যাংক রিসিট স্টাইল */
-            #editor-container h2 { font-size: 18px !important; margin-bottom: 2px !important; }
-            #editor-container .text-sm { font-size: 11px !important; }
-            #editor-container .text-xs { font-size: 10px !important; }
-            #editor-container table { font-size: 11px !important; margin-bottom: 5px !important; }
-            #editor-container table th, #editor-container table td { padding: 3px !important; }
-            #editor-container .mt-10 { margin-top: 15px !important; }
-            #editor-container .w-24.h-24 { width: 55px !important; height: 55px !important; }
-
+            .receipt-copy { height: 48vh; padding: 10px; page-break-inside: avoid; }
             @page { size: A4; margin: 0; }
-            #print-wrapper { display: block !important; }
         }
-        
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
     </style>
 </head>
@@ -75,11 +44,17 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
@@ -114,21 +89,54 @@
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="printSingle()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
-        
+
+        function handleFocus(el) {
+            if (el.innerText.trim().includes('...')) {
+                el.innerText = '';
+            }
+        }
+
+        function handleBlur(el, placeholder) {
+            if (el.innerText.trim() === '') {
+                el.innerText = placeholder;
+            }
+        }
+
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
+            
             const newRow = document.createElement('tr');
-            newRow.innerHTML = `<td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td><td class="border border-teal-600 p-1" contenteditable="true"></td><td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td><td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td><td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>`;
+            newRow.innerHTML = `
+                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
+                <td class="border border-teal-600 p-1" contenteditable="true"></td>
+                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
+            `;
             tableBody.appendChild(newRow);
-            if(shouldFocus) { newRow.querySelector('.rate').focus(); document.execCommand('selectAll', false, null); }
+            if(shouldFocus) {
+                const rateField = newRow.querySelector('.rate');
+                rateField.focus();
+                document.execCommand('selectAll', false, null);
+            }
+        }
+
+        function checkTab(e, el) {
+            if (e.key === "Tab" || e.key === "Enter") {
+                const tableBody = document.getElementById('table-body');
+                if (el.closest('tr') === tableBody.lastElementChild) {
+                    e.preventDefault();
+                    addNewRow(true);
+                }
+            }
         }
 
         function calculate(el) {
@@ -165,21 +173,71 @@
             return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
         }
 
-        // একদম পরিষ্কার লজিক: শুধু ১টি রিসিট প্রিন্ট হবে
-        function printSingle() {
+        function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const editorContent = document.getElementById('editor-container').outerHTML;
-            printWrapper.innerHTML = `<div class="receipt-copy">${editorContent}</div>`;
+            const editorContent = document.getElementById('editor-container').innerHTML;
+            printWrapper.innerHTML = `
+                <div class="receipt-copy"><div class="border border-teal-600 p-4">${editorContent}</div></div>
+                <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+                <div class="receipt-copy"><div class="border border-teal-600 p-4">${editorContent}</div></div>
+            `;
+            printWrapper.classList.remove('hidden');
             window.print();
+            printWrapper.classList.add('hidden');
             incrementReceiptNo();
         }
 
-        function checkTab(e, el) { if (e.key === "Tab" || e.key === "Enter") { if (el.closest('tr') === document.getElementById('table-body').lastElementChild) { e.preventDefault(); addNewRow(true); } } }
-        function incrementReceiptNo() { let receiptEl = document.getElementById('receiptNo'); let nextNo = (parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0) + 1; receiptEl.innerText = nextNo; localStorage.setItem('receiptNo', nextNo); }
+        function incrementReceiptNo() {
+            let receiptEl = document.getElementById('receiptNo');
+            let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
+            let nextNo = currentNo + 1;
+            receiptEl.innerText = nextNo;
+            saveData('receiptNo', nextNo);
+        }
+
         function saveData(k, v) { localStorage.setItem(k, v); }
-        function previewLogo(input) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('logo-preview').src = e.target.result; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); localStorage.setItem('savedLogo', e.target.result); }; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
-        function loadSavedData() { document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD'); ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => { let v = localStorage.getItem(k); if (v && document.getElementById(k)) document.getElementById(k).innerText = v; }); let logo = localStorage.getItem('savedLogo'); if(logo) { document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); } if(document.getElementById('table-body').rows.length === 0) addNewRow(false); }
-        function clearAllData() { if(confirm("ক্লিয়ার করবেন?")) { document.getElementById('table-body').innerHTML = ''; addNewRow(false); updateGrandTotal(); } }
+
+        function previewLogo(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('logo-preview').src = e.target.result;
+                document.getElementById('logo-preview').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                localStorage.setItem('savedLogo', e.target.result);
+            };
+            if(input.files[0]) reader.readAsDataURL(input.files[0]);
+        }
+
+        function loadSavedData() {
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
+            ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
+                let v = localStorage.getItem(k);
+                if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
+            });
+            let logo = localStorage.getItem('savedLogo');
+            if(logo) {
+                document.getElementById('logo-preview').src = logo;
+                document.getElementById('logo-preview').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+            }
+            if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
+        }
+
+        function clearAllData() {
+            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
+                // কাস্টমার তথ্য রিসেট
+                document.getElementById('custName').innerText = '..................................................................';
+                document.getElementById('custAcc').innerText = '......................................................';
+                
+                // টেবিলের ডাটা রিসেট
+                document.getElementById('table-body').innerHTML = '';
+                addNewRow(false);
+                
+                // গ্র্যান্ড টোটাল রিসেট
+                document.getElementById('grandTotal').innerText = '0.00';
+                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+            }
+        }
     </script>
 </body>
 </html>
