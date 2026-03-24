@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ২ কপি ২.৯ ইঞ্চি</title>
+    <title>জমা রিসিট - ২ কপি ফিক্সড</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
+        #print-wrapper { display: none; }
+
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; margin: 0; }
+            #editor-container { display: none !important; }
+            #print-wrapper { display: block !important; background: white; width: 100%; }
             
-            /* প্রতিটি রিসিট একদম ফিক্সড ২.৯ ইঞ্চি */
+            body { margin: 0; padding: 0; background: white; }
+
+            /* ২.৯ ইঞ্চি ফিক্সড রাখতে ফোর্স করা হচ্ছে */
             .receipt-copy { 
                 height: 2.9in !important; 
+                width: 100% !important;
                 max-height: 2.9in !important;
                 min-height: 2.9in !important;
-                width: 100%;
-                padding: 0; 
-                page-break-inside: avoid; 
                 overflow: hidden;
                 display: block;
-                border-bottom: 1px dashed #000; /* কাটার দাগ */
+                border-bottom: 1px dashed #000;
                 position: relative;
+                page-break-inside: avoid;
             }
 
-            /* অরিজিনাল ডিজাইনকে ২.৯ ইঞ্চির ভেতর ফিট করার জন্য স্কেলিং */
+            /* অরিজিনাল ডিজাইন স্কেলিং */
             .receipt-copy > div {
-                transform: scale(0.58); 
+                transform: scale(0.60); 
                 transform-origin: top center;
-                width: 172.4%; /* স্কেল অনুযায়ী উইডথ অ্যাডজাস্টমেন্ট */
+                width: 166.6%; 
                 margin: 0 auto;
             }
-            
-            @page { size: A4; margin: 0; }
+
+            @page { 
+                size: A4; 
+                margin: 0; 
+            }
         }
 
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -104,7 +111,7 @@
         </div>
     </div>
 
-    <div id="print-wrapper" class="hidden"></div>
+    <div id="print-wrapper"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
         <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
@@ -115,8 +122,7 @@
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
         function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
-
+        
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
@@ -150,15 +156,13 @@
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
             
-            // মাত্র ২ টি কপি জেনারেট হবে
+            // জোর করে ২ টা কপি বসানো হচ্ছে
             printWrapper.innerHTML = `
                 <div class="receipt-copy"><div>${editorContent}</div></div>
                 <div class="receipt-copy"><div>${editorContent}</div></div>
             `;
             
-            printWrapper.classList.remove('hidden');
             window.print();
-            printWrapper.classList.add('hidden');
             incrementReceiptNo();
         }
 
