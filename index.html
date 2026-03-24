@@ -8,34 +8,42 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
+        
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; margin: 0; overflow: hidden; }
+            body { background: white; padding: 0; margin: 0; }
             
             @page { 
                 size: A4; 
-                margin: 0; 
+                margin: 0; /* পেজ মার্জিন জিরো */
             }
 
-            /* ১টি পেজে ফিক্সড কন্টেইনার */
+            /* মেইন প্রিন্ট কন্টেইনার */
             #print-wrapper {
-                display: block !important;
+                display: flex !important;
+                flex-direction: column;
                 width: 210mm;
                 height: 297mm;
+                justify-content: space-between; /* দুই কপিকে সমান দূরত্বে রাখবে */
+                padding: 5mm; /* হালকা বর্ডার গ্যাপ */
+                box-sizing: border-box;
+                page-break-after: avoid;
             }
 
-            /* আপনার অরিজিনাল ডিজাইন যাতে ১ পেজে ২ কপি ধরে */
+            /* প্রতিটি রিসিট কপির হাইট ফিক্সড */
             .receipt-copy { 
-                height: 148mm; 
-                padding: 10mm; 
-                box-sizing: border-box; 
-                overflow: hidden;
+                height: 140mm; 
+                width: 100%;
+                border: 1px solid #0d9488;
+                padding: 8mm;
+                box-sizing: border-box;
+                overflow: hidden; /* কন্টেন্ট বাইরে যাবে না */
             }
             
             .divider-line {
                 border-top: 1px dashed #000;
-                width: 100%;
-                margin: 0;
+                width: 90%;
+                margin: 2mm auto;
             }
         }
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -44,7 +52,7 @@
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
-        <div class="p-4 md:p-8">
+        <div class="p-4 md:p-8" id="main-receipt-design">
             <div class="flex justify-between items-start mb-4">
                 <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
@@ -68,17 +76,11 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '......................................................')">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
@@ -136,11 +138,7 @@
                 <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
-            if(shouldFocus) {
-                const rateField = newRow.querySelector('.rate');
-                rateField.focus();
-                document.execCommand('selectAll', false, null);
-            }
+            if(shouldFocus) newRow.querySelector('.rate').focus();
         }
 
         function calculate(el) {
@@ -158,7 +156,6 @@
             document.getElementById('amountInWords').innerText = bngAmountInWords(total);
         }
 
-        /* আপনার অরিজিনাল বাংলা কনভার্টার ফাংশনটি এখানে হুবহু ফিরিয়ে আনা হয়েছে */
         function bngAmountInWords(num) {
             const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
             const tens = ['', '', 'বিশ', 'ত্রিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
@@ -180,12 +177,14 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const editorContent = document.getElementById('editor-container').innerHTML;
+            const designHtml = document.getElementById('main-receipt-design').innerHTML;
+            
             printWrapper.innerHTML = `
-                <div class="receipt-copy">${editorContent}</div>
+                <div class="receipt-copy">${designHtml}</div>
                 <div class="divider-line"></div>
-                <div class="receipt-copy">${editorContent}</div>
+                <div class="receipt-copy">${designHtml}</div>
             `;
+            
             window.print();
             incrementReceiptNo();
         }
@@ -197,7 +196,9 @@
             receiptEl.innerText = nextNo;
             saveData('receiptNo', nextNo);
         }
+
         function saveData(k, v) { localStorage.setItem(k, v); }
+
         function previewLogo(input) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -208,6 +209,7 @@
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
+
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
             ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
@@ -222,6 +224,7 @@
             }
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
+
         function checkTab(e, el) {
             if (e.key === "Tab" || e.key === "Enter") {
                 const tableBody = document.getElementById('table-body');
@@ -231,6 +234,7 @@
                 }
             }
         }
+
         function clearAllData() {
             if(confirm("সব তথ্য ক্লিয়ার করবেন?")) {
                 document.getElementById('custName').innerText = '..................................................................';
