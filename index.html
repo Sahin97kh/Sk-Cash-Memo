@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - সিঙ্গেল কপি</title>
+    <title>জমা রিসিট - ফাইনাল সিঙ্গেল কপি</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
@@ -13,12 +13,14 @@
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
-            /* রিসিট ঠিক ৩.৫ ইঞ্চি ফিক্সড থাকবে */
+            /* রিসিট ঠিক ৩.৫ ইঞ্চি ফিক্সড */
             .receipt-copy { 
                 height: 3.5in !important; 
-                padding: 10px !important; 
+                padding: 0 !important;
+                margin: 0 !important;
                 overflow: hidden; 
                 display: block !important;
+                page-break-after: avoid;
             }
             
             #editor-container { 
@@ -27,16 +29,17 @@
                 width: 100% !important;
                 max-width: none !important;
                 padding: 10px !important;
+                margin: 0 !important;
             }
 
-            /* টেক্সট সাইজ আপনার টিক দেওয়া রিসিটের মতো ফিক্সড */
+            /* টেক্সট সাইজ ব্যাংক রিসিট স্টাইল */
             #editor-container h2 { font-size: 18px !important; margin-bottom: 2px !important; }
             #editor-container .text-sm { font-size: 11px !important; }
             #editor-container .text-xs { font-size: 10px !important; }
             #editor-container table { font-size: 11px !important; margin-bottom: 5px !important; }
             #editor-container table th, #editor-container table td { padding: 3px !important; }
-            #editor-container .mt-10 { margin-top: 20px !important; }
-            #editor-container .w-24.h-24 { width: 60px !important; height: 60px !important; }
+            #editor-container .mt-10 { margin-top: 15px !important; }
+            #editor-container .w-24.h-24 { width: 55px !important; height: 55px !important; }
 
             @page { size: A4; margin: 0; }
             #print-wrapper { display: block !important; }
@@ -111,7 +114,7 @@
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="generateSingleCopyAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="printSingle()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
@@ -162,10 +165,10 @@
             return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
         }
 
-        function generateSingleCopyAndPrint() {
+        // একদম পরিষ্কার লজিক: শুধু ১টি রিসিট প্রিন্ট হবে
+        function printSingle() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').outerHTML;
-            // এখন শুধুমাত্র ১টি রিসিট জেনারেট হবে
             printWrapper.innerHTML = `<div class="receipt-copy">${editorContent}</div>`;
             window.print();
             incrementReceiptNo();
