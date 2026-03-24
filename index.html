@@ -9,22 +9,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
-        /* শুধুমাত্র প্রিন্ট প্রিভিউ এর জন্য পরিবর্তন */
+        /* প্রিন্ট প্রিভিউ ফিক্স */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
-            #editor-container { display: none; } /* মেইন এডিটর প্রিন্টে দেখাবে না */
+            #editor-container { display: none; }
             #print-wrapper { display: block !important; }
+            
             .receipt-copy { 
-                height: 49vh; /* এক পেজে দুইটা কপি আটানোর জন্য */
-                padding: 10px; 
-                box-sizing: border-box; 
+                height: 32vh; /* সাইজ অনেক কমানো হয়েছে যাতে ১ পেজে ৩টার জায়গা থাকে কিন্তু আমরা ২টা প্রিন্ট করব */
+                padding: 10px 20px;
+                box-sizing: border-box;
                 overflow: hidden;
             }
             .receipt-copy > div { 
-                transform: scale(0.9); /* প্রিন্টে সামান্য ছোট করা যাতে ৭-৮ রো ধরে */
+                transform: scale(0.85); /* কন্টেন্ট একটু ছোট করা হয়েছে যাতে ৭-৮ রো অনায়াসে ধরে */
                 transform-origin: top center;
             }
+            .divider { border-top: 1px dashed #444; width: 100%; margin: 0; }
             @page { size: A4; margin: 0; }
         }
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -58,16 +60,12 @@
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
                     <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                         contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
                     <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '......................................................')">......................................................</div>
+                         contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
@@ -109,22 +107,13 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) {
-            if (el.innerText.trim().includes('...')) {
-                el.innerText = '';
-            }
-        }
-
-        function handleBlur(el, placeholder) {
-            if (el.innerText.trim() === '') {
-                el.innerText = placeholder;
-            }
-        }
+        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
+        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
 
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
-            if (rowCount >= 12) return; // ৭টা রো বাড়ালেও যাতে পেজে ধরে
+            if (rowCount >= 12) return; 
             
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
@@ -190,15 +179,14 @@
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
             
-            // একই ডিজাইন দুইবার প্রিন্ট কপির জন্য তৈরি করা হচ্ছে
             printWrapper.innerHTML = `
                 <div class="receipt-copy">
-                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal;">Customer Copy</div>
+                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 2px;">Customer Copy</div>
                     <div class="border border-teal-600 p-4 bg-white">${editorContent}</div>
                 </div>
-                <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
+                <div class="divider"></div>
                 <div class="receipt-copy">
-                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal;">Office Copy</div>
+                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 2px;">Office Copy</div>
                     <div class="border border-teal-600 p-4 bg-white">${editorContent}</div>
                 </div>
             `;
@@ -244,13 +232,12 @@
         }
 
         function clearAllData() {
-            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
+            if(confirm("ক্লিয়ার করবেন?")) {
                 document.getElementById('custName').innerText = '..................................................................';
                 document.getElementById('custAcc').innerText = '......................................................';
                 document.getElementById('table-body').innerHTML = '';
                 addNewRow(false);
-                document.getElementById('grandTotal').innerText = '0.00';
-                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+                updateGrandTotal();
             }
         }
     </script>
