@@ -132,17 +132,8 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { 
-            if (el.innerText.trim().includes('...') || el.innerText.trim() === '0') {
-                el.innerText = ''; 
-            }
-        }
-        function handleBlur(el, placeholder) { 
-            if (el.innerText.trim() === '') {
-                el.innerText = placeholder; 
-            }
-            updateGrandTotal();
-        }
+        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
+        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
 
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
@@ -153,13 +144,14 @@
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
                 <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onfocus="handleFocus(this)" onblur="handleBlur(this, '0')" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
                 <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
             if(shouldFocus) {
                 const rateField = newRow.querySelector('.rate');
                 rateField.focus();
+                document.execCommand('selectAll', false, null);
             }
         }
 
@@ -175,12 +167,8 @@
 
         function calculate(el) {
             const row = el.closest('tr');
-            let qtyText = row.querySelector('.qty').innerText.trim();
-            let rateText = row.querySelector('.rate').innerText.trim();
-            
-            let qty = parseFloat(qtyText) || 0;
-            let rate = parseFloat(rateText) || 0;
-            
+            let qty = parseFloat(row.querySelector('.qty').innerText) || 0;
+            let rate = parseFloat(row.querySelector('.rate').innerText) || 0;
             row.querySelector('.row-total').innerText = (qty * rate).toFixed(2);
             updateGrandTotal();
         }
@@ -192,23 +180,24 @@
             document.getElementById('amountInWords').innerText = bngAmountInWords(total);
         }
 
+        // --- সংশোধিত bngAmountInWords ফাংশন ---
         function bngAmountInWords(num) {
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
-            const tens = ['', '', 'বিশ', 'ত্রিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
-            const teenagers = ['দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ'];
             if (num == 0) return 'শূণ্য টাকা মাত্র।';
+            const words = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'ঊনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাসি', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+
             function convert(n) {
                 let word = '';
                 if (n >= 10000000) { word += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
                 if (n >= 100000) { word += convert(Math.floor(n / 100000)) + ' লাখ '; n %= 100000; }
                 if (n >= 1000) { word += convert(Math.floor(n / 1000)) + ' হাজার '; n %= 1000; }
-                if (n >= 100) { word += convert(Math.floor(n / 100)) + 'শ '; n %= 100; }
-                if (n >= 20) { word += tens[Math.floor(n / 10)]; if (n % 10 > 0) word += ' ' + units[n % 10]; }
-                else if (n >= 10) { word += teenagers[n - 10]; }
-                else if (n > 0) { word += units[n]; }
+                if (n >= 100) { word += words[Math.floor(n / 100)] + 'শ '; n %= 100; }
+                if (n > 0) word += words[n];
                 return word;
             }
-            return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
+
+            let amount = Math.floor(num);
+            let result = convert(amount).trim() + ' টাকা';
+            return result + ' মাত্র।';
         }
 
         function generateTwoCopiesAndPrint() {
