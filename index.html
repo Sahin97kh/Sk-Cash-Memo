@@ -17,7 +17,6 @@
             @page { size: A4; margin: 0; }
         }
 
-        /* রিসিট কন্টেইনার ৫ ইঞ্চি (৪ ইঞ্চি কন্টেন্ট + ১ ইঞ্চি খালি জায়গা) */
         .receipt-copy { 
             height: 5in; 
             width: 100%; 
@@ -30,7 +29,6 @@
             flex-direction: column;
         }
 
-        /* কন্টেন্ট এরিয়া ৪ ইঞ্চিতে ফিক্সড রাখা হয়েছে */
         .print-scaling {
             height: 4in;
             transform: scale(0.85); 
@@ -134,8 +132,17 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
+        function handleFocus(el) { 
+            if (el.innerText.trim().includes('...') || el.innerText.trim() === '0') {
+                el.innerText = ''; 
+            }
+        }
+        function handleBlur(el, placeholder) { 
+            if (el.innerText.trim() === '') {
+                el.innerText = placeholder; 
+            }
+            updateGrandTotal();
+        }
 
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
@@ -146,14 +153,13 @@
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
                 <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onfocus="handleFocus(this)" onblur="handleBlur(this, '0')" onkeydown="checkTab(event, this)">0</td>
                 <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
             if(shouldFocus) {
                 const rateField = newRow.querySelector('.rate');
                 rateField.focus();
-                document.execCommand('selectAll', false, null);
             }
         }
 
@@ -169,8 +175,12 @@
 
         function calculate(el) {
             const row = el.closest('tr');
-            let qty = parseFloat(row.querySelector('.qty').innerText) || 0;
-            let rate = parseFloat(row.querySelector('.rate').innerText) || 0;
+            let qtyText = row.querySelector('.qty').innerText.trim();
+            let rateText = row.querySelector('.rate').innerText.trim();
+            
+            let qty = parseFloat(qtyText) || 0;
+            let rate = parseFloat(rateText) || 0;
+            
             row.querySelector('.row-total').innerText = (qty * rate).toFixed(2);
             updateGrandTotal();
         }
