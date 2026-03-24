@@ -8,51 +8,27 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-        
+
+        /* প্রিন্ট প্রিভিউ সেটআপ */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
-            #editor-container { display: none; }
-            #print-wrapper { display: block !important; width: 100%; }
             
-            /* রিসিটের স্লিম সাইজ নিশ্চিত করা */
+            /* প্রতিটি কপি A4 এর প্রায় ২৫-৩০% জায়গা নিবে, যাতে ২টি মিলে ৫০% হয় */
             .receipt-copy { 
-                height: 35vh; /* ব্যাংক রিসিটের মতো লম্বায় ছোট/স্লিম */
-                padding: 15px 30px; 
+                height: 48vh; 
+                padding: 20px; 
                 box-sizing: border-box;
-                overflow: hidden;
+                page-break-inside: avoid;
+                border-bottom: 1px dashed #ccc; /* কাটার সুবিধার্থে ডটেড লাইন */
             }
             
-            /* আপনার অরিজিনাল ডিজাইন যেন ফুল উইডথ পায় এবং সামান্য স্কেল হয় */
-            .print-box {
-                border: 1.5px solid #0d9488;
-                padding: 15px;
-                transform: scale(0.9); /* হালকা ছোট করা হয়েছে স্লিম লুকের জন্য */
-                transform-origin: top center;
-                width: 100%;
-            }
-
-            /* মাঝখানে কেঁচি দিয়ে কাটার দাগ */
-            .cut-line {
-                width: 100%;
-                border-top: 2px dashed #444;
-                position: relative;
-                margin: 5px 0;
-                text-align: center;
-            }
-            .cut-line::after {
-                content: '✂--------------------------------------------------';
-                position: absolute;
-                top: -12px;
-                left: 10%;
-                font-size: 14px;
-                background: white;
-                padding: 0 10px;
-                color: #333;
-            }
-
+            #print-wrapper { display: block !important; }
+            #editor-container { display: none; } /* এডিটর হাইড হবে প্রিন্টে */
+            
             @page { size: A4; margin: 0; }
         }
+
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
     </style>
 </head>
@@ -84,12 +60,16 @@
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
                     <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
                     <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
@@ -131,24 +111,63 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
+        function handleFocus(el) {
+            if (el.innerText.trim().includes('...')) {
+                el.innerText = '';
+            }
+        }
+
+        function handleBlur(el, placeholder) {
+            if (el.innerText.trim() === '') {
+                el.innerText = placeholder;
+            }
+        }
 
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
+            
             const newRow = document.createElement('tr');
-            newRow.innerHTML = `<td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td><td class="border border-teal-600 p-1" contenteditable="true"></td><td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td><td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td><td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>`;
+            newRow.innerHTML = `
+                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
+                <td class="border border-teal-600 p-1" contenteditable="true"></td>
+                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
+            `;
             tableBody.appendChild(newRow);
-            if(shouldFocus) { const rateField = newRow.querySelector('.rate'); rateField.focus(); document.execCommand('selectAll', false, null); }
+            if(shouldFocus) {
+                const rateField = newRow.querySelector('.rate');
+                rateField.focus();
+                document.execCommand('selectAll', false, null);
+            }
         }
 
-        function checkTab(e, el) { if (e.key === "Tab" || e.key === "Enter") { const tableBody = document.getElementById('table-body'); if (el.closest('tr') === tableBody.lastElementChild) { e.preventDefault(); addNewRow(true); } } }
+        function checkTab(e, el) {
+            if (e.key === "Tab" || e.key === "Enter") {
+                const tableBody = document.getElementById('table-body');
+                if (el.closest('tr') === tableBody.lastElementChild) {
+                    e.preventDefault();
+                    addNewRow(true);
+                }
+            }
+        }
 
-        function calculate(el) { const row = el.closest('tr'); let qty = parseFloat(row.querySelector('.qty').innerText) || 0; let rate = parseFloat(row.querySelector('.rate').innerText) || 0; row.querySelector('.row-total').innerText = (qty * rate).toFixed(2); updateGrandTotal(); }
+        function calculate(el) {
+            const row = el.closest('tr');
+            let qty = parseFloat(row.querySelector('.qty').innerText) || 0;
+            let rate = parseFloat(row.querySelector('.rate').innerText) || 0;
+            row.querySelector('.row-total').innerText = (qty * rate).toFixed(2);
+            updateGrandTotal();
+        }
 
-        function updateGrandTotal() { let total = 0; document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0); document.getElementById('grandTotal').innerText = total.toFixed(2); document.getElementById('amountInWords').innerText = bngAmountInWords(total); }
+        function updateGrandTotal() {
+            let total = 0;
+            document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0);
+            document.getElementById('grandTotal').innerText = total.toFixed(2);
+            document.getElementById('amountInWords').innerText = bngAmountInWords(total);
+        }
 
         function bngAmountInWords(num) {
             const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
@@ -172,16 +191,29 @@
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
-            printWrapper.innerHTML = `
-                <div class="receipt-copy"><div class="print-box">${editorContent}</div></div>
-                <div class="cut-line"></div>
-                <div class="receipt-copy"><div class="print-box">${editorContent}</div></div>
+            
+            // একই ডিজাইন ২ বার তৈরি করা হচ্ছে, মাঝখানে একটি লাইন সহ
+            const singleCopy = `
+                <div class="receipt-copy">
+                    <div style="border: 1px solid #0d9488; padding: 15px; height: 100%; position: relative;">
+                        ${editorContent}
+                    </div>
+                </div>
             `;
+
+            printWrapper.innerHTML = singleCopy + singleCopy;
+            
             window.print();
             incrementReceiptNo();
         }
 
-        function incrementReceiptNo() { let receiptEl = document.getElementById('receiptNo'); let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0; let nextNo = currentNo + 1; receiptEl.innerText = nextNo; saveData('receiptNo', nextNo); }
+        function incrementReceiptNo() {
+            let receiptEl = document.getElementById('receiptNo');
+            let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
+            let nextNo = currentNo + 1;
+            receiptEl.innerText = nextNo;
+            saveData('receiptNo', nextNo);
+        }
 
         function saveData(k, v) { localStorage.setItem(k, v); }
 
@@ -204,14 +236,24 @@
             });
             let logo = localStorage.getItem('savedLogo');
             if(logo) {
-                document.getElementById('logo-preview').src = logo;
-                document.getElementById('logo-preview').classList.remove('hidden');
+                const previewImg = document.getElementById('logo-preview');
+                previewImg.src = logo;
+                previewImg.classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
             }
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
 
-        function clearAllData() { if(confirm("সব ক্লিয়ার করবেন?")) { document.getElementById('custName').innerText = '..................................................................'; document.getElementById('custAcc').innerText = '......................................................'; document.getElementById('table-body').innerHTML = ''; addNewRow(false); document.getElementById('grandTotal').innerText = '0.00'; document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।'; } }
+        function clearAllData() {
+            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
+                document.getElementById('custName').innerText = '..................................................................';
+                document.getElementById('custAcc').innerText = '......................................................';
+                document.getElementById('table-body').innerHTML = '';
+                addNewRow(false);
+                document.getElementById('grandTotal').innerText = '0.00';
+                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+            }
+        }
     </script>
 </body>
 </html>
