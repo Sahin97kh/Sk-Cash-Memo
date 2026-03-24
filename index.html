@@ -8,11 +8,39 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
+        
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; margin: 0; }
-            .receipt-copy { height: 48vh; padding: 10px; page-break-inside: avoid; }
-            @page { size: A4; margin: 0; }
+            body { background: white; padding: 0; margin: 0; overflow: hidden; }
+            
+            @page { 
+                size: A4; 
+                margin: 0; 
+            }
+
+            /* মেইন কন্টেইনার যা এক পেজে দুই কপি ধরে রাখবে */
+            #print-wrapper {
+                display: block !important;
+                width: 210mm;
+                height: 297mm;
+                padding: 5mm;
+                box-sizing: border-box;
+            }
+
+            /* প্রতিটি কপির হাইট ফিক্সড করা হলো যাতে ২য় পেজে না যায় */
+            .receipt-copy { 
+                height: 140mm; 
+                padding: 5mm; 
+                box-sizing: border-box;
+                overflow: hidden;
+                position: relative;
+            }
+            
+            .divider-line {
+                border-top: 1px dashed #000;
+                margin: 2mm 0;
+                width: 100%;
+            }
         }
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
     </style>
@@ -96,17 +124,8 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) {
-            if (el.innerText.trim().includes('...')) {
-                el.innerText = '';
-            }
-        }
-
-        function handleBlur(el, placeholder) {
-            if (el.innerText.trim() === '') {
-                el.innerText = placeholder;
-            }
-        }
+        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
+        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
 
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
@@ -176,14 +195,19 @@
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContent = document.getElementById('editor-container').innerHTML;
+            
+            // একই কন্টেন্ট দুইবার দেওয়া হচ্ছে এবং মাঝখানে ড্যাশ লাইন
             printWrapper.innerHTML = `
-                <div class="receipt-copy"><div class="border border-teal-600 p-4">${editorContent}</div></div>
-                <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
-                <div class="receipt-copy"><div class="border border-teal-600 p-4">${editorContent}</div></div>
+                <div class="receipt-copy">
+                    <div class="border border-teal-600 p-4" style="height: 100%">${editorContent}</div>
+                </div>
+                <div class="divider-line"></div>
+                <div class="receipt-copy">
+                    <div class="border border-teal-600 p-4" style="height: 100%">${editorContent}</div>
+                </div>
             `;
-            printWrapper.classList.remove('hidden');
+            
             window.print();
-            printWrapper.classList.add('hidden');
             incrementReceiptNo();
         }
 
@@ -224,18 +248,12 @@
         }
 
         function clearAllData() {
-            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
-                // কাস্টমার তথ্য রিসেট
+            if(confirm("সব তথ্য ক্লিয়ার করবেন?")) {
                 document.getElementById('custName').innerText = '..................................................................';
                 document.getElementById('custAcc').innerText = '......................................................';
-                
-                // টেবিলের ডাটা রিসেট
                 document.getElementById('table-body').innerHTML = '';
                 addNewRow(false);
-                
-                // গ্র্যান্ড টোটাল রিসেট
-                document.getElementById('grandTotal').innerText = '0.00';
-                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+                updateGrandTotal();
             }
         }
     </script>
