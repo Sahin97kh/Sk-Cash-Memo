@@ -3,35 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
+    <title>জমা রিসিট - ফুল উইডথ ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
-        /* প্রিন্ট প্রিভিউ ফিক্স: আপনার ছবি অনুযায়ী উপরে-নিচে ও চিকন */
+        /* প্রিন্ট প্রিভিউ ফিক্স: পুরো স্ক্রিন জুড়ে রিসিট */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             #editor-container { display: none; }
-            #print-wrapper { display: block !important; }
+            #print-wrapper { display: block !important; width: 100%; }
             
             .receipt-copy { 
-                height: 30vh; /* রিসিট লম্বায় আরও চিকন করা হয়েছে */
-                padding: 5px 20px;
+                width: 100%;
+                height: 35vh; /* উচ্চতা আপনার চাহিদা মতো চিকন রাখা হয়েছে */
+                padding: 10px 30px; /* ডানে বামে হালকা মার্জিন যাতে বর্ডার না কাটে */
                 box-sizing: border-box;
                 overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
             }
             
             .print-scale { 
-                transform: scale(0.85); /* কন্টেন্ট একটু ছোট করা হয়েছে যাতে সুন্দর ধরে */
-                transform-origin: top center;
+                width: 100% !important; /* ফুল উইডথ নিশ্চিত করা */
+                max-width: none !important;
                 border: 1px solid #0d9488;
-                padding: 10px;
+                padding: 15px;
                 background: white;
+            }
+
+            /* মেইন কন্টেন্ট যেন পুরো জায়গা নেয় */
+            .print-scale > div {
+                width: 100% !important;
+                max-width: none !important;
             }
 
             .divider { 
@@ -190,6 +194,7 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
+            // প্লেইন টেক্সট হিসেবে কন্টেন্ট নিচ্ছি যাতে max-w-4xl এর প্রভাব না থাকে
             const editorContent = document.getElementById('editor-container').innerHTML;
             
             printWrapper.innerHTML = `
