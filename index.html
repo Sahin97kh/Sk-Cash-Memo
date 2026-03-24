@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - পারফেক্ট ফিক্স</title>
+    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
@@ -29,20 +29,22 @@
                 display: flex;
                 flex-direction: column;
                 border-bottom: 1px dashed #000;
-                overflow: hidden; /* যাতে স্বাক্ষর কখনো না ঢাকে */
+                overflow: hidden;
             }
-            .table-wrap { flex: 1 1 auto; overflow: hidden; }
-            .footer-wrap { flex: 0 0 auto; margin-top: 10px; }
+            /* টেবিল কন্টেইনার ফ্লেক্সিবল রাখা হয়েছে */
+            .table-wrap { flex-grow: 1; min-height: 0; overflow: hidden; }
+            .footer-wrap { flex-shrink: 0; margin-top: auto; padding-top: 10px; }
+            table { font-size: 11px !important; line-height: 1; }
+            td, th { padding: 2px !important; }
         }
-        [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
-    <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
+    <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600">
         <div class="p-6 md:p-10 flex flex-col h-full" id="main-design">
             <div class="flex justify-between items-start mb-4">
-                <div class="w-24 h-24 border-2 border-dashed border-teal-300 rounded flex items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
+                <div class="w-20 h-20 border-2 border-dashed border-teal-300 rounded flex items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
                     <img id="logo-preview" class="hidden object-contain w-full h-full">
                     <span id="upload-placeholder" class="text-gray-400 text-[10px]">লোগো</span>
@@ -95,19 +97,19 @@
 
             <div class="footer-wrap">
                 <p class="text-xs italic font-bold text-teal-800">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
-                <div class="flex justify-between mt-10 text-xs font-bold">
+                <div class="flex justify-between mt-8 text-xs font-bold">
                     <div class="border-t border-black pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
                     <div class="border-t border-black pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
         <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold">প্রিন্ট করুন</button>
-        <button onclick="addNewRow(true)" class="bg-teal-600 text-white py-4 px-6 rounded-lg font-bold">+ রো যোগ করুন</button>
+        <button onclick="addNewRow(true)" class="bg-teal-600 text-white py-4 px-6 rounded-lg font-bold">+ রো যোগ</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
@@ -117,7 +119,7 @@
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
-            if (rowCount >= 15) return; // ১৫টির বেশি রো নিলে এক পেজে রাখা অসম্ভব
+            if (rowCount >= 12) return;
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
