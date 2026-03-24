@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফুল উইডথ ফিক্স</title>
+    <title>জমা রিসিট - ফুল ভিউ ও কাটিং লাইন</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
-        /* প্রিন্ট প্রিভিউ ফিক্স: পুরো স্ক্রিন জুড়ে রিসিট */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
@@ -18,30 +17,35 @@
             
             .receipt-copy { 
                 width: 100%;
-                height: 35vh; /* উচ্চতা আপনার চাহিদা মতো চিকন রাখা হয়েছে */
-                padding: 10px 30px; /* ডানে বামে হালকা মার্জিন যাতে বর্ডার না কাটে */
+                min-height: 40vh; /* ফিক্সড হাইট সরিয়ে দেয়া হয়েছে যাতে হেডার-ফুটার না কাটে */
+                padding: 20px 40px;
                 box-sizing: border-box;
-                overflow: hidden;
+                position: relative;
             }
             
             .print-scale { 
-                width: 100% !important; /* ফুল উইডথ নিশ্চিত করা */
-                max-width: none !important;
-                border: 1px solid #0d9488;
-                padding: 15px;
+                width: 100% !important;
+                border: 1.5px solid #0d9488;
+                padding: 20px;
                 background: white;
             }
 
-            /* মেইন কন্টেন্ট যেন পুরো জায়গা নেয় */
-            .print-scale > div {
-                width: 100% !important;
-                max-width: none !important;
-            }
-
-            .divider { 
-                border-top: 1px dashed #000; 
-                margin: 5px 0; 
+            /* কেঁচি দিয়ে কাটার দাগ */
+            .cut-line {
                 width: 100%;
+                border-top: 2px dashed #333;
+                position: relative;
+                margin: 10px 0;
+                text-align: center;
+            }
+            .cut-line::after {
+                content: '✂';
+                position: absolute;
+                top: -15px;
+                left: 5%;
+                font-size: 20px;
+                background: white;
+                padding: 0 10px;
             }
 
             @page { size: A4; margin: 0; }
@@ -51,7 +55,7 @@
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
-    <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
+    <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600">
         <div class="p-4 md:p-8">
             <div class="flex justify-between items-start mb-4">
                 <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
@@ -76,24 +80,22 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">......................................................</div>
                 </div>
             </div>
 
             <table class="w-full border-collapse border border-teal-600 text-sm mb-3">
                 <thead>
                     <tr class="bg-teal-600 text-white">
-                        <th class="border border-teal-600 p-1 w-10">SL</th>
+                        <th class="border border-teal-600 p-1">SL</th>
                         <th class="border border-teal-600 p-1 text-left">বিবরণ</th>
-                        <th class="border border-teal-600 p-1 w-20">পরিমাণ</th>
-                        <th class="border border-teal-600 p-1 w-20">দর</th>
-                        <th class="border border-teal-600 p-1 w-28 text-right">মোট টাকা</th>
+                        <th class="border border-teal-600 p-1">পরিমাণ</th>
+                        <th class="border border-teal-600 p-1">দর</th>
+                        <th class="border border-teal-600 p-1 text-right">মোট টাকা</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -107,7 +109,7 @@
 
             <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
 
-            <div class="flex justify-between mt-8 text-xs font-bold text-teal-800">
+            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800">
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
             </div>
@@ -124,28 +126,20 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
-
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
-            if (rowCount >= 12) return; 
-            
+            if (rowCount >= 10) return;
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount] || ''}</td>
+                <td class="border border-teal-600 p-1 text-center font-bold qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount] || ''}</td>
                 <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
                 <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
-            if(shouldFocus) {
-                const rateField = newRow.querySelector('.rate');
-                rateField.focus();
-                document.execCommand('selectAll', false, null);
-            }
+            if(shouldFocus) newRow.querySelector('.rate').focus();
         }
 
         function checkTab(e, el) {
@@ -170,41 +164,20 @@
             let total = 0;
             document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0);
             document.getElementById('grandTotal').innerText = total.toFixed(2);
-            document.getElementById('amountInWords').innerText = bngAmountInWords(total);
-        }
-
-        function bngAmountInWords(num) {
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়'];
-            const tens = ['', '', 'বিশ', 'ত্রিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
-            const teenagers = ['দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ'];
-            if (num == 0) return 'শূণ্য টাকা মাত্র।';
-            function convert(n) {
-                let word = '';
-                if (n >= 10000000) { word += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
-                if (n >= 100000) { word += convert(Math.floor(n / 100000)) + ' লাখ '; n %= 100000; }
-                if (n >= 1000) { word += convert(Math.floor(n / 1000)) + ' হাজার '; n %= 1000; }
-                if (n >= 100) { word += convert(Math.floor(n / 100)) + 'শ '; n %= 100; }
-                if (n >= 20) { word += tens[Math.floor(n / 10)]; if (n % 10 > 0) word += ' ' + units[n % 10]; }
-                else if (n >= 10) { word += teenagers[n - 10]; }
-                else if (n > 0) { word += units[n]; }
-                return word;
-            }
-            return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
         }
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            // প্লেইন টেক্সট হিসেবে কন্টেন্ট নিচ্ছি যাতে max-w-4xl এর প্রভাব না থাকে
             const editorContent = document.getElementById('editor-container').innerHTML;
             
             printWrapper.innerHTML = `
                 <div class="receipt-copy">
-                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 2px;">Customer Copy</div>
+                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 5px;">Customer Copy</div>
                     <div class="print-scale">${editorContent}</div>
                 </div>
-                <div class="divider"></div>
+                <div class="cut-line"></div>
                 <div class="receipt-copy">
-                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 2px;">Office Copy</div>
+                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 5px;">Office Copy</div>
                     <div class="print-scale">${editorContent}</div>
                 </div>
             `;
@@ -215,8 +188,7 @@
 
         function incrementReceiptNo() {
             let receiptEl = document.getElementById('receiptNo');
-            let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
-            let nextNo = currentNo + 1;
+            let nextNo = (parseInt(receiptEl.innerText) || 0) + 1;
             receiptEl.innerText = nextNo;
             saveData('receiptNo', nextNo);
         }
@@ -250,9 +222,7 @@
         }
 
         function clearAllData() {
-            if(confirm("সব ক্লিয়ার করবেন?")) {
-                document.getElementById('custName').innerText = '..................................................................';
-                document.getElementById('custAcc').innerText = '......................................................';
+            if(confirm("ক্লিয়ার করবেন?")) {
                 document.getElementById('table-body').innerHTML = '';
                 addNewRow(false);
                 updateGrandTotal();
