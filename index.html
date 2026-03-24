@@ -3,43 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - প্রিন্ট ফিক্স</title>
+    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
-        /* প্রিন্ট প্রিভিউ সেটিংস */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             
-            /* প্রতিটি রিসিটের উচ্চতা ৩.৫ ইঞ্চি নির্ধারণ */
+            /* প্রতিটি রিসিট ঠিক ৩.৫ ইঞ্চি হবে, এর বেশি হবে না */
             .receipt-copy { 
-                height: 3.5in; 
-                padding: 10px; 
-                overflow: hidden; /* কন্টেন্ট বাইরে যাবে না */
-                position: relative;
+                height: 3.5in !important; 
+                overflow: hidden; 
+                page-break-inside: avoid;
+                margin-bottom: 5px; /* রিসিট দুটির মাঝে সামান্য গ্যাপ */
+            }
+            
+            /* মূল ডিজাইনের কোনো পরিবর্তন হবে না */
+            #editor-container { 
+                box-shadow: none !important; 
+                border: 1px solid #0d9488 !important; 
+                max-width: none !important;
+                width: 100% !important;
             }
 
-            /* কন্টেন্ট যেন ছোট জায়গায় ফিট হয় */
-            .receipt-copy #editor-container {
-                box-shadow: none !important;
-                border: 1px solid #0d9488 !important;
-                transform: scale(0.95); /* হালকা ছোট করা যাতে ৩.৫ ইঞ্চিতে সব ধরে */
-                transform-origin: top center;
-            }
-
-            /* পেজ সেটআপ: নিচে ৪০% ফাঁকা রাখার জন্য */
             @page { 
                 size: A4; 
-                margin: 0.5in 0; /* উপরে নিচে সামান্য মার্জিন */
+                margin: 0; /* ফুল পেজ মার্জিন শূন্য */
             }
-
-            #print-wrapper {
-                display: block !important;
-                height: 100vh;
-            }
+            
+            #print-wrapper { display: block !important; }
         }
         
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
@@ -50,60 +45,60 @@
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
         <div class="p-4 md:p-8">
             <div class="flex justify-between items-start mb-4">
-                <div class="relative w-20 h-20 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
+                <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
                     <img id="logo-preview" class="hidden object-contain w-full h-full">
                     <span id="upload-placeholder" class="text-gray-400 text-[10px]">লোগো</span>
                 </div>
                 <div class="text-right flex-1 ml-4">
-                    <h2 id="shopName" class="text-xl font-bold text-teal-700 italic uppercase" contenteditable="true" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
-                    <div class="flex flex-wrap gap-2 justify-end text-[10px] mt-1">
-                        <span id="shopAddress" class="border border-teal-500 px-2 py-0.5 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
-                        <span id="shopMobile" class="border border-teal-500 px-2 py-0.5 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
+                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
+                    <div class="flex flex-wrap gap-2 justify-end text-xs mt-2">
+                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
+                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-between text-[11px] font-bold mb-2 text-gray-700">
+            <div class="flex justify-between text-sm font-bold mb-4 text-gray-700">
                 <div>রিসিট নং: <span id="receiptNo" contenteditable="true" oninput="saveData('receiptNo', this.innerText)">101</span></div>
                 <div>তারিখ: <span id="currentDate"></span></div>
             </div>
 
-            <div class="text-[11px] font-bold mb-3 text-gray-700 space-y-1">
+            <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
-                    <span class="w-12">Name:</span>
+                    <span class="w-16">Name:</span>
                     <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
-                    <span class="w-24">Acc Number:</span>
+                    <span class="w-32">Account Number:</span>
                     <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
-            <table class="w-full border-collapse border border-teal-600 text-[11px] mb-2">
+            <table class="w-full border-collapse border border-teal-600 text-sm mb-3">
                 <thead>
                     <tr class="bg-teal-600 text-white">
-                        <th class="border border-teal-600 p-0.5 w-8">SL</th>
-                        <th class="border border-teal-600 p-0.5 text-left">বিবরণ</th>
-                        <th class="border border-teal-600 p-0.5 w-16">পরিমাণ</th>
-                        <th class="border border-teal-600 p-0.5 w-16">দর</th>
-                        <th class="border border-teal-600 p-0.5 w-24 text-right">মোট টাকা</th>
+                        <th class="border border-teal-600 p-1 w-10">SL</th>
+                        <th class="border border-teal-600 p-1 text-left">বিবরণ</th>
+                        <th class="border border-teal-600 p-1 w-20">পরিমাণ</th>
+                        <th class="border border-teal-600 p-1 w-20">দর</th>
+                        <th class="border border-teal-600 p-1 w-28 text-right">মোট টাকা</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
                 <tfoot>
                     <tr class="text-teal-700 font-bold bg-teal-50">
-                        <td colspan="4" class="border border-teal-600 p-0.5 text-right">মোট জমাকৃত টাকা:</td>
-                        <td id="grandTotal" class="border border-teal-600 p-0.5 text-right">0.00</td>
+                        <td colspan="4" class="border border-teal-600 p-1 text-right">মোট জমাকৃত টাকা:</td>
+                        <td id="grandTotal" class="border border-teal-600 p-1 text-right">0.00</td>
                     </tr>
                 </tfoot>
             </table>
 
-            <p class="text-[10px] italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block mb-4">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
+            <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
 
-            <div class="flex justify-between mt-4 text-[10px] font-bold text-teal-800">
-                <div class="border-t border-teal-600 pt-1 w-24 text-center">গ্রাহকের স্বাক্ষর</div>
-                <div class="border-t border-teal-600 pt-1 w-24 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
+            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800">
+                <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
+                <div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
             </div>
         </div>
     </div>
@@ -116,7 +111,6 @@
     </div>
 
     <script>
-        // আপনার আগের সব স্ক্রিপ্ট একই থাকবে, শুধু প্রিন্ট ফাংশনটি আপডেট করা হয়েছে
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
         function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
@@ -128,18 +122,14 @@
             if (rowCount >= noteSequence.length) return;
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td class="border border-teal-600 p-0.5 text-center">${rowCount + 1}</td>
-                <td class="border border-teal-600 p-0.5" contenteditable="true"></td>
-                <td class="border border-teal-600 p-0.5 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-0.5 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
-                <td class="border border-teal-600 p-0.5 text-right font-bold row-total">0.00</td>
+                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
+                <td class="border border-teal-600 p-1" contenteditable="true"></td>
+                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
-            if(shouldFocus) {
-                const rateField = newRow.querySelector('.rate');
-                rateField.focus();
-                document.execCommand('selectAll', false, null);
-            }
+            if(shouldFocus) { const rateField = newRow.querySelector('.rate'); rateField.focus(); document.execCommand('selectAll', false, null); }
         }
 
         function calculate(el) {
@@ -178,18 +168,14 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const editorContent = document.getElementById('editor-container').innerHTML;
+            // outerHTML ব্যবহার করছি যাতে আইডি এবং স্টাইলসহ হুবহু কপি হয়
+            const editorContent = document.getElementById('editor-container').outerHTML;
             
-            // একই পেজে ২ টা রিসিট এবং নিচে ৪০% জায়গা ফাঁকা রাখার স্ট্রাকচার
+            // লজিক: মাত্র ২টি রিসিট জেনারেট হবে
             printWrapper.innerHTML = `
-                <div class="receipt-copy">
-                    <div id="editor-container">${editorContent}</div>
-                </div>
-                <div style="border-top: 1px dashed #666; width: 90%; margin: 5px auto;"></div>
-                <div class="receipt-copy">
-                    <div id="editor-container">${editorContent}</div>
-                </div>
-                `;
+                <div class="receipt-copy">${editorContent}</div>
+                <div class="receipt-copy">${editorContent}</div>
+            `;
             
             window.print();
             incrementReceiptNo();
