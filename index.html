@@ -12,12 +12,12 @@
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
-            #editor-container { display: none !important; }
-            #print-wrapper { display: block !important; }
+            #editor-container { display: none !important; } /* এডিটর হাইড হবে */
+            #print-wrapper { display: block !important; }  /* প্রিন্ট কপি শো হবে */
             @page { size: A4; margin: 0; }
         }
 
-        /* রিসিট কন্টেইনার ৪ ইঞ্চিতে লকড */
+        /* প্রিন্ট রিসিটের স্পেসিফিকেশন (৪ ইঞ্চি হাইট) */
         .receipt-copy { 
             height: 4in; 
             width: 100%; 
@@ -28,14 +28,15 @@
             background: #fff;
         }
 
-        /* শুধুমাত্র প্রিন্ট কপির কন্টেন্ট ছোট করার জন্য */
+        /* শুধুমাত্র প্রিন্ট কপির কন্টেন্ট ছোট করার জন্য স্কেলিং */
         .print-scaling {
-            transform: scale(0.85); /* ৮৫% ছোট করা হয়েছে যাতে সব ফিট হয় */
+            transform: scale(0.85); 
             transform-origin: top center;
-            width: 118%; /* স্কেল কমানোর কারণে উইডথ অ্যাডজাস্ট করা হয়েছে */
+            width: 118%; 
             margin-left: -9%; 
         }
 
+        /* কাটার ড্যাশ লাইন */
         .cut-line {
             width: 100%;
             border-bottom: 1px dashed #000;
@@ -67,7 +68,7 @@
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
-        <div class="p-4 md:p-8" id="actual-design">
+        <div class="p-4 md:p-8" id="actual-design-content">
             <div class="flex justify-between items-start mb-4">
                 <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
@@ -75,27 +76,33 @@
                     <span id="upload-placeholder" class="text-gray-400 text-[10px]">লোগো</span>
                 </div>
                 <div class="text-right flex-1 ml-4">
-                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true">YOUR SHOP NAME</h2>
+                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
                     <div class="flex flex-wrap gap-2 justify-end text-xs mt-2">
-                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true">ঠিকানা</span>
-                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true">মোবাইল</span>
+                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
+                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-between text-sm font-bold mb-4 text-gray-700">
-                <div>রিসিট নং: <span id="receiptNo" contenteditable="true">101</span></div>
+                <div>রিসিট নং: <span id="receiptNo" contenteditable="true" oninput="saveData('receiptNo', this.innerText)">101</span></div>
                 <div>তারিখ: <span id="currentDate"></span></div>
             </div>
 
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 px-1" contenteditable="true">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 px-1" contenteditable="true">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
@@ -137,19 +144,38 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function addNewRow() {
+        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
+        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
+
+        function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
+            
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)">0</td>
-                <td class="border border-teal-600 p-1 text-right row-total">0.00</td>
+                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
+            if(shouldFocus) {
+                const rateField = newRow.querySelector('.rate');
+                rateField.focus();
+                document.execCommand('selectAll', false, null);
+            }
+        }
+
+        function checkTab(e, el) {
+            if (e.key === "Tab" || e.key === "Enter") {
+                const tableBody = document.getElementById('table-body');
+                if (el.closest('tr') === tableBody.lastElementChild) {
+                    e.preventDefault();
+                    addNewRow(true);
+                }
+            }
         }
 
         function calculate(el) {
@@ -157,6 +183,10 @@
             let qty = parseFloat(row.querySelector('.qty').innerText) || 0;
             let rate = parseFloat(row.querySelector('.rate').innerText) || 0;
             row.querySelector('.row-total').innerText = (qty * rate).toFixed(2);
+            updateGrandTotal();
+        }
+
+        function updateGrandTotal() {
             let total = 0;
             document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0);
             document.getElementById('grandTotal').innerText = total.toFixed(2);
@@ -184,7 +214,7 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const editorContent = document.getElementById('actual-design').innerHTML;
+            const editorContent = document.getElementById('actual-design-content').innerHTML;
             
             printWrapper.innerHTML = `
                 <div class="receipt-copy">
@@ -198,7 +228,18 @@
                 </div>
             `;
             window.print();
+            incrementReceiptNo();
         }
+
+        function incrementReceiptNo() {
+            let receiptEl = document.getElementById('receiptNo');
+            let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
+            let nextNo = currentNo + 1;
+            receiptEl.innerText = nextNo;
+            saveData('receiptNo', nextNo);
+        }
+
+        function saveData(k, v) { localStorage.setItem(k, v); }
 
         function previewLogo(input) {
             const reader = new FileReader();
@@ -206,16 +247,36 @@
                 document.getElementById('logo-preview').src = e.target.result;
                 document.getElementById('logo-preview').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
+                localStorage.setItem('savedLogo', e.target.result);
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
 
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
-            if(document.getElementById('table-body').rows.length === 0) addNewRow();
+            ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
+                let v = localStorage.getItem(k);
+                if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
+            });
+            let logo = localStorage.getItem('savedLogo');
+            if(logo) {
+                document.getElementById('logo-preview').src = logo;
+                document.getElementById('logo-preview').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+            }
+            if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
 
-        function clearAllData() { if(confirm("রিসেট করবেন?")) location.reload(); }
+        function clearAllData() {
+            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
+                document.getElementById('custName').innerText = '..................................................................';
+                document.getElementById('custAcc').innerText = '......................................................';
+                document.getElementById('table-body').innerHTML = '';
+                addNewRow(false);
+                document.getElementById('grandTotal').innerText = '0.00';
+                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+            }
+        }
     </script>
 </body>
 </html>
