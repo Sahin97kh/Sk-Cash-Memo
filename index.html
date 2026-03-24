@@ -9,32 +9,35 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
-        /* প্রিন্ট প্রিভিউ ফিক্স: পাশাপাশি ২ কপি */
+        /* প্রিন্ট প্রিভিউ ফিক্স: আপনার ছবি অনুযায়ী উপরে-নিচে ও চিকন */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
             #editor-container { display: none; }
-            
-            #print-wrapper { 
-                display: flex !important; 
-                flex-direction: row; /* পাশাপাশি করার জন্য */
-                justify-content: space-between;
-                padding: 10px;
-                gap: 10px;
-            }
+            #print-wrapper { display: block !important; }
             
             .receipt-copy { 
-                width: 48%; /* ২টা পাশাপাশি বসানোর জন্য প্রস্থ */
-                height: auto;
+                height: 30vh; /* রিসিট লম্বায় আরও চিকন করা হয়েছে */
+                padding: 5px 20px;
                 box-sizing: border-box;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
             }
             
-            /* রিসিটের ভেতরের কন্টেন্ট আরও চিকন বা ছোট করা */
             .print-scale { 
-                transform: scale(0.75); 
+                transform: scale(0.85); /* কন্টেন্ট একটু ছোট করা হয়েছে যাতে সুন্দর ধরে */
                 transform-origin: top center;
                 border: 1px solid #0d9488;
                 padding: 10px;
+                background: white;
+            }
+
+            .divider { 
+                border-top: 1px dashed #000; 
+                margin: 5px 0; 
+                width: 100%;
             }
 
             @page { size: A4; margin: 0; }
@@ -100,7 +103,7 @@
 
             <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
 
-            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800">
+            <div class="flex justify-between mt-8 text-xs font-bold text-teal-800">
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
             </div>
@@ -110,8 +113,8 @@
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl hover:bg-blue-700">প্রিন্ট করুন</button>
-        <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold hover:bg-red-600">রিসেট</button>
+        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
     <script>
@@ -191,11 +194,12 @@
             
             printWrapper.innerHTML = `
                 <div class="receipt-copy">
-                    <div style="font-size: 8px; font-weight: bold; color: teal; margin-bottom: 2px;">Customer Copy</div>
+                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 2px;">Customer Copy</div>
                     <div class="print-scale">${editorContent}</div>
                 </div>
+                <div class="divider"></div>
                 <div class="receipt-copy">
-                    <div style="font-size: 8px; font-weight: bold; color: teal; margin-bottom: 2px;">Office Copy</div>
+                    <div style="font-size: 10px; text-align: right; font-weight: bold; color: teal; margin-bottom: 2px;">Office Copy</div>
                     <div class="print-scale">${editorContent}</div>
                 </div>
             `;
@@ -241,7 +245,7 @@
         }
 
         function clearAllData() {
-            if(confirm("ক্লিয়ার করবেন?")) {
+            if(confirm("সব ক্লিয়ার করবেন?")) {
                 document.getElementById('custName').innerText = '..................................................................';
                 document.getElementById('custAcc').innerText = '......................................................';
                 document.getElementById('table-body').innerHTML = '';
