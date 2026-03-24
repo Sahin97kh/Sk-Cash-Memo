@@ -3,110 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - গ্রাহক ও অফিস কপি</title>
+    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-
-        /* প্রিন্ট সেটিংস */
+        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
+            #editor-container { display: none !important; } /* এডিটর হাইড হবে */
+            #print-wrapper { display: block !important; }  /* প্রিন্ট এরিয়া শো হবে */
             @page { size: A4; margin: 0; }
-            
-            #print-wrapper { display: block !important; }
-            #editor-container, .max-w-4xl { display: none !important; }
         }
 
-        /* রিসিটের নির্দিষ্ট সাইজ (৪ ইঞ্চি) */
+        /* প্রিন্ট কপির স্পেসিফিকেশন */
         .receipt-copy { 
             height: 4in; 
             width: 100%; 
             padding: 15px; 
             box-sizing: border-box; 
+            overflow: hidden; 
             position: relative;
-            overflow: hidden; /* লেখা ৪ ইঞ্চির বাইরে যাবে না */
-            background: white;
+            background: #fff;
         }
 
-        /* কাটার চিহ্ন */
-        .cut-mark {
+        .cut-line {
             width: 100%;
-            text-align: center;
+            border-bottom: 2px dashed #000;
             position: absolute;
-            bottom: -10px;
+            bottom: 0;
             left: 0;
-            border-bottom: 1px dashed #000;
-            z-index: 10;
+            text-align: center;
+            z-index: 50;
         }
-        .cut-mark span { background: white; padding: 0 10px; font-size: 16px; }
+        .cut-line span {
+            background: #fff;
+            padding: 0 10px;
+            position: relative;
+            top: 12px;
+            font-size: 18px;
+        }
+
+        .copy-tag {
+            text-align: right;
+            font-size: 10px;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            margin-bottom: -15px;
+        }
 
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
-        
-        /* রিসিটের কন্টেন্ট ফিট রাখার জন্য ছোট কিছু টুইক */
-        .receipt-content-fit { transform: scale(0.95); transform-origin: top; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
 
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
-        <div class="p-4 md:p-8" id="main-design">
+        <div class="p-4 md:p-8">
             <div class="flex justify-between items-start mb-4">
-                <div class="relative w-20 h-20 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
+                <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
                     <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
                     <img id="logo-preview" class="hidden object-contain w-full h-full">
                     <span id="upload-placeholder" class="text-gray-400 text-[10px]">লোগো</span>
                 </div>
                 <div class="text-right flex-1 ml-4">
-                    <h2 id="shopName" class="text-xl font-bold text-teal-700 italic uppercase" contenteditable="true">YOUR SHOP NAME</h2>
-                    <div class="flex flex-wrap gap-2 justify-end text-[10px] mt-1">
-                        <span id="shopAddress" class="border border-teal-500 px-2 py-0.5 text-teal-600 rounded" contenteditable="true">ঠিকানা</span>
-                        <span id="shopMobile" class="border border-teal-500 px-2 py-0.5 text-teal-600 rounded" contenteditable="true">মোবাইল</span>
+                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
+                    <div class="flex flex-wrap gap-2 justify-end text-xs mt-2">
+                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
+                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-between text-xs font-bold mb-2 text-gray-700">
-                <div>রিসিট নং: <span id="receiptNo" contenteditable="true">101</span></div>
+            <div class="flex justify-between text-sm font-bold mb-4 text-gray-700">
+                <div>রিসিট নং: <span id="receiptNo" contenteditable="true" oninput="saveData('receiptNo', this.innerText)">101</span></div>
                 <div>তারিখ: <span id="currentDate"></span></div>
             </div>
 
-            <div class="text-[11px] font-bold mb-2 text-gray-700 space-y-1">
+            <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
-                    <span class="w-12">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................')">..................................</div>
+                    <span class="w-16">Name:</span>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
                 </div>
                 <div class="flex items-center">
-                    <span class="w-24">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................')">..................................</div>
+                    <span class="w-32">Account Number:</span>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
+                         contenteditable="true"
+                         onfocus="handleFocus(this)"
+                         onblur="handleBlur(this, '......................................................')">......................................................</div>
                 </div>
             </div>
 
-            <table class="w-full border-collapse border border-teal-600 text-[11px] mb-2">
+            <table class="w-full border-collapse border border-teal-600 text-sm mb-3">
                 <thead>
                     <tr class="bg-teal-600 text-white">
-                        <th class="border border-teal-600 p-0.5 w-8">SL</th>
-                        <th class="border border-teal-600 p-0.5 text-left">বিবরণ</th>
-                        <th class="border border-teal-600 p-0.5 w-16">পরিমাণ</th>
-                        <th class="border border-teal-600 p-0.5 w-16">দর</th>
-                        <th class="border border-teal-600 p-0.5 w-24 text-right">মোট টাকা</th>
+                        <th class="border border-teal-600 p-1 w-10">SL</th>
+                        <th class="border border-teal-600 p-1 text-left">বিবরণ</th>
+                        <th class="border border-teal-600 p-1 w-20">পরিমাণ</th>
+                        <th class="border border-teal-600 p-1 w-20">দর</th>
+                        <th class="border border-teal-600 p-1 w-28 text-right">মোট টাকা</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
                 <tfoot>
                     <tr class="text-teal-700 font-bold bg-teal-50">
-                        <td colspan="4" class="border border-teal-600 p-0.5 text-right">মোট জমাকৃত টাকা:</td>
-                        <td id="grandTotal" class="border border-teal-600 p-0.5 text-right">0.00</td>
+                        <td colspan="4" class="border border-teal-600 p-1 text-right">মোট জমাকৃত টাকা:</td>
+                        <td id="grandTotal" class="border border-teal-600 p-1 text-right">0.00</td>
                     </tr>
                 </tfoot>
             </table>
 
-            <p class="text-[10px] italic text-teal-800 font-semibold">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
+            <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
 
-            <div class="flex justify-between mt-6 text-[10px] font-bold text-teal-800">
-                <div class="border-t border-teal-600 pt-1 w-24 text-center">গ্রাহকের স্বাক্ষর</div>
-                <div class="border-t border-teal-600 pt-1 w-24 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
+            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800">
+                <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
+                <div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
             </div>
         </div>
     </div>
@@ -127,15 +142,15 @@
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
-            if (rowCount >= 8) return; // ৪ ইঞ্চিতে ফিট রাখার জন্য লিমিট ৮ রাখা ভালো
+            if (rowCount >= noteSequence.length) return;
             
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td class="border border-teal-600 p-0.5 text-center">${rowCount + 1}</td>
-                <td class="border border-teal-600 p-0.5" contenteditable="true">নোট</td>
-                <td class="border border-teal-600 p-0.5 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount] || 0}</td>
-                <td class="border border-teal-600 p-0.5 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
-                <td class="border border-teal-600 p-0.5 text-right row-total">0.00</td>
+                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
+                <td class="border border-teal-600 p-1" contenteditable="true"></td>
+                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
             if(shouldFocus) {
@@ -191,18 +206,18 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const mainContent = document.getElementById('main-design').innerHTML;
+            const editorContent = document.querySelector('#editor-container > div').innerHTML; // ভিতরের মেইন কন্টেন্ট
             
             printWrapper.innerHTML = `
                 <div class="receipt-copy">
-                    <div style="text-align:right; font-size:10px; font-weight:bold; color:teal;">Customer Copy</div>
-                    <div class="receipt-content-fit">${mainContent}</div>
-                    <div class="cut-mark"><span>✂--------------------------------</span></div>
+                    <div class="copy-tag">Customer Copy</div>
+                    <div>${editorContent}</div>
+                    <div class="cut-line"><span>✂--------------------------------</span></div>
                 </div>
                 
                 <div class="receipt-copy">
-                    <div style="text-align:right; font-size:10px; font-weight:bold; color:teal; margin-top:10px;">Office Copy</div>
-                    <div class="receipt-content-fit">${mainContent}</div>
+                    <div class="copy-tag">Office Copy</div>
+                    <div>${editorContent}</div>
                 </div>
             `;
             
@@ -213,8 +228,12 @@
         function incrementReceiptNo() {
             let receiptEl = document.getElementById('receiptNo');
             let currentNo = parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0;
-            receiptEl.innerText = currentNo + 1;
+            let nextNo = currentNo + 1;
+            receiptEl.innerText = nextNo;
+            saveData('receiptNo', nextNo);
         }
+
+        function saveData(k, v) { localStorage.setItem(k, v); }
 
         function previewLogo(input) {
             const reader = new FileReader();
@@ -222,17 +241,35 @@
                 document.getElementById('logo-preview').src = e.target.result;
                 document.getElementById('logo-preview').classList.remove('hidden');
                 document.getElementById('upload-placeholder').classList.add('hidden');
+                localStorage.setItem('savedLogo', e.target.result);
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
 
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
+            ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
+                let v = localStorage.getItem(k);
+                if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
+            });
+            let logo = localStorage.getItem('savedLogo');
+            if(logo) {
+                document.getElementById('logo-preview').src = logo;
+                document.getElementById('logo-preview').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+            }
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
 
         function clearAllData() {
-            if(confirm("সব ডাটা ক্লিয়ার করবেন?")) location.reload();
+            if(confirm("কাস্টমার তথ্য এবং টেবিলের হিসাবগুলো কি ক্লিয়ার করবেন?")) {
+                document.getElementById('custName').innerText = '..................................................................';
+                document.getElementById('custAcc').innerText = '......................................................';
+                document.getElementById('table-body').innerHTML = '';
+                addNewRow(false);
+                document.getElementById('grandTotal').innerText = '0.00';
+                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+            }
         }
     </script>
 </body>
