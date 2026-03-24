@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
 
-        /* প্রিন্ট স্পেসিফিক ডিজাইন */
+        /* প্রিন্ট সেটিংস - শুধুমাত্র প্রিন্টে কাজ করবে */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
@@ -18,24 +18,27 @@
                 display: block !important; 
                 width: 210mm; 
                 height: 297mm; 
-                padding: 10mm;
+                padding: 5mm 10mm;
                 box-sizing: border-box;
             }
             
-            /* প্রতিটি রিসিট ঠিক ৩ ইঞ্চি (৭৬.২ মিমি) */
+            /* ৩ ইঞ্চি উচ্চতা নিশ্চিত করা */
             .receipt-copy { 
-                height: 76.2mm; 
-                margin-bottom: 8mm;
+                height: 80mm; /* প্রায় ৩.১৫ ইঞ্চি */
+                margin-bottom: 5mm;
                 overflow: hidden;
-                position: relative;
-                page-break-inside: avoid;
+                border-bottom: 1px dashed #444;
             }
 
-            /* প্রিন্ট কপিতে ফন্ট ও টেবিল একটু ছোট করা যাতে ৩ ইঞ্চিতে ধরে */
-            .receipt-copy h2 { font-size: 1.25rem !important; margin-bottom: 2px !important; }
-            .receipt-copy table { font-size: 10px !important; margin-bottom: 4px !important; }
+            /* ৩ ইঞ্চিতে ডাটা ফিট করার জন্য প্রিন্ট কপি ছোট করা */
+            .receipt-copy #receipt-content { padding: 10px !important; }
+            .receipt-copy h2 { font-size: 1.2rem !important; margin-bottom: 0 !important; }
+            .receipt-copy .w-24.h-24 { width: 60px !important; height: 60px !important; } /* লোগো ছোট করা */
+            .receipt-copy table { font-size: 10px !important; margin-top: 5px !important; margin-bottom: 5px !important; }
             .receipt-copy .text-sm { font-size: 11px !important; }
-            .receipt-copy .mt-10 { margin-top: 1.5rem !important; }
+            .receipt-copy .space-y-3 { spacing: 0.25rem !important; }
+            .receipt-copy .mt-10 { margin-top: 15px !important; }
+            .receipt-copy .mb-4 { margin-bottom: 5px !important; }
 
             #editor-container { display: none; }
             @page { size: A4; margin: 0; }
@@ -71,17 +74,11 @@
             <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
                 <div class="flex items-center">
                     <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '..................................................................')">..................................................................</div>
+                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">..................................................................</div>
                 </div>
                 <div class="flex items-center">
                     <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" 
-                         contenteditable="true"
-                         onfocus="handleFocus(this)"
-                         onblur="handleBlur(this, '......................................................')">......................................................</div>
+                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true">......................................................</div>
                 </div>
             </div>
 
@@ -98,7 +95,7 @@
                 <tbody id="table-body"></tbody>
                 <tfoot>
                     <tr class="text-teal-700 font-bold bg-teal-50">
-                        <td colspan="4" class="border border-teal-600 p-1 text-right">মোট জমাকৃত টাকা:</td>
+                        <td colspan="4" class="border border-teal-600 p-1 text-right uppercase">Total:</td>
                         <td id="grandTotal" class="border border-teal-600 p-1 text-right">0.00</td>
                     </tr>
                 </tfoot>
@@ -123,18 +120,15 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5];
 
-        function handleFocus(el) { if (el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; }
-
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
             const rowCount = tableBody.rows.length;
-            if (rowCount >= noteSequence.length) return;
+            if (rowCount >= 8) return;
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount]}</td>
+                <td class="border border-teal-600 p-1 text-center qty" contenteditable="true" oninput="calculate(this)">${noteSequence[rowCount] || 0}</td>
                 <td class="border border-teal-600 p-1 text-center rate" contenteditable="true" oninput="calculate(this)" onkeydown="checkTab(event, this)">0</td>
                 <td class="border border-teal-600 p-1 text-right row-total">0.00</td>
             `;
@@ -191,20 +185,12 @@
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
-            const receiptHTML = document.getElementById('receipt-content').innerHTML;
+            const receiptContent = document.getElementById('editor-container').innerHTML;
             
-            // প্রিন্টের জন্য লেআউট সেটআপ (২ কপি এবং নিচে ডটেড লাইন)
+            // প্রিন্ট লেআউটে ২টি কপি সেট করা
             printWrapper.innerHTML = `
-                <div class="receipt-copy">
-                    <div class="border border-teal-600 p-4 h-full" style="border-width: 1px !important;">
-                        ${receiptHTML}
-                    </div>
-                </div>
-                <div class="receipt-copy">
-                    <div class="border border-teal-600 p-4 h-full" style="border-width: 1px !important;">
-                        ${receiptHTML}
-                    </div>
-                </div>
+                <div class="receipt-copy">${receiptContent}</div>
+                <div class="receipt-copy">${receiptContent}</div>
             `;
             
             window.print();
