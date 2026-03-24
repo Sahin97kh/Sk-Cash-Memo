@@ -3,52 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - স্মার্ট এ৪ প্রিন্ট</title>
+    <title>জমা রিসিট - ফিক্সড ১ পেজ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
 
-        /* প্রিন্ট সেটিংস */
+        /* প্রিন্ট সেটিংস: ১ পেজে ২ কপি নিশ্চিত করা */
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; margin: 0; }
+            body { background: white; padding: 0; margin: 0; height: 100vh; overflow: hidden; }
             
-            /* পুরো পেজটিকে ফ্লেক্সবক্স হিসেবে সাজানো */
             #print-wrapper { 
                 display: flex !important; 
                 flex-direction: column; 
-                height: 100vh; 
-                justify-content: space-between;
-                padding: 10px 0;
+                height: 100vh; /* পুরো পেজের উচ্চতা */
+                justify-content: space-around; /* দুই কপির মাঝে সমান জায়গা */
+                padding: 0;
             }
 
             .receipt-copy {
-                height: 48%; /* প্রতিটি কপির উচ্চতা পেজের অর্ধেকের কম */
-                overflow: hidden;
+                height: 48vh; /* প্রতিটি কপি পেজের অর্ধেকের কম উচ্চতা নেবে */
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                scale: 0.95; /* রো বেশি হলে পুরো মেমোটি সামান্য ছোট হয়ে এক পেজে ধরবে */
+                page-break-inside: avoid;
             }
 
             .receipt-container { 
                 box-shadow: none !important; 
                 border: 1px solid #0d9488 !important; 
-                width: 100% !important;
-                margin: 0 !important;
+                width: 95% !important;
+                margin: 0 auto !important;
+                transform: scale(0.9); /* রো বেশি হলে জায়গা করতে সামান্য ছোট করা */
+                transform-origin: center;
             }
 
             .copy-tag { 
                 display: block !important; 
                 text-align: center; 
                 font-size: 10px; 
-                color: #555; 
-                margin-bottom: 5px; 
-                font-weight: bold; 
+                font-weight: bold;
+                color: #666;
+                margin-bottom: 2px;
             }
 
-            @page { size: A4; margin: 0.5cm; }
+            @page { size: A4; margin: 0; }
         }
 
         /* স্ক্রিন সেটিংস */
@@ -112,8 +112,8 @@
     <div id="print-wrapper"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl hover:bg-blue-700 transition-all">প্রিন্ট করুন</button>
-        <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold hover:bg-red-600 transition-all">রিসেট</button>
+        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
     <script>
@@ -185,16 +185,14 @@
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const editorContainer = document.getElementById('editor-container');
-            
-            // মেইন কন্টেন্ট কপি করা
             const content = editorContainer.innerHTML;
             
             printWrapper.innerHTML = `
                 <div class="receipt-copy">
                     <div class="copy-tag">— গ্রাহক কপি —</div>
                     <div class="receipt-container overflow-hidden">${content}</div>
+                    <div style="border-bottom: 1px dashed #aaa; width: 100%; margin: 10px 0;"></div>
                 </div>
-                <div style="height: 2px; border-bottom: 1px dashed #999; width: 100%;"></div>
                 <div class="receipt-copy">
                     <div class="copy-tag">— অফিস কপি —</div>
                     <div class="receipt-container overflow-hidden">${content}</div>
