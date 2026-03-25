@@ -79,6 +79,7 @@
         .cash-table input:focus { border-color: #059669; background: #ecfdf5; }
         .cash-table td { padding: 8px 5px; border-bottom: 1px solid #f3f4f6; }
 
+        /* ক্যাশ মেমো ফিক্সড ডিজাইন */
         #memo-preview-area { 
             display: none; background: white; padding: 15px; width: 100%;
             border: 1px solid #000; color: #000; overflow: hidden; margin-top: 15px;
@@ -88,8 +89,18 @@
         .memo-header-left p { margin: 2px 0; font-size: 11px; }
         .memo-header-right { text-align: right; font-size: 10px; min-width: 120px; }
         .memo-meta { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 10px; }
-        .memo-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .memo-table td, .memo-table th { border: 1px solid #000; padding: 5px; font-size: 12px; }
+        
+        /* টেবিল লেআউট ফিক্স */
+        .memo-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed; }
+        .memo-table td, .memo-table th { border: 1px solid #000; padding: 5px; font-size: 11px; word-wrap: break-word; overflow-wrap: break-word; }
+        
+        /* কলামের উইডথ ফিক্স */
+        .col-sl { width: 10%; }
+        .col-desc { width: 40%; text-align: left; }
+        .col-qty { width: 15%; }
+        .col-rate { width: 15%; }
+        .col-total { width: 20%; }
+
         .memo-label { width: 60px; background: #f2f2f2; font-weight: bold; }
         .memo-signatures { display: flex; justify-content: space-between; margin-top: auto; padding-top: 50px; font-size: 11px; }
         .memo-sig-box { border-top: 1px solid #000; width: 100px; text-align: center; padding-top: 3px; }
@@ -98,6 +109,17 @@
         .input-row-memo input { 
             border: 1px solid #ddd; padding: 8px; border-radius: 6px; font-size: 13px; flex: 1; min-width: 120px; 
         }
+
+        /* কাস্টম রিসেট অ্যালার্ট স্টাইল */
+        .reset-alert-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .reset-alert-box {
+            background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 320px;
+            text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #f3f4f6;
+        }
+
         @media (max-width: 640px) {
             .input-row-memo input { flex: 1 1 100%; }
             .m_item_row input.mi_desc { flex: 1 1 100%; }
@@ -173,6 +195,18 @@
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
         <button onclick="printReceipt()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
+    </div>
+
+    <div id="resetModal" class="reset-alert-overlay no-print">
+        <div class="reset-alert-box">
+            <div class="text-red-500 text-5xl mb-3"><i class="fas fa-trash-alt"></i></div>
+            <h3 class="text-gray-800 font-bold text-xl mb-2">রিসেট করবেন?</h3>
+            <p class="text-gray-500 text-sm mb-6 px-2">রিসেট বাটনে ক্লিক করলে সকল এন্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?</p>
+            <div class="flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm">বাতিল</button>
+                <button onclick="confirmReset()" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-200">হ্যাঁ, মুছুন</button>
+            </div>
+        </div>
     </div>
 
     <div class="max-w-4xl mx-auto no-print mb-20 px-2">
@@ -265,15 +299,23 @@
                                 <span>তারিখ: <span id="pm_date"></span></span>
                             </div>
                             <table class="memo-table" style="margin-bottom: 5px;">
-                                <tr><td class="memo-label">নাম:</td><td id="pm_name"></td></tr>
-                                <tr><td class="memo-label">ঠিকানা:</td><td id="pm_addr"></td></tr>
+                                <tr><td class="memo-label">নাম:</td><td id="pm_name" style="white-space: normal;"></td></tr>
+                                <tr><td class="memo-label">ঠিকানা:</td><td id="pm_addr" style="white-space: normal;"></td></tr>
                             </table>
                             <table class="memo-table">
-                                <thead><tr class="bg-gray-100"><th>ক্র.নং</th><th>বিবরণ</th><th>পরিমাণ</th><th>দর</th><th>মোট</th></tr></thead>
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="col-sl">ক্র.নং</th>
+                                        <th class="col-desc">বিবরণ</th>
+                                        <th class="col-qty">পরিমাণ</th>
+                                        <th class="col-rate">দর</th>
+                                        <th class="col-total">মোট</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="pm_items"></tbody>
                                 <tfoot><tr><td colspan="4" class="text-right font-bold">সর্বমোট:</td><td id="pm_total" class="text-right font-bold"></td></tr></tfoot>
                             </table>
-                            <div class="text-[11px] italic border-b border-black pb-1">কথায়: <span id="pm_words"></span> টাকা মাত্র।</div>
+                            <div class="text-[11px] italic border-b border-black pb-1">কথায়: <span id="pm_words"></span></div>
                             <div class="memo-signatures">
                                 <div class="memo-sig-box">ক্রেতার স্বাক্ষর</div>
                                 <div class="memo-sig-box">বিক্রেতার স্বাক্ষর</div>
@@ -452,7 +494,7 @@
                 let q = parseBn(qs[i].value), r = parseBn(rs[i].value), t = q * r;
                 if(ds[i].value || q > 0) {
                     grand += t;
-                    tbody.innerHTML += `<tr><td class="text-center">${toBn(i+1)}</td><td>${ds[i].value || "পণ্য"}</td><td class="text-center">${toBn(q)}</td><td class="text-right">${toBn(r.toFixed(2))}</td><td class="text-right">${toBn(t.toFixed(2))}</td></tr>`;
+                    tbody.innerHTML += `<tr><td class="text-center col-sl">${toBn(i+1)}</td><td class="col-desc">${ds[i].value || "পণ্য"}</td><td class="text-center col-qty">${toBn(q)}</td><td class="text-right col-rate">${toBn(r.toFixed(2))}</td><td class="text-right col-total">${toBn(t.toFixed(2))}</td></tr>`;
                 }
             }
             document.getElementById('pm_total').innerText = toBn(grand.toFixed(2));
@@ -516,11 +558,9 @@
             }
         }
 
-        // রিয়াল-টাইম পূর্ণাঙ্গ টেবিল ক্যালকুলেশন (ফিক্সড)
         function calculateAll() {
             let grandTotal = 0;
             const rows = document.querySelectorAll('#table-body tr');
-            
             rows.forEach(row => {
                 let note = parseBn(row.querySelector('.note-val').innerText);
                 let count = parseBn(row.querySelector('.count-val').innerText);
@@ -528,27 +568,43 @@
                 row.querySelector('.row-total').innerText = rowTotal.toFixed(2);
                 grandTotal += rowTotal;
             });
-
             document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
             document.getElementById('amountInWords').innerText = bngAmountInWords(grandTotal);
         }
 
         function bngAmountInWords(num) {
             if (num === 0) return 'শূণ্য টাকা মাত্র।';
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+            if (num < 0) return 'ঋণাত্মক সংখ্যা সমর্থিত নয়';
             
-            function convert(n) {
+            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+
+            function convertBase(n) {
                 let res = '';
-                if (n >= 10000000) { res += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
-                if (n >= 100000) { res += units[Math.floor(n / 100000)] + ' লাখ '; n %= 100000; }
-                if (n >= 1000) { res += units[Math.floor(n / 1000)] + ' হাজার '; n %= 1000; }
-                if (n >= 100) { res += units[Math.floor(n / 100)] + 'শ '; n %= 100; }
-                if (n > 0) { res += units[Math.floor(n)]; }
+                if (n >= 10000000) {
+                    res += convertBase(Math.floor(n / 10000000)) + ' কোটি ';
+                    n %= 10000000;
+                }
+                if (n >= 100000) {
+                    res += units[Math.floor(n / 100000)] + ' লাখ ';
+                    n %= 100000;
+                }
+                if (n >= 1000) {
+                    res += units[Math.floor(n / 1000)] + ' হাজার ';
+                    n %= 1000;
+                }
+                if (n >= 100) {
+                    res += units[Math.floor(n / 100)] + 'শ ';
+                    n %= 100;
+                }
+                if (n > 0) {
+                    res += units[Math.floor(n)];
+                }
                 return res.trim();
             }
-            
-            let finalRes = convert(Math.floor(num));
-            return finalRes ? finalRes + ' টাকা মাত্র।' : 'শূণ্য টাকা মাত্র।';
+
+            let mainNumber = Math.floor(num);
+            let result = convertBase(mainNumber);
+            return result ? result + ' টাকা মাত্র।' : 'শূণ্য টাকা মাত্র।';
         }
 
         function incrementReceiptNo() {
@@ -595,14 +651,21 @@
         }
 
         function clearAllData() {
-            if(confirm("রিসেট করবেন?")) {
-                document.getElementById('custName').innerText = '..................................................................';
-                document.getElementById('custAcc').innerText = '......................................................';
-                document.getElementById('table-body').innerHTML = '';
-                document.getElementById('grandTotal').innerText = '0.00';
-                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
-                addNewRow(false);
-            }
+            document.getElementById('resetModal').style.display = 'flex';
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').style.display = 'none';
+        }
+
+        function confirmReset() {
+            document.getElementById('custName').innerText = '..................................................................';
+            document.getElementById('custAcc').innerText = '......................................................';
+            document.getElementById('table-body').innerHTML = '';
+            document.getElementById('grandTotal').innerText = '0.00';
+            document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
+            addNewRow(false);
+            closeResetModal();
         }
 
         function openTool(t) {
