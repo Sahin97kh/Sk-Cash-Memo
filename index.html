@@ -52,8 +52,6 @@
         }
 
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
-
-        /* Premium Modal Extra Styles (No Impact on Receipt) */
         .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         .premium-card:hover { border-color: #0d9488; transform: translateY(-3px); }
         #qrcode img { margin: 0 auto; }
@@ -127,6 +125,7 @@
             </div>
         </div>
     </div>
+
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
@@ -291,25 +290,64 @@
             document.getElementById('amountInWords').innerText = bngAmountInWords(total);
         }
 
+        // --- সলভ করা কথায় লিখার ফাংশন (১০০০ কোটি টাকা সাপোর্ট করবে) ---
         function bngAmountInWords(num) {
             if (num == 0) return 'শূণ্য টাকা মাত্র।';
-            const words = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাসি', 'ছিয়াশি', 'সাতাশি', 'আटाশি', 'উননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+            
+            const words = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 
+                           'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 
+                           'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 
+                           'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 
+                           'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 
+                           'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 
+                           'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 
+                           'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 
+                           'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 
+                           'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+
             function convert(n) {
                 let word = '';
-                if (n >= 10000000) { word += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
-                if (n >= 100000) { word += convert(Math.floor(n / 100000)) + ' লাখ '; n %= 100000; }
-                if (n >= 1000) { word += convert(Math.floor(n / 1000)) + ' হাজার '; n %= 1000; }
-                if (n >= 100) { word += words[Math.floor(n / 100)] + 'শ '; n %= 100; }
-                if (n > 0) word += words[Math.floor(n)];
+                if (n >= 10000000) {
+                    let koti = Math.floor(n / 10000000);
+                    word += convert(koti) + ' কোটি ';
+                    n %= 10000000;
+                }
+                if (n >= 100000) {
+                    word += words[Math.floor(n / 100000)] + ' লাখ ';
+                    n %= 100000;
+                }
+                if (n >= 1000) {
+                    word += words[Math.floor(n / 1000)] + ' হাজার ';
+                    n %= 1000;
+                }
+                if (n >= 100) {
+                    word += words[Math.floor(n / 100)] + 'শ ';
+                    n %= 100;
+                }
+                if (n > 0) {
+                    word += words[Math.floor(n)];
+                }
                 return word;
             }
-            return convert(Math.floor(num)).trim() + ' টাকা মাত্র।';
+
+            let result = convert(Math.floor(num)).trim();
+            
+            // পয়সা হ্যান্ডেল করা (যদি থাকে)
+            let paisa = Math.round((num - Math.floor(num)) * 100);
+            if (paisa > 0) {
+                return result + ' টাকা ' + words[paisa] + ' পয়সা মাত্র।';
+            } else {
+                return result + ' টাকা মাত্র।';
+            }
         }
 
         function generateTwoCopiesAndPrint() {
             const printWrapper = document.getElementById('print-wrapper');
             const content = document.getElementById('main-receipt-design').innerHTML;
-            printWrapper.innerHTML = `<div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div><div style="height: 5px;"></div><div class="receipt-copy"><div class="print-scaling">${content}</div></div>`;
+            printWrapper.innerHTML = `
+                <div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div>
+                <div style="height: 5px;"></div>
+                <div class="receipt-copy"><div class="print-scaling">${content}</div></div>`;
             window.print();
             incrementReceiptNo();
         }
@@ -385,7 +423,6 @@
             document.getElementById('feetOut').innerText = (i/12).toFixed(2);
         }
         
-        // --- FDR Calculation Logic ---
         function runFDR() {
             const p = parseFloat(document.getElementById('fdrP').value) || 0;
             const r = parseFloat(document.getElementById('fdrR').value) || 0;
@@ -403,7 +440,6 @@
             document.getElementById('netInt').innerText = '৳' + netInterest.toLocaleString('bn-BD', {minimumFractionDigits: 2});
         }
 
-        // --- QR Code Logic ---
         let qrcodeObj;
         function runQR() {
             const text = document.getElementById('qrText').value;
