@@ -300,7 +300,7 @@
         // ব্যাংক ক্যাশ ক্যালকুলেটর শুরু
         function initBankCash() {
             const body = document.getElementById('bankCashBody');
-            const notes = [1000, 500, 200, 100, 50, 20, 10, 5];
+            const notes = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
             body.innerHTML = notes.map(n => `
                 <tr>
                     <td class="font-bold text-gray-600 w-16 text-sm">${n} ৳</td>
@@ -329,7 +329,7 @@
             runBankCash();
         }
 
-        // রিসিট ফাংশনসমূহ (অপরিবর্তিত)
+        // রিসিট ফাংশনসমূহ
         function handleFocus(el) { if (el.innerText.trim() === '0' || el.innerText.trim().includes('...')) el.innerText = ''; }
         function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; calculate(el); }
 
@@ -371,23 +371,39 @@
             document.getElementById('amountInWords').innerText = bngAmountInWords(total);
         }
 
+        // ব্যাংকিং স্ট্যান্ডার্ডে ১০০০ কোটি টাকা পর্যন্ত নির্ভুল কথায় রূপান্তর ফাংশন
         function bngAmountInWords(num) {
             if (num == 0) return 'শূণ্য টাকা মাত্র।';
-            const words = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-            // Simplified for brevity, use existing full words array if needed
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
             
-            function convert(n) {
-                let word = '';
-                if (n >= 10000000) { word += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
-                if (n >= 100000) { word += units[Math.floor(n / 100000)] + ' লাখ '; n %= 100000; }
-                if (n >= 1000) { word += units[Math.floor(n / 1000)] + ' হাজার '; n %= 1000; }
-                if (n >= 100) { word += units[Math.floor(n / 100)] + 'শ '; n %= 100; }
-                if (n > 0) { word += units[Math.floor(n)]; }
-                return word;
+            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+
+            function convertToWords(n) {
+                let result = '';
+                if (n >= 10000000) {
+                    result += convertToWords(Math.floor(n / 10000000)) + ' কোটি ';
+                    n %= 10000000;
+                }
+                if (n >= 100000) {
+                    result += units[Math.floor(n / 100000)] + ' লাখ ';
+                    n %= 100000;
+                }
+                if (n >= 1000) {
+                    result += units[Math.floor(n / 1000)] + ' হাজার ';
+                    n %= 1000;
+                }
+                if (n >= 100) {
+                    result += units[Math.floor(n / 100)] + 'শ ';
+                    n %= 100;
+                }
+                if (n > 0) {
+                    result += units[Math.floor(n)];
+                }
+                return result.trim();
             }
-            let result = convert(Math.floor(num)).trim();
-            return result + ' টাকা মাত্র।';
+
+            let mainPart = Math.floor(num);
+            let result = convertToWords(mainPart);
+            return result ? result + ' টাকা মাত্র।' : 'শূণ্য টাকা মাত্র।';
         }
 
         function generateTwoCopiesAndPrint() {
@@ -420,7 +436,7 @@
 
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
-            initBankCash(); // Init bank cash notes
+            initBankCash(); 
             ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
                 let v = localStorage.getItem(k);
                 if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
@@ -461,7 +477,6 @@
             document.getElementById('toolModal').classList.replace('flex', 'hidden'); 
         }
 
-        // টুল লজিক (Age, EMI, etc - অপরিবর্তিত রাখা হলো)
         function runAge() {
             const b = new Date(document.getElementById('dobIn').value); if(isNaN(b)) return;
             const n = new Date(); let y = n.getFullYear()-b.getFullYear(), m = n.getMonth()-b.getMonth(), d = n.getDate()-b.getDate();
