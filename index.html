@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>জমা রিসিট - ফাইনাল ফিক্স</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
@@ -55,6 +56,7 @@
         /* Premium Modal Extra Styles (No Impact on Receipt) */
         .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         .premium-card:hover { border-color: #0d9488; transform: translateY(-3px); }
+        #qrcode img { margin: 0 auto; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -134,22 +136,30 @@
 
     <div class="max-w-4xl mx-auto no-print mb-20 px-2">
         <h3 class="text-teal-800 font-bold mb-4 border-l-4 border-teal-600 pl-2">প্রিমিয়াম টুলস</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div onclick="openTool('age')" class="premium-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div onclick="openTool('age')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">🗓️</div>
-                <div class="text-sm font-bold text-gray-700">বয়স ক্যালকুলেটর</div>
+                <div class="text-xs font-bold text-gray-700">বয়স ক্যালকুলেটর</div>
             </div>
-            <div onclick="openTool('emi')" class="premium-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+            <div onclick="openTool('emi')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">💸</div>
-                <div class="text-sm font-bold text-gray-700">কিস্তি ক্যালকুলেটর</div>
+                <div class="text-xs font-bold text-gray-700">কিস্তি ক্যালকুলেটর</div>
             </div>
-            <div onclick="openTool('unit')" class="premium-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+            <div onclick="openTool('unit')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">📏</div>
-                <div class="text-sm font-bold text-gray-700">ইউনিট কনভার্টার</div>
+                <div class="text-xs font-bold text-gray-700">ইউনিট কনভার্টার</div>
             </div>
-            <div onclick="openTool('card')" class="premium-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+            <div onclick="openTool('card')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">🪪</div>
-                <div class="text-sm font-bold text-gray-700">কার্ড মেকার</div>
+                <div class="text-xs font-bold text-gray-700">কার্ড মেকার</div>
+            </div>
+            <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏦</div>
+                <div class="text-xs font-bold text-gray-700">FDR ক্যালকুলেটর</div>
+            </div>
+            <div onclick="openTool('qr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏁</div>
+                <div class="text-xs font-bold text-gray-700">QR কোড মেকার</div>
             </div>
         </div>
     </div>
@@ -187,6 +197,31 @@
                         <div id="cardN" class="font-bold text-2xl">NAME</div>
                         <div class="text-xs opacity-75 mt-2">PREMIUM CUSTOMER</div>
                     </div>
+                </div>
+                <div id="fdrBox" class="hidden">
+                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-left">FDR মুনাফা ক্যালকুলেটর</h4>
+                    <input type="number" id="fdrP" placeholder="জমার পরিমাণ (টাকা)" class="w-full border p-2 mb-2 rounded outline-none focus:border-orange-500">
+                    <input type="number" id="fdrR" placeholder="বার্ষিক মুনাফার হার %" class="w-full border p-2 mb-2 rounded outline-none focus:border-orange-500">
+                    <input type="number" id="fdrM" placeholder="সময় (মাস হিসেবে)" class="w-full border p-2 mb-4 rounded outline-none focus:border-orange-500">
+                    <button onclick="runFDR()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
+                    <div id="fdrOut" class="mt-4 hidden">
+                        <div class="bg-gray-800 text-white p-4 rounded-lg space-y-2">
+                            <div class="flex justify-between items-center border-b border-gray-600 pb-2">
+                                <span class="text-xs">মোট মুনাফা (ভ্যাটসহ):</span>
+                                <span id="totalInt" class="font-bold text-orange-400">৳০.০০</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-1">
+                                <span class="font-bold text-xs text-green-400">ভ্যাট বাদে নীট মুনাফা (১৫% কর্তন):</span>
+                                <span id="netInt" class="font-bold text-lg text-green-400">৳০.০০</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="qrBox" class="hidden text-center">
+                    <h4 class="font-bold text-indigo-700 mb-4 uppercase text-left">QR কোড জেনারেটর</h4>
+                    <input type="text" id="qrText" placeholder="লিঙ্ক বা টেক্সট লিখুন" class="w-full border p-3 rounded-lg mb-4 outline-none">
+                    <button onclick="runQR()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold mb-4">কোড তৈরি করুন</button>
+                    <div id="qrcode" class="flex justify-center p-4 bg-white border rounded"></div>
                 </div>
             </div>
         </div>
@@ -258,7 +293,7 @@
 
         function bngAmountInWords(num) {
             if (num == 0) return 'শূণ্য টাকা মাত্র।';
-            const words = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'উনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'উনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'উনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাসি', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'উননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+            const words = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাসি', 'ছিয়াশি', 'সাতাশি', 'আटाশি', 'উননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
             function convert(n) {
                 let word = '';
                 if (n >= 10000000) { word += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
@@ -327,7 +362,7 @@
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox'].forEach(b => document.getElementById(b).classList.add('hidden'));
+            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox'].forEach(b => document.getElementById(b).classList.add('hidden'));
             modal.classList.replace('hidden', 'flex');
             document.getElementById(t + 'Box').classList.remove('hidden');
         }
@@ -348,6 +383,34 @@
             const i = document.getElementById('unitIn').value || 0;
             document.getElementById('sootOut').innerText = (i*8).toFixed(1);
             document.getElementById('feetOut').innerText = (i/12).toFixed(2);
+        }
+        
+        // --- FDR Calculation Logic ---
+        function runFDR() {
+            const p = parseFloat(document.getElementById('fdrP').value) || 0;
+            const r = parseFloat(document.getElementById('fdrR').value) || 0;
+            const m = parseFloat(document.getElementById('fdrM').value) || 0;
+            if(p <= 0 || r <= 0 || m <= 0) return alert("সঠিক তথ্য দিন");
+
+            const yearlyInterest = (p * r) / 100;
+            const monthlyInterest = yearlyInterest / 12;
+            const totalInterest = monthlyInterest * m;
+            const vat = totalInterest * 0.15;
+            const netInterest = totalInterest - vat;
+
+            document.getElementById('fdrOut').classList.remove('hidden');
+            document.getElementById('totalInt').innerText = '৳' + totalInterest.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+            document.getElementById('netInt').innerText = '৳' + netInterest.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+        }
+
+        // --- QR Code Logic ---
+        let qrcodeObj;
+        function runQR() {
+            const text = document.getElementById('qrText').value;
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = "";
+            if(!text) return alert("টেক্সট লিখুন!");
+            qrcodeObj = new QRCode(qrDiv, { text: text, width: 128, height: 128 });
         }
     </script>
 </body>
