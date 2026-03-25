@@ -20,6 +20,7 @@
             @page { size: A4; margin: 0; }
         }
 
+        /* রিসিট প্রিন্ট স্টাইল (২ কপি) */
         .receipt-copy { 
             height: 5in; 
             width: 100%; 
@@ -27,6 +28,17 @@
             box-sizing: border-box; 
             overflow: hidden; 
             position: relative;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ক্যাশ মেমো প্রিন্ট স্টাইল (১ কপি লম্বা) */
+        .memo-full-page {
+            min-height: 10in;
+            width: 100%;
+            padding: 40px;
+            box-sizing: border-box;
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -58,16 +70,39 @@
         .premium-card:hover { border-color: #0d9488; transform: translateY(-3px); }
         #qrcode img { margin: 0 auto; }
         
-        /* TV Styles */
         .tv-screen { background: #000; aspect-ratio: 16/9; position: relative; border-radius: 8px; overflow: hidden; }
         .channel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 200px; overflow-y: auto; }
         .channel-item { background: #f3f4f6; padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; border: 2px solid transparent; transition: 0.3s; }
         .channel-item:hover { border-color: #0d9488; background: #e0f2f1; }
 
-        /* Cash Modal Styling */
         .cash-table input { width: 80px; border: 1px solid #ddd; text-align: center; border-radius: 6px; padding: 4px; outline: none; transition: 0.3s; }
         .cash-table input:focus { border-color: #059669; background: #ecfdf5; }
         .cash-table td { padding: 8px 5px; border-bottom: 1px solid #f3f4f6; }
+
+        #memo-preview-area { 
+            display: none; background: white; padding: 15px; width: 100%;
+            border: 1px solid #000; color: #000; overflow: hidden; margin-top: 15px;
+        }
+        .memo-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; }
+        .memo-header-left h1 { margin: 0; font-size: 18px; line-height: 1.2; }
+        .memo-header-left p { margin: 2px 0; font-size: 11px; }
+        .memo-header-right { text-align: right; font-size: 10px; min-width: 120px; }
+        .memo-meta { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 10px; }
+        .memo-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .memo-table td, .memo-table th { border: 1px solid #000; padding: 5px; font-size: 12px; }
+        .memo-label { width: 60px; background: #f2f2f2; font-weight: bold; }
+        .memo-signatures { display: flex; justify-content: space-between; margin-top: auto; padding-top: 50px; font-size: 11px; }
+        .memo-sig-box { border-top: 1px solid #000; width: 100px; text-align: center; padding-top: 3px; }
+        
+        .input-row-memo { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .input-row-memo input { 
+            border: 1px solid #ddd; padding: 8px; border-radius: 6px; font-size: 13px; flex: 1; min-width: 120px; 
+        }
+        @media (max-width: 640px) {
+            .input-row-memo input { flex: 1 1 100%; }
+            .m_item_row input.mi_desc { flex: 1 1 100%; }
+            .m_item_row input.mi_qty, .m_item_row input.mi_rate { flex: 1 1 48%; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -136,7 +171,7 @@
     <div id="print-wrapper" class="hidden"></div>
 
     <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="generateTwoCopiesAndPrint()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
+        <button onclick="printReceipt()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
@@ -175,6 +210,10 @@
                 <div class="text-2xl mb-2">🎬</div>
                 <div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
             </div>
+            <div onclick="openTool('memo')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📝</div>
+                <div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো</div>
+            </div>
             <div onclick="openTool('cash')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">💰</div>
                 <div class="text-[10px] font-bold text-gray-700">ক্যাশ হিসাব</div>
@@ -185,7 +224,64 @@
     <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
-            <div class="p-8">
+            <div class="p-6 max-h-[90vh] overflow-y-auto">
+                
+                <div id="memoBox" class="hidden">
+                    <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">নতুন ক্যাশ মেমো</h4>
+                    <div class="input-row-memo">
+                        <input type="text" id="m_c_name" placeholder="ক্রেতার নাম">
+                        <input type="text" id="m_c_addr" placeholder="ঠিকানা">
+                    </div>
+                    <div class="input-row-memo">
+                        <input type="text" id="m_no" placeholder="মেমো নং">
+                        <input type="date" id="m_date">
+                    </div>
+                    <div id="m_item_list" class="space-y-2 mt-3">
+                        <div class="input-row-memo m_item_row">
+                            <input type="text" class="mi_desc" placeholder="বিবরণ">
+                            <input type="text" class="mi_qty" placeholder="পরিমাণ">
+                            <input type="text" class="mi_rate" placeholder="দর">
+                        </div>
+                    </div>
+                    <button onclick="addMemoRow()" class="w-full bg-blue-50 text-blue-600 py-2 rounded mt-2 font-bold text-xs">+ আরও পণ্য যোগ করুন</button>
+                    <button onclick="generateMemo()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold mt-4 shadow-lg">মেমো তৈরি করুন</button>
+
+                    <div id="memo-preview-area">
+                        <button class="bg-black text-white px-4 py-1 rounded text-[10px] mb-2 no-print" onclick="printMemo()">মেমো প্রিন্ট করুন (১ কপি)</button>
+                        <div id="memo-print-content">
+                            <div class="memo-header">
+                                <div class="memo-header-left">
+                                    <h1 id="m_shop_name" contenteditable="true" oninput="saveMHeader()">শাহিন ভ্যারাইটিজ স্টোর</h1>
+                                    <p id="m_shop_prop" contenteditable="true" oninput="saveMHeader()">প্রোপাইটর: শাহিন খান</p>
+                                    <p id="m_shop_addr" contenteditable="true" oninput="saveMHeader()">জনতা বাজার, হাইমচর, চাঁদপুর।</p>
+                                </div>
+                                <div class="memo-header-right">
+                                    <p id="m_shop_phone" contenteditable="true" oninput="saveMHeader()">📞 +৮৮০ ১৮৩৫৩০৩৮৮৩</p>
+                                    <p id="m_shop_email" contenteditable="true" oninput="saveMHeader()">✉️ sahinkhan8585@gmail.com</p>
+                                </div>
+                            </div>
+                            <div class="memo-meta">
+                                <span>মেমো নং: <span id="pm_no"></span></span>
+                                <span>তারিখ: <span id="pm_date"></span></span>
+                            </div>
+                            <table class="memo-table" style="margin-bottom: 5px;">
+                                <tr><td class="memo-label">নাম:</td><td id="pm_name"></td></tr>
+                                <tr><td class="memo-label">ঠিকানা:</td><td id="pm_addr"></td></tr>
+                            </table>
+                            <table class="memo-table">
+                                <thead><tr class="bg-gray-100"><th>ক্র.নং</th><th>বিবরণ</th><th>পরিমাণ</th><th>দর</th><th>মোট</th></tr></thead>
+                                <tbody id="pm_items"></tbody>
+                                <tfoot><tr><td colspan="4" class="text-right font-bold">সর্বমোট:</td><td id="pm_total" class="text-right font-bold"></td></tr></tfoot>
+                            </table>
+                            <div class="text-[11px] italic border-b border-black pb-1">কথায়: <span id="pm_words"></span> টাকা মাত্র।</div>
+                            <div class="memo-signatures">
+                                <div class="memo-sig-box">ক্রেতার স্বাক্ষর</div>
+                                <div class="memo-sig-box">বিক্রেতার স্বাক্ষর</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="ageBox" class="hidden">
                     <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm">বয়স ক্যালকুলেটর</h4>
                     <input type="date" id="dobIn" class="w-full border p-3 rounded-lg mb-4 outline-none">
@@ -297,11 +393,76 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
-        // ব্যাংক ক্যাশ ক্যালকুলেটর শুরু
+        function printReceipt() {
+            const printWrapper = document.getElementById('print-wrapper');
+            const content = document.getElementById('main-receipt-design').innerHTML;
+            printWrapper.innerHTML = `
+                <div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div>
+                <div style="height: 5px;"></div>
+                <div class="receipt-copy"><div class="print-scaling">${content}</div></div>
+            `;
+            window.print();
+            incrementReceiptNo();
+        }
+
+        function printMemo() {
+            const printWrapper = document.getElementById('print-wrapper');
+            const content = document.getElementById('memo-print-content').innerHTML;
+            printWrapper.innerHTML = `<div class="memo-full-page">${content}</div>`;
+            window.print();
+        }
+
+        function parseBn(s) {
+            const b = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+            let val = s.toString().replace(/[০-৯]/g, x => b[x]).replace(/[^0-9.]/g, '');
+            return parseFloat(val) || 0;
+        }
+
+        function toBn(n) {
+            if (n === null || n === undefined) return "০";
+            const b = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯','.' : '.'};
+            return n.toString().split('').map(x => b[x] || x).join('');
+        }
+
+        function addMemoRow() {
+            const div = document.createElement('div');
+            div.className = 'input-row-memo m_item_row';
+            div.innerHTML = `<input type="text" class="mi_desc" placeholder="বিবরণ"><input type="text" class="mi_qty" placeholder="পরিমাণ"><input type="text" class="mi_rate" placeholder="দর">`;
+            document.getElementById('m_item_list').appendChild(div);
+        }
+
+        function saveMHeader() {
+            localStorage.setItem('sh_shop_name', document.getElementById('m_shop_name').innerText);
+            localStorage.setItem('sh_shop_prop', document.getElementById('m_shop_prop').innerText);
+            localStorage.setItem('sh_shop_addr', document.getElementById('m_shop_addr').innerText);
+            localStorage.setItem('sh_shop_phone', document.getElementById('m_shop_phone').innerText);
+            localStorage.setItem('sh_shop_email', document.getElementById('m_shop_email').innerText);
+        }
+
+        function generateMemo() {
+            document.getElementById('pm_name').innerText = document.getElementById('m_c_name').value || "---";
+            document.getElementById('pm_addr').innerText = document.getElementById('m_c_addr').value || "---";
+            document.getElementById('pm_no').innerText = toBn(document.getElementById('m_no').value || "১");
+            let d = document.getElementById('m_date').value;
+            document.getElementById('pm_date').innerText = d ? new Date(d).toLocaleDateString('bn-BD') : new Date().toLocaleDateString('bn-BD');
+            const tbody = document.getElementById('pm_items'); tbody.innerHTML = "";
+            let grand = 0;
+            const ds = document.getElementsByClassName('mi_desc'), qs = document.getElementsByClassName('mi_qty'), rs = document.getElementsByClassName('mi_rate');
+            for(let i=0; i<ds.length; i++) {
+                let q = parseBn(qs[i].value), r = parseBn(rs[i].value), t = q * r;
+                if(ds[i].value || q > 0) {
+                    grand += t;
+                    tbody.innerHTML += `<tr><td class="text-center">${toBn(i+1)}</td><td>${ds[i].value || "পণ্য"}</td><td class="text-center">${toBn(q)}</td><td class="text-right">${toBn(r.toFixed(2))}</td><td class="text-right">${toBn(t.toFixed(2))}</td></tr>`;
+                }
+            }
+            document.getElementById('pm_total').innerText = toBn(grand.toFixed(2));
+            document.getElementById('pm_words').innerText = bngAmountInWords(grand);
+            document.getElementById('memo-preview-area').style.display = 'block';
+        }
+
         function initBankCash() {
             const body = document.getElementById('bankCashBody');
-            const notes = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
-            body.innerHTML = notes.map(n => `
+            body.innerHTML = noteSequence.map(n => `
                 <tr>
                     <td class="font-bold text-gray-600 w-16 text-sm">${n} ৳</td>
                     <td class="text-gray-400">×</td>
@@ -329,9 +490,8 @@
             runBankCash();
         }
 
-        // রিসিট ফাংশনসমূহ
         function handleFocus(el) { if (el.innerText.trim() === '0' || el.innerText.trim().includes('...')) el.innerText = ''; }
-        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; calculate(el); }
+        function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; calculateAll(); }
 
         function addNewRow(shouldFocus = false) {
             const tableBody = document.getElementById('table-body');
@@ -342,7 +502,7 @@
                 <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
                 <td class="border border-teal-600 p-1" contenteditable="true"></td>
                 <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 note-val">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center count-val" contenteditable="true" oninput="calculate(this)" onfocus="handleFocus(this)" onblur="handleBlur(this, '0')" onkeydown="checkTab(event, this)">0</td>
+                <td class="border border-teal-600 p-1 text-center count-val" contenteditable="true" oninput="calculateAll()" onfocus="handleFocus(this)" onblur="handleBlur(this, '0')" onkeydown="checkTab(event, this)">0</td>
                 <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
             `;
             tableBody.appendChild(newRow);
@@ -356,62 +516,39 @@
             }
         }
 
-        function calculate(el) {
-            const row = el.closest('tr');
-            let note = parseFloat(row.querySelector('.note-val').innerText) || 0;
-            let count = parseFloat(row.querySelector('.count-val').innerText) || 0;
-            row.querySelector('.row-total').innerText = (note * count).toFixed(2);
-            updateGrandTotal();
-        }
-
-        function updateGrandTotal() {
-            let total = 0;
-            document.querySelectorAll('.row-total').forEach(c => total += parseFloat(c.innerText) || 0);
-            document.getElementById('grandTotal').innerText = total.toFixed(2);
-            document.getElementById('amountInWords').innerText = bngAmountInWords(total);
-        }
-
-        // ব্যাংকিং স্ট্যান্ডার্ডে ১০০০ কোটি টাকা পর্যন্ত নির্ভুল কথায় রূপান্তর ফাংশন
-        function bngAmountInWords(num) {
-            if (num == 0) return 'শূণ্য টাকা মাত্র।';
+        // রিয়াল-টাইম পূর্ণাঙ্গ টেবিল ক্যালকুলেশন (ফিক্সড)
+        function calculateAll() {
+            let grandTotal = 0;
+            const rows = document.querySelectorAll('#table-body tr');
             
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+            rows.forEach(row => {
+                let note = parseBn(row.querySelector('.note-val').innerText);
+                let count = parseBn(row.querySelector('.count-val').innerText);
+                let rowTotal = note * count;
+                row.querySelector('.row-total').innerText = rowTotal.toFixed(2);
+                grandTotal += rowTotal;
+            });
 
-            function convertToWords(n) {
-                let result = '';
-                if (n >= 10000000) {
-                    result += convertToWords(Math.floor(n / 10000000)) + ' কোটি ';
-                    n %= 10000000;
-                }
-                if (n >= 100000) {
-                    result += units[Math.floor(n / 100000)] + ' লাখ ';
-                    n %= 100000;
-                }
-                if (n >= 1000) {
-                    result += units[Math.floor(n / 1000)] + ' হাজার ';
-                    n %= 1000;
-                }
-                if (n >= 100) {
-                    result += units[Math.floor(n / 100)] + 'শ ';
-                    n %= 100;
-                }
-                if (n > 0) {
-                    result += units[Math.floor(n)];
-                }
-                return result.trim();
-            }
-
-            let mainPart = Math.floor(num);
-            let result = convertToWords(mainPart);
-            return result ? result + ' টাকা মাত্র।' : 'শূণ্য টাকা মাত্র।';
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+            document.getElementById('amountInWords').innerText = bngAmountInWords(grandTotal);
         }
 
-        function generateTwoCopiesAndPrint() {
-            const printWrapper = document.getElementById('print-wrapper');
-            const content = document.getElementById('main-receipt-design').innerHTML;
-            printWrapper.innerHTML = `<div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div><div style="height: 5px;"></div><div class="receipt-copy"><div class="print-scaling">${content}</div></div>`;
-            window.print();
-            incrementReceiptNo();
+        function bngAmountInWords(num) {
+            if (num === 0) return 'শূণ্য টাকা মাত্র।';
+            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+            
+            function convert(n) {
+                let res = '';
+                if (n >= 10000000) { res += convert(Math.floor(n / 10000000)) + ' কোটি '; n %= 10000000; }
+                if (n >= 100000) { res += units[Math.floor(n / 100000)] + ' লাখ '; n %= 100000; }
+                if (n >= 1000) { res += units[Math.floor(n / 1000)] + ' হাজার '; n %= 1000; }
+                if (n >= 100) { res += units[Math.floor(n / 100)] + 'শ '; n %= 100; }
+                if (n > 0) { res += units[Math.floor(n)]; }
+                return res.trim();
+            }
+            
+            let finalRes = convert(Math.floor(num));
+            return finalRes ? finalRes + ' টাকা মাত্র।' : 'শূণ্য টাকা মাত্র।';
         }
 
         function incrementReceiptNo() {
@@ -441,6 +578,13 @@
                 let v = localStorage.getItem(k);
                 if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
             });
+            if(localStorage.getItem('sh_shop_name')) {
+                document.getElementById('m_shop_name').innerText = localStorage.getItem('sh_shop_name');
+                document.getElementById('m_shop_prop').innerText = localStorage.getItem('sh_shop_prop');
+                document.getElementById('m_shop_addr').innerText = localStorage.getItem('sh_shop_addr');
+                document.getElementById('m_shop_phone').innerText = localStorage.getItem('sh_shop_phone');
+                document.getElementById('m_shop_email').innerText = localStorage.getItem('sh_shop_email');
+            }
             let logo = localStorage.getItem('savedLogo');
             if(logo) {
                 document.getElementById('logo-preview').src = logo;
@@ -455,20 +599,19 @@
                 document.getElementById('custName').innerText = '..................................................................';
                 document.getElementById('custAcc').innerText = '......................................................';
                 document.getElementById('table-body').innerHTML = '';
+                document.getElementById('grandTotal').innerText = '0.00';
+                document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
                 addNewRow(false);
-                updateGrandTotal();
             }
         }
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox'].forEach(b => {
-                const el = document.getElementById(b);
-                if(el) el.classList.add('hidden');
+            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox'].forEach(b => {
+                const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
             modal.classList.replace('hidden', 'flex');
-            const target = document.getElementById(t + 'Box');
-            if(target) target.classList.remove('hidden');
+            const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
         }
 
         function closeModal() { 
@@ -508,8 +651,7 @@
         function playChannel(url) {
             const video = document.getElementById('tvVideo');
             const placeholder = document.getElementById('videoPlaceholder');
-            placeholder.classList.add('hidden');
-            video.classList.remove('hidden');
+            placeholder.classList.add('hidden'); video.classList.remove('hidden');
             if (Hls.isSupported()) {
                 const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
