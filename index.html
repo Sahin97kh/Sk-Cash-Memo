@@ -22,7 +22,6 @@
             @page { size: A4; margin: 0; }
         }
 
-        /* রিসিট প্রিন্ট স্টাইল (২ কপি) */
         .receipt-copy { 
             height: 5in; 
             width: 100%; 
@@ -35,7 +34,6 @@
             flex-direction: column;
         }
 
-        /* ক্যাশ মেমো প্রিন্ট স্টাইল (১ কপি লম্বা) */
         .memo-full-page {
             min-height: 10in;
             width: 100%;
@@ -81,7 +79,6 @@
         .cash-table input:focus { border-color: #059669; background: #ecfdf5; }
         .cash-table td { padding: 8px 5px; border-bottom: 1px solid #f3f4f6; }
 
-        /* ক্যাশ মেমো ফিক্সড ডিজাইন */
         #memo-preview-area { 
             display: none; background: white; padding: 15px; width: 100%;
             border: 1px solid #000; color: #000; overflow: hidden; margin-top: 15px;
@@ -106,9 +103,7 @@
         .memo-sig-box { border-top: 1px solid #000; width: 100px; text-align: center; padding-top: 3px; }
         
         .input-row-memo { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-        .input-row-memo input { 
-            border: 1px solid #ddd; padding: 8px; border-radius: 6px; font-size: 13px; flex: 1; min-width: 120px; 
-        }
+        .input-row-memo input { border: 1px solid #ddd; padding: 8px; border-radius: 6px; font-size: 13px; flex: 1; min-width: 120px; }
 
         .reset-alert-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
@@ -119,59 +114,39 @@
             text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #f3f4f6;
         }
 
-        /* --- New Visiting Card Styles (Fixed Layout) --- */
         #visiting-card-preview {
-            width: 100%;
-            max-width: 350px;
-            height: 200px;
-            background: white;
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            margin: 10px auto;
-            border: 1px solid #ddd;
+            width: 350px; max-width: 100%; height: 200px; background: white; position: relative;
+            overflow: hidden; border-radius: 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin: 10px auto; border: 1px solid #ddd; aspect-ratio: 3.5 / 2;
         }
         .card-top-design {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 60px;
-            background: #0d6e4a; /* Islamic Green */
-            clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+            position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+            background: #0d6e4a; clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
         }
         .card-top-pattern {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.1;
-            background-image: radial-gradient(#fff 1px, transparent 1px);
-            background-size: 10px 10px;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1;
+            background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 10px 10px;
         }
-        .card-content {
-            position: relative;
-            z-index: 5;
-            padding: 15px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            color: #333;
-        }
-        .card-header-texts { color: white; font-size: 10px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 40px; }
-        .card-body-main { margin-top: 35px; display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .card-content { position: relative; z-index: 5; padding: 8px 12px; height: 100%; display: flex; flex-direction: column; color: #333; }
+        .card-header-texts { color: white; font-size: 10px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 35px; margin-top: -4px; }
+        #v_h1 { font-weight: bold; font-size: 12px; line-height: 1; margin-bottom: 2px; }
+        #v_h2 { font-size: 8px; line-height: 1; }
+        .card-body-main { margin-top: 35px; display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
         .card-left { width: 55%; text-align: left; }
-        .card-name { font-weight: bold; font-size: 16px; color: #0d6e4a; margin-bottom: 2px; }
+        .card-name { font-weight: bold; font-size: 16px; color: #0d6e4a; margin-bottom: 2px; line-height: 1.2; }
         .card-info { font-size: 9px; line-height: 1.4; color: #555; }
         .card-right { width: 45%; text-align: right; font-size: 9px; color: #444; font-weight: bold; border-left: 1px solid #eee; padding-left: 5px; display: flex; flex-direction: column; gap: 2px; }
-        .card-footer { margin-top: auto; font-size: 9px; display: flex; gap: 10px; color: #0d6e4a; font-weight: bold; justify-content: center; border-top: 1px solid #f0f0f0; pt-1; }
+        .card-footer { margin-top: auto; font-size: 9px; display: flex; gap: 10px; color: #0d6e4a; font-weight: bold; justify-content: center; border-top: 1px solid #f0f0f0; padding-top: 4px; }
 
         @media (max-width: 640px) {
             .input-row-memo input { flex: 1 1 100%; }
-            .m_item_row input.mi_desc { flex: 1 1 100%; }
-            .m_item_row input.mi_qty, .m_item_row input.mi_rate { flex: 1 1 48%; }
-            #visiting-card-preview { transform: scale(0.9); transform-origin: top center; margin-bottom: -10px; }
+            #visiting-card-preview { height: auto; min-height: 180px; }
         }
+        
+        .count-input { width: 100%; background: transparent; text-align: center; border: none; outline: none; font-weight: normal; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
-
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
         <div class="p-4 md:p-8" id="main-receipt-design">
             <div class="flex justify-between items-start mb-4">
@@ -244,40 +219,31 @@
         <h3 class="text-teal-800 font-bold mb-4 border-l-4 border-teal-600 pl-2">প্রিমিয়াম টুলস</h3>
         <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-9 gap-4">
             <div onclick="openTool('card')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🪪</div>
-                <div class="text-[10px] font-bold text-gray-700">কার্ড মেকার</div>
+                <div class="text-2xl mb-2">🪪</div><div class="text-[10px] font-bold text-gray-700">কার্ড মেকার</div>
             </div>
             <div onclick="openTool('qr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏁</div>
-                <div class="text-[10px] font-bold text-gray-700">QR কোড জেনারেট</div>
+                <div class="text-2xl mb-2">🏁</div><div class="text-[10px] font-bold text-gray-700">QR কোড জেনারেট</div>
             </div>
             <div onclick="openTool('tv')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📺</div>
-                <div class="text-[10px] font-bold text-gray-700">লাইভ টিভি</div>
+                <div class="text-2xl mb-2">📺</div><div class="text-[10px] font-bold text-gray-700">লাইভ টিভি</div>
             </div>
             <div onclick="openTool('video')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🎬</div>
-                <div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
+                <div class="text-2xl mb-2">🎬</div><div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
             </div>
             <div onclick="openTool('memo')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📝</div>
-                <div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো তৈরি</div>
+                <div class="text-2xl mb-2">📝</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো তৈরি</div>
             </div>
             <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div>
-                <div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
+                <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
             </div>
             <div onclick="openTool('birth')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📄</div>
-                <div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন চেক</div>
+                <div class="text-2xl mb-2">📄</div><div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন চেক</div>
             </div>
             <div onclick="openTool('dsr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📊</div>
-                <div class="text-[10px] font-bold text-gray-700">বিক্রয় রিপোর্ট</div>
+                <div class="text-2xl mb-2">📊</div><div class="text-[10px] font-bold text-gray-700">বিক্রয় রিপোর্ট</div>
             </div>
             <div onclick="openTool('study')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📚</div>
-                <div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
+                <div class="text-2xl mb-2">📚</div><div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
             </div>
         </div>
     </div>
@@ -286,56 +252,43 @@
         <h3 class="text-blue-800 font-bold mb-4 border-l-4 border-blue-600 pl-2">ক্যালকুলেটর টুলস</h3>
         <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-10 gap-4">
             <div onclick="openTool('age')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🗓️</div>
-                <div class="text-[10px] font-bold text-gray-700">বয়স</div>
+                <div class="text-2xl mb-2">🗓️</div><div class="text-[10px] font-bold text-gray-700">বয়স</div>
             </div>
             <div onclick="openTool('unit')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📏</div>
-                <div class="text-[10px] font-bold text-gray-700">ইউনিট</div>
+                <div class="text-2xl mb-2">📏</div><div class="text-[10px] font-bold text-gray-700">ইউনিট</div>
             </div>
             <div onclick="openTool('emi')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💸</div>
-                <div class="text-[10px] font-bold text-gray-700">কিস্তি</div>
+                <div class="text-2xl mb-2">💸</div><div class="text-[10px] font-bold text-gray-700">কিস্তি</div>
             </div>
             <div onclick="openTool('vat')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🧾</div>
-                <div class="text-[10px] font-bold text-gray-700">ভ্যাট</div>
+                <div class="text-2xl mb-2">🧾</div><div class="text-[10px] font-bold text-gray-700">ভ্যাট</div>
             </div>
             <div onclick="openTool('tax')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">⚖️</div>
-                <div class="text-[10px] font-bold text-gray-700">ইনকাম ট্যাক্স</div>
+                <div class="text-2xl mb-2">⚖️</div><div class="text-[10px] font-bold text-gray-700">ইনকাম ট্যাক্স</div>
             </div>
             <div onclick="openTool('curr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💱</div>
-                <div class="text-[10px] font-bold text-gray-700">কারেন্সি</div>
+                <div class="text-2xl mb-2">💱</div><div class="text-[10px] font-bold text-gray-700">কারেন্সি</div>
             </div>
             <div onclick="openTool('dps')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📈</div>
-                <div class="text-[10px] font-bold text-gray-700">DPS</div>
+                <div class="text-2xl mb-2">📈</div><div class="text-[10px] font-bold text-gray-700">DPS</div>
             </div>
             <div onclick="openTool('zakat')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🕋</div>
-                <div class="text-[10px] font-bold text-gray-700">জাকাত</div>
+                <div class="text-2xl mb-2">🕋</div><div class="text-[10px] font-bold text-gray-700">জাকাত</div>
             </div>
             <div onclick="openTool('gold')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏆</div>
-                <div class="text-[10px] font-bold text-gray-700">গোল্ড প্রাইস</div>
+                <div class="text-2xl mb-2">🏆</div><div class="text-[10px] font-bold text-gray-700">গোল্ড প্রাইস</div>
             </div>
             <div onclick="openTool('cashout')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💸</div>
-                <div class="text-[10px] font-bold text-gray-700">ক্যাশ আউট</div>
+                <div class="text-2xl mb-2">💸</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ আউট</div>
             </div>
             <div onclick="openTool('cash')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💰</div>
-                <div class="text-[10px] font-bold text-gray-700">ব্যাংক ক্যাশ হিসাব</div>
+                <div class="text-2xl mb-2">💰</div><div class="text-[10px] font-bold text-gray-700">ব্যাংক ক্যাশ হিসাব</div>
             </div>
             <div onclick="openTool('discount')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏷️</div>
-                <div class="text-[10px] font-bold text-gray-700">ডিসকাউন্ট</div>
+                <div class="text-2xl mb-2">🏷️</div><div class="text-[10px] font-bold text-gray-700">ডিসকাউন্ট</div>
             </div>
             <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div>
-                <div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
+                <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
             </div>
         </div>
     </div>
@@ -365,7 +318,44 @@
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
             <div class="p-6 max-h-[90vh] overflow-y-auto">
-                
+                <div id="cardBox" class="hidden">
+                    <h4 class="font-bold text-gray-700 mb-4 uppercase text-sm border-b pb-2">প্রফেশনাল কার্ড মেকার</h4>
+                    <div id="visiting-card-preview">
+                        <div class="card-top-design"><div class="card-top-pattern"></div></div>
+                        <div class="card-content">
+                            <div class="card-header-texts">
+                                <div id="v_h1">HEADER TEXT 1</div><div id="v_h2">Header text 2 example</div>
+                            </div>
+                            <div class="card-body-main">
+                                <div class="card-left">
+                                    <div id="v_name" class="card-name">SAHIN KHAN</div>
+                                    <div id="v_mobile" class="card-info">📞 +880 1835303883</div>
+                                    <div id="v_email" class="card-info">✉️ example@mail.com</div>
+                                </div>
+                                <div class="card-right">
+                                    <div id="v_r1">Designation Box 1</div><div id="v_r2">Organization Box 2</div><div id="v_r3">Location Box 3</div>
+                                </div>
+                            </div>
+                            <div class="card-footer"><span>SAHIN SOCIAL PLATFORM</span><span>|</span><span>PREMIUM MEMBER</span></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-3 mt-4">
+                        <input type="text" placeholder="হেডার ১" class="border p-2 rounded text-xs" oninput="updateCard('v_h1', this.value)">
+                        <input type="text" placeholder="হেডার ২" class="border p-2 rounded text-xs" oninput="updateCard('v_h2', this.value)">
+                        <input type="text" placeholder="আপনার নাম" class="border p-2 rounded text-xs font-bold" oninput="updateCard('v_name', this.value)">
+                        <input type="text" placeholder="মোবাইল নাম্বার" class="border p-2 rounded text-xs" oninput="updateCard('v_mobile', '📞 ' + this.value)">
+                        <input type="text" placeholder="ইমেইল" class="border p-2 rounded text-xs" oninput="updateCard('v_email', '✉️ ' + this.value)">
+                        <input type="text" placeholder="ডান বক্স ১" class="border p-2 rounded text-xs" oninput="updateCard('v_r1', this.value)">
+                        <input type="text" placeholder="ডান বক্স ২" class="border p-2 rounded text-xs" oninput="updateCard('v_r2', this.value)">
+                        <input type="text" placeholder="ডান বক্স ৩" class="border p-2 rounded text-xs" oninput="updateCard('v_r3', this.value)">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="saveCardImg()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold text-xs shadow-md"><i class="fas fa-image"></i> গ্যালারি সেভ</button>
+                        <button onclick="saveCardPDF()" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold text-xs shadow-md"><i class="fas fa-file-pdf"></i> PDF সেভ</button>
+                        <button onclick="resetCard()" class="bg-gray-500 text-white px-4 py-3 rounded-lg font-bold text-xs shadow-md">মুছুন</button>
+                    </div>
+                </div>
+
                 <div id="vatBox" class="hidden">
                     <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">ভ্যাট (VAT) ক্যালকুলেটর</h4>
                     <input type="number" id="vatAmt" placeholder="টাকার পরিমাণ" class="w-full border p-2 mb-2 rounded outline-none text-sm">
@@ -453,10 +443,7 @@
                                     <p id="m_shop_email" contenteditable="true" oninput="saveMHeader()">✉️ sahinkhan8585@gmail.com</p>
                                 </div>
                             </div>
-                            <div class="memo-meta">
-                                <span>মেমো নং: <span id="pm_no"></span></span>
-                                <span>তারিখ: <span id="pm_date"></span></span>
-                            </div>
+                            <div class="memo-meta"><span>মেমো নং: <span id="pm_no"></span></span><span>তারিখ: <span id="pm_date"></span></span></div>
                             <table class="memo-table" style="margin-bottom: 5px;">
                                 <tr><td class="memo-label">নাম:</td><td id="pm_name" style="white-space: normal;"></td></tr>
                                 <tr><td class="memo-label">ঠিকানা:</td><td id="pm_addr" style="white-space: normal;"></td></tr>
@@ -464,11 +451,7 @@
                             <table class="memo-table">
                                 <thead>
                                     <tr class="bg-gray-100">
-                                        <th class="col-sl">ক্র.নং</th>
-                                        <th class="col-desc">বিবরণ</th>
-                                        <th class="col-qty">পরিমাণ</th>
-                                        <th class="col-rate">দর</th>
-                                        <th class="col-total">মোট</th>
+                                        <th class="col-sl">ক্র.নং</th><th class="col-desc">বিবরণ</th><th class="col-qty">পরিমাণ</th><th class="col-rate">দর</th><th class="col-total">মোট</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pm_items"></tbody>
@@ -476,8 +459,7 @@
                             </table>
                             <div class="text-[11px] italic border-b border-black pb-1">কথায়: <span id="pm_words"></span></div>
                             <div class="memo-signatures">
-                                <div class="memo-sig-box">ক্রেতার স্বাক্ষর</div>
-                                <div class="memo-sig-box">বিক্রেতার স্বাক্ষর</div>
+                                <div class="memo-sig-box">ক্রেতার স্বাক্ষর</div><div class="memo-sig-box">বিক্রেতার স্বাক্ষর</div>
                             </div>
                         </div>
                     </div>
@@ -505,71 +487,16 @@
                         <div><div class="text-xs uppercase">ফুট</div><div id="feetOut" class="font-bold text-xl">0</div></div>
                     </div>
                 </div>
-
-                <div id="cardBox" class="hidden">
-                    <h4 class="font-bold text-gray-700 mb-4 uppercase text-sm border-b pb-2">প্রফেশনাল কার্ড মেকার</h4>
-                    
-                    <div id="visiting-card-preview">
-                        <div class="card-top-design"><div class="card-top-pattern"></div></div>
-                        <div class="card-content">
-                            <div class="card-header-texts">
-                                <div id="v_h1">HEADER TEXT 1</div>
-                                <div id="v_h2">Header text 2 example</div>
-                            </div>
-                            <div class="card-body-main">
-                                <div class="card-left">
-                                    <div id="v_name" class="card-name">SAHIN KHAN</div>
-                                    <div id="v_mobile" class="card-info">📞 +880 1835303883</div>
-                                    <div id="v_email" class="card-info">✉️ example@mail.com</div>
-                                </div>
-                                <div class="card-right">
-                                    <div id="v_r1">Designation Box 1</div>
-                                    <div id="v_r2">Organization Box 2</div>
-                                    <div id="v_r3">Location Box 3</div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <span>SAHIN SOCIAL PLATFORM</span>
-                                <span>|</span>
-                                <span>PREMIUM MEMBER</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <input type="text" placeholder="হেডার ১" class="border p-2 rounded text-xs" oninput="updateCard('v_h1', this.value)">
-                        <input type="text" placeholder="হেডার ২" class="border p-2 rounded text-xs" oninput="updateCard('v_h2', this.value)">
-                        <input type="text" placeholder="আপনার নাম" class="border p-2 rounded text-xs font-bold" oninput="updateCard('v_name', this.value)">
-                        <input type="text" placeholder="মোবাইল নাম্বার" class="border p-2 rounded text-xs" oninput="updateCard('v_mobile', '📞 ' + this.value)">
-                        <input type="text" placeholder="ইমেইল" class="border p-2 rounded text-xs" oninput="updateCard('v_email', '✉️ ' + this.value)">
-                        <input type="text" placeholder="ডান পাশের বক্স ১" class="border p-2 rounded text-xs" oninput="updateCard('v_r1', this.value)">
-                        <input type="text" placeholder="ডান পাশের বক্স ২" class="border p-2 rounded text-xs" oninput="updateCard('v_r2', this.value)">
-                        <input type="text" placeholder="ডান পাশের বক্স ৩" class="border p-2 rounded text-xs" oninput="updateCard('v_r3', this.value)">
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button onclick="saveCardImg()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold text-xs shadow-md"><i class="fas fa-image"></i> গ্যালারি সেভ</button>
-                        <button onclick="saveCardPDF()" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold text-xs shadow-md"><i class="fas fa-file-pdf"></i> PDF সেভ</button>
-                        <button onclick="resetCard()" class="bg-gray-500 text-white px-4 py-3 rounded-lg font-bold text-xs shadow-md">মুছুন</button>
-                    </div>
-                </div>
-
                 <div id="fdrBox" class="hidden">
                     <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm">FDR মুনাফা ক্যালকুলেটর</h4>
-                    <input type="number" id="fdrP" placeholder="জমার পরিমাণ (টাকা)" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="fdrR" placeholder="বার্ষিক মুনাফার হার %" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="fdrM" placeholder="সময় (মাস হিসেবে)" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <input type="number" id="fdrP" placeholder="জমা (টাকা)" class="w-full border p-2 mb-2 rounded outline-none text-sm">
+                    <input type="number" id="fdrR" placeholder="মুনাফার হার %" class="w-full border p-2 mb-2 rounded outline-none text-sm">
+                    <input type="number" id="fdrM" placeholder="সময় (মাস)" class="w-full border p-2 mb-4 rounded outline-none text-sm">
                     <button onclick="runFDR()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
                     <div id="fdrOut" class="mt-4 hidden">
                         <div class="bg-gray-800 text-white p-4 rounded-lg space-y-2">
-                            <div class="flex justify-between items-center border-b border-gray-600 pb-2 text-xs">
-                                <span>মোট মুনাফা:</span>
-                                <span id="totalInt" class="font-bold text-orange-400">৳০.০০</span>
-                            </div>
-                            <div class="flex justify-between items-center pt-1 text-xs">
-                                <span class="font-bold text-green-400">নীট মুনাফা (১৫% ভ্যাট বাদে):</span>
-                                <span id="netInt" class="font-bold text-lg text-green-400">৳০.০০</span>
-                            </div>
+                            <div class="flex justify-between border-b border-gray-600 pb-2 text-xs"><span>মোট মুনাফা:</span><span id="totalInt" class="font-bold text-orange-400">৳০.০০</span></div>
+                            <div class="flex justify-between pt-1 text-xs"><span class="font-bold text-green-400">নীট মুনাফা (ভ্যাট বাদে):</span><span id="netInt" class="font-bold text-lg text-green-400">৳০.০০</span></div>
                         </div>
                     </div>
                 </div>
@@ -583,10 +510,7 @@
                     <h4 class="font-bold text-red-600 mb-4 uppercase text-sm">লাইভ টিভি প্লেয়ার</h4>
                     <div class="tv-screen mb-4 flex items-center justify-center text-xs">
                         <video id="tvVideo" class="w-full h-full hidden" controls></video>
-                        <div id="videoPlaceholder" class="text-white text-center">
-                            <div class="text-4xl mb-2">▶️</div>
-                            <div>চ্যানেল সিলেক্ট করুন</div>
-                        </div>
+                        <div id="videoPlaceholder" class="text-white text-center"><div class="text-4xl mb-2">▶️</div><div>চ্যানেল সিলেক্ট করুন</div></div>
                         <div id="tvLoading" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center text-white">লোডিং হচ্ছে...</div>
                     </div>
                     <div class="channel-grid">
@@ -614,16 +538,9 @@
 
                 <div id="cashBox" class="hidden">
                     <h4 class="font-bold text-green-700 mb-4 uppercase text-sm">ব্যাংক ক্যাশ হিসাব</h4>
-                    <div class="max-h-[300px] overflow-y-auto pr-2">
-                        <table class="w-full text-xs cash-table">
-                            <tbody id="bankCashBody"></tbody>
-                        </table>
-                    </div>
+                    <div class="max-h-[300px] overflow-y-auto pr-2"><table class="w-full text-xs cash-table"><tbody id="bankCashBody"></tbody></table></div>
                     <div class="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
-                        <div class="flex justify-between items-center font-bold text-green-800 text-lg">
-                            <span>মোট:</span>
-                            <span>৳ <span id="bankTotal">0</span></span>
-                        </div>
+                        <div class="flex justify-between items-center font-bold text-green-800 text-lg"><span>মোট:</span><span>৳ <span id="bankTotal">0</span></span></div>
                         <div class="text-[10px] text-green-700 mt-2 italic font-semibold border-t border-green-200 pt-2" id="bankWords">শূণ্য টাকা মাত্র।</div>
                     </div>
                     <button onclick="clearBankCash()" class="w-full mt-3 bg-gray-100 py-2 rounded font-bold text-gray-500 text-[10px] hover:bg-gray-200">সব ক্লিয়ার করুন</button>
@@ -632,18 +549,12 @@
                 <div id="loanBox" class="hidden">
                     <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">লোন যোগ্যতা যাচাই</h4>
                     <div class="space-y-3">
-                        <input type="number" id="loanIncome" placeholder="আপনার মাসিক আয় (৳)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-teal-500">
-                        <input type="number" id="loanExpense" placeholder="মাসিক খরচ (৳)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-teal-500">
-                        <select id="loanTenure" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-teal-500 bg-white text-gray-500">
-                            <option value="12">মেয়াদ: ১ বছর</option>
-                            <option value="24">মেয়াদ: ২ বছর</option>
-                            <option value="36">মেয়াদ: ৩ বছর</option>
-                            <option value="60">মেয়াদ: ৫ বছর</option>
-                        </select>
-                        <button onclick="runLoan()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-teal-700">যাচাই করুন</button>
+                        <input type="number" id="loanIncome" placeholder="মাসিক আয় (৳)" class="w-full border p-2 rounded-lg text-sm outline-none">
+                        <input type="number" id="loanExpense" placeholder="মাসিক খরচ (৳)" class="w-full border p-2 rounded-lg text-sm outline-none">
+                        <select id="loanTenure" class="w-full border p-2 rounded-lg text-sm bg-white text-gray-500"><option value="12">১ বছর</option><option value="24">২ বছর</option><option value="36">৩ বছর</option><option value="60">৫ বছর</option></select>
+                        <button onclick="runLoan()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow-md">যাচাই করুন</button>
                         <div id="loanOut" class="mt-4 hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-center">
-                            <div class="text-xs text-teal-600 uppercase font-bold">আপনি লোন পেতে পারেন সর্বোচ্চ:</div>
-                            <div id="loanResult" class="text-2xl font-bold text-teal-800 mt-1">৳০.০০</div>
+                            <div class="text-xs text-teal-600 uppercase font-bold">সর্বোচ্চ লোন:</div><div id="loanResult" class="text-2xl font-bold text-teal-800 mt-1">৳০.০০</div>
                         </div>
                     </div>
                 </div>
@@ -652,26 +563,23 @@
                     <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">জন্ম নিবন্ধন যাচাইকারক</h4>
                     <div class="space-y-4">
                         <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                            <label class="block text-[10px] font-bold text-indigo-700 mb-1 uppercase">Birth Registration Number (১৭ ডিজিট)</label>
-                            <input type="text" id="brnIn" placeholder="Ex: 2005xxxxxxxxxxxxx" maxlength="17" class="w-full border p-2 rounded-lg mb-2 outline-none text-sm focus:border-indigo-500">
-                            <label class="block text-[10px] font-bold text-indigo-700 mb-1 uppercase">Date of Birth</label>
-                            <input type="date" id="brnDate" class="w-full border p-2 rounded-lg mb-2 outline-none text-sm focus:border-indigo-500">
-                            <button onclick="openGovBirth()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm shadow-md flex items-center justify-center gap-2">
-                                <i class="fas fa-external-link-alt"></i> যাচাই করতে সরকারি পোর্টালে যান
-                            </button>
+                            <label class="block text-[10px] font-bold text-indigo-700 mb-1">Birth Registration Number</label>
+                            <input type="text" id="brnIn" placeholder="17 Digit Number" maxlength="17" class="w-full border p-2 rounded text-sm mb-2">
+                            <label class="block text-[10px] font-bold text-indigo-700 mb-1">Date of Birth</label>
+                            <input type="date" id="brnDate" class="w-full border p-2 rounded text-sm mb-2">
+                            <button onclick="openGovBirth()" class="w-full bg-indigo-600 text-white py-3 rounded font-bold text-sm">পোর্টালে যান</button>
                         </div>
-                        <p class="text-[10px] text-gray-500 italic">* সরকারি সুরক্ষা নীতির কারণে সরাসরি আমাদের সাইটে ডাটা দেখানো সম্ভব নয়, তবে ওপরের বাটনটি আপনাকে সঠিক পেইজে নিয়ে যাবে।</p>
                     </div>
                 </div>
 
                 <div id="discountBox" class="hidden">
                     <h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">ডিসকাউন্ট ক্যালকুলেটর</h4>
                     <div class="space-y-3">
-                        <input type="number" id="origPrice" placeholder="আসল দাম (৳)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-pink-500">
-                        <input type="number" id="discPercent" placeholder="ডিসকাউন্ট (%)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-pink-500">
-                        <button onclick="runDiscount()" class="w-full bg-pink-600 text-white py-3 rounded-lg font-bold shadow-md">হিসাব করুন</button>
+                        <input type="number" id="origPrice" placeholder="আসল দাম (৳)" class="w-full border p-2 rounded text-sm">
+                        <input type="number" id="discPercent" placeholder="ডিসকাউন্ট (%)" class="w-full border p-2 rounded text-sm">
+                        <button onclick="runDiscount()" class="w-full bg-pink-600 text-white py-3 rounded font-bold shadow-md">হিসাব করুন</button>
                         <div id="discountOut" class="mt-4 hidden p-4 bg-pink-50 border border-pink-100 rounded-xl">
-                            <div class="flex justify-between text-sm text-pink-700"><span>আপনি সাশ্রয় করবেন:</span> <span id="saveAmt" class="font-bold">৳০.০০</span></div>
+                            <div class="flex justify-between text-sm text-pink-700"><span>সাশ্রয়:</span> <span id="saveAmt" class="font-bold">৳০.০০</span></div>
                             <div class="flex justify-between text-lg text-pink-900 font-bold border-t mt-2 pt-2"><span>ফাইনাল দাম:</span> <span id="finalPrice">৳০.০০</span></div>
                         </div>
                     </div>
@@ -680,37 +588,21 @@
                 <div id="dsrBox" class="hidden">
                     <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">ডেইলি সেলস রিপোর্ট</h4>
                     <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="cashSale" placeholder="নগদ বিক্রি" class="border p-2 rounded text-sm outline-none">
-                            <input type="number" id="onlineSale" placeholder="অনলাইন বিক্রি" class="border p-2 rounded text-sm outline-none">
-                        </div>
-                        <button onclick="saveDSR()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-bold">রিপোর্ট সেভ করুন</button>
+                        <div class="grid grid-cols-2 gap-2"><input type="number" id="cashSale" placeholder="নগদ" class="border p-2 rounded text-sm"><input type="number" id="onlineSale" placeholder="অনলাইন" class="border p-2 rounded text-sm"></div>
+                        <button onclick="saveDSR()" class="w-full bg-purple-600 text-white py-2 rounded font-bold">সেভ করুন</button>
                         <div id="dsrHistory" class="mt-4 max-h-40 overflow-y-auto space-y-2"></div>
-                        <div id="dsrMonthlyTotal" class="p-3 bg-purple-100 rounded-lg text-center mt-3 hidden border border-purple-200">
-                            <div class="text-[10px] text-purple-600 font-bold uppercase">এই মাসের মোট বিক্রি</div>
-                            <div id="m_total_val" class="text-xl font-bold text-purple-800">৳০.০০</div>
-                        </div>
+                        <div id="dsrMonthlyTotal" class="p-3 bg-purple-100 rounded-lg text-center mt-3 hidden border border-purple-200"><div class="text-[10px] text-purple-600 font-bold">মোট বিক্রি:</div><div id="m_total_val" class="text-xl font-bold text-purple-800">৳০.০০</div></div>
                     </div>
                 </div>
 
                 <div id="studyBox" class="hidden">
-                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">স্টাডি প্ল্যানার ও রুটিন</h4>
+                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">স্টাডি প্ল্যানার</h4>
                     <div class="space-y-3 mb-4">
-                        <input type="text" id="subjectTask" placeholder="বিষয়/টাস্ক" class="w-full border p-2 rounded text-sm outline-none focus:border-orange-500">
-                        <div class="flex gap-2">
-                            <input type="time" id="studyTime" class="flex-1 border p-2 rounded text-sm outline-none">
-                            <select id="studyDayNight" class="flex-1 border p-2 rounded text-sm bg-white">
-                                <option value="দিন">দিন</option>
-                                <option value="রাত">রাত</option>
-                            </select>
-                        </div>
-                        <button onclick="addStudyTask()" class="w-full bg-orange-600 text-white py-2 rounded font-bold shadow text-sm">পড়াশোনা যোগ করুন</button>
+                        <input type="text" id="subjectTask" placeholder="টাস্ক" class="w-full border p-2 rounded text-sm"><div class="flex gap-2"><input type="time" id="subjectTime" class="flex-1 border p-2 rounded text-sm"><select id="studyDayNight" class="flex-1 border p-2 rounded text-sm bg-white"><option value="দিন">দিন</option><option value="রাত">রাত</option></select></div>
+                        <button onclick="addStudyTask()" class="w-full bg-orange-600 text-white py-2 rounded font-bold shadow text-sm">যোগ করুন</button>
                     </div>
-                    <div class="max-h-60 overflow-y-auto">
-                        <ul id="studyList" class="space-y-2"></ul>
-                    </div>
+                    <div class="max-h-60 overflow-y-auto"><ul id="studyList" class="space-y-2"></ul></div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -718,30 +610,18 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
-        // --- Card Maker Logic ---
-        function updateCard(id, val) {
-            document.getElementById(id).innerText = val || (id === 'v_name' ? 'YOUR NAME' : '');
-        }
-
+        function updateCard(id, val) { document.getElementById(id).innerText = val || (id === 'v_name' ? 'YOUR NAME' : ''); }
         function resetCard() {
             document.querySelectorAll('#cardBox input').forEach(i => i.value = '');
-            updateCard('v_h1', 'HEADER TEXT 1');
-            updateCard('v_h2', 'Header text 2 example');
-            updateCard('v_name', 'SAHIN KHAN');
-            updateCard('v_mobile', '📞 +880 1835303883');
-            updateCard('v_email', '✉️ example@mail.com');
-            updateCard('v_r1', 'Designation Box 1');
-            updateCard('v_r2', 'Organization Box 2');
-            updateCard('v_r3', 'Location Box 3');
+            updateCard('v_h1', 'HEADER TEXT 1'); updateCard('v_h2', 'Header text 2 example'); updateCard('v_name', 'SAHIN KHAN');
+            updateCard('v_mobile', '📞 +880 1835303883'); updateCard('v_email', '✉️ example@mail.com');
+            updateCard('v_r1', 'Designation Box 1'); updateCard('v_r2', 'Organization Box 2'); updateCard('v_r3', 'Location Box 3');
         }
 
         function saveCardImg() {
             const card = document.getElementById('visiting-card-preview');
             html2canvas(card, { scale: 3 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'visiting-card-sksocial.png';
-                link.href = canvas.toDataURL();
-                link.click();
+                const link = document.createElement('a'); link.download = 'visiting-card-sksocial.png'; link.href = canvas.toDataURL(); link.click();
             });
         }
 
@@ -749,30 +629,22 @@
             const { jsPDF } = window.jspdf;
             const card = document.getElementById('visiting-card-preview');
             html2canvas(card, { scale: 3 }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('l', 'mm', [90, 50]);
-                pdf.addImage(imgData, 'PNG', 0, 0, 90, 50);
-                pdf.save('visiting-card.pdf');
+                const imgData = canvas.toDataURL('image/png'); const pdf = new jsPDF('l', 'mm', [90, 55]);
+                pdf.addImage(imgData, 'PNG', 0, 0, 90, 55); pdf.save('visiting-card.pdf');
             });
         }
 
-        // কাস্টম অ্যালার্ট ফাংশন
         function showAlert(msg, title = "সতর্কবার্তা") {
-            document.getElementById('alertMsg').innerText = msg;
-            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMsg').innerText = msg; document.getElementById('alertTitle').innerText = title;
             document.getElementById('customAlert').style.display = 'flex';
         }
-
-        function closeAlert() {
-            document.getElementById('customAlert').style.display = 'none';
-        }
+        function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
 
         function parseBn(s) {
             if (!s) return 0;
             const b = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
             let cleanStr = s.toString().replace(/[০-৯]/g, x => b[x]).replace(/[^0-9.]/g, '');
-            let val = parseFloat(cleanStr);
-            return isNaN(val) ? 0 : val;
+            let val = parseFloat(cleanStr); return isNaN(val) ? 0 : val;
         }
 
         function toBn(n) {
@@ -782,18 +654,18 @@
         }
 
         function calculateAll() {
-            let grandTotal = BigInt(0);
+            let grandTotal = 0; // ব্যাংকিং কাজের নিখুঁত দশমিক হিসাবের জন্য BigInt থেকে Number এ পরিবর্তন
             const rows = document.querySelectorAll('#table-body tr');
             rows.forEach(row => {
                 let note = Math.floor(parseBn(row.querySelector('.note-val').innerText));
-                let count = Math.floor(parseBn(row.querySelector('.count-val').innerText));
-                let rowTotal = BigInt(note) * BigInt(count);
-                row.querySelector('.row-total').innerText = rowTotal.toString() + ".00";
+                let countInput = row.querySelector('.count-val');
+                let count = countInput ? Math.floor(parseBn(countInput.value)) : 0;
+                let rowTotal = note * count;
+                row.querySelector('.row-total').innerText = rowTotal.toFixed(2);
                 grandTotal += rowTotal;
             });
-            let finalSum = grandTotal.toString();
-            document.getElementById('grandTotal').innerText = finalSum + ".00";
-            document.getElementById('amountInWords').innerText = bngAmountInWords(finalSum);
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+            document.getElementById('amountInWords').innerText = bngAmountInWords(grandTotal.toString());
         }
 
         function bngAmountInWords(amountStr) {
@@ -801,39 +673,16 @@
             if (numStr === "" || numStr === "0") return 'শূণ্য টাকা মাত্র।';
             let n = BigInt(numStr);
             const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আटाশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-
             function getPart(num) {
-                let res = '';
-                let n = Number(num);
-                if (n >= 100) {
-                    res += units[Math.floor(n / 100)] + 'শ ';
-                    n %= 100;
-                }
-                if (n > 0) {
-                    res += units[n] + ' ';
-                }
-                return res;
+                let res = ''; let n = Number(num);
+                if (n >= 100) { res += units[Math.floor(n / 100)] + 'শ '; n %= 100; }
+                if (n > 0) { res += units[n] + ' '; } return res;
             }
-
             let words = '';
-            if (n >= 10000000n) {
-                let kotiValue = n / 10000000n;
-                words += bngAmountInWordsSimple(kotiValue.toString()) + ' কোটি ';
-                n %= 10000000n;
-            }
-            if (n >= 100000n) {
-                let lakh = Number(n / 100000n);
-                words += units[lakh] + ' লাখ ';
-                n %= 100000n;
-            }
-            if (n >= 1000n) {
-                let hazar = Number(n / 1000n);
-                words += units[hazar] + ' হাজার ';
-                n %= 1000n;
-            }
-            if (n > 0n) {
-                words += getPart(Number(n));
-            }
+            if (n >= 10000000n) { words += bngAmountInWordsSimple((n / 10000000n).toString()) + ' কোটি '; n %= 10000000n; }
+            if (n >= 100000n) { words += units[Number(n / 100000n)] + ' লাখ '; n %= 100000n; }
+            if (n >= 1000n) { words += units[Number(n / 1000n)] + ' হাজার '; n %= 1000n; }
+            if (n > 0n) { words += getPart(Number(n)); }
             return words.trim() + ' টাকা মাত্র।';
         }
 
@@ -850,84 +699,51 @@
         }
 
         function runVAT() {
-            const amt = parseFloat(document.getElementById('vatAmt').value) || 0;
-            const perc = parseFloat(document.getElementById('vatPerc').value) || 0;
-            const v = (amt * perc) / 100;
-            const out = document.getElementById('vatOut');
-            out.classList.remove('hidden');
-            out.innerText = `ভ্যাটের পরিমাণ: ৳${v.toFixed(2)}\nমোট (ভ্যাটসহ): ৳${(amt + v).toFixed(2)}`;
+            const amt = parseFloat(document.getElementById('vatAmt').value) || 0; const perc = parseFloat(document.getElementById('vatPerc').value) || 0;
+            const v = (amt * perc) / 100; const out = document.getElementById('vatOut');
+            out.classList.remove('hidden'); out.innerText = `ভ্যাট: ৳${v.toFixed(2)}\nমোট: ৳${(amt + v).toFixed(2)}`;
         }
-
         function runTax() {
-            const income = parseFloat(document.getElementById('taxIncome').value) || 0;
-            let tax = 0;
-            if (income > 350000) tax = (income - 350000) * 0.05;
-            const out = document.getElementById('taxOut');
-            out.classList.remove('hidden');
-            out.innerText = `আনুমানিক ইনকাম ট্যাক্স: ৳${tax.toFixed(2)}`;
+            const income = parseFloat(document.getElementById('taxIncome').value) || 0; let tax = 0; if (income > 350000) tax = (income - 350000) * 0.05;
+            const out = document.getElementById('taxOut'); out.classList.remove('hidden'); out.innerText = `ট্যাক্স: ৳${tax.toFixed(2)}`;
         }
-
         function runCurr() {
-            const usd = parseFloat(document.getElementById('usdIn').value) || 0;
-            const rate = 120.50;
-            const out = document.getElementById('currOut');
-            out.classList.remove('hidden');
-            out.innerText = `${usd} USD = ৳${(usd * rate).toLocaleString('bn-BD')}`;
+            const usd = parseFloat(document.getElementById('usdIn').value) || 0; const rate = 120.50; const out = document.getElementById('currOut');
+            out.classList.remove('hidden'); out.innerText = `${usd} USD = ৳${(usd * rate).toLocaleString('bn-BD')}`;
         }
-
         function runDPS() {
             const m = parseFloat(document.getElementById('dpsM').value) || 0, r = parseFloat(document.getElementById('dpsR').value) || 0, y = parseFloat(document.getElementById('dpsY').value) || 0;
             const total = (m * ((Math.pow(1 + r/100/12, y*12) - 1) / (r/100/12))) * (1 + r/100/12);
-            const out = document.getElementById('dpsOut');
-            out.classList.remove('hidden');
-            out.innerText = `মেয়াদ শেষে পাবেন: ৳${total.toLocaleString('bn-BD', {maximumFractionDigits:2})}`;
+            const out = document.getElementById('dpsOut'); out.classList.remove('hidden'); out.innerText = `পাবেন: ৳${total.toLocaleString('bn-BD', {maximumFractionDigits:2})}`;
         }
-
         function runZakat() {
-            const amt = parseFloat(document.getElementById('zakAmt').value) || 0;
-            const zak = amt * 0.025;
-            const out = document.getElementById('zakOut');
-            out.classList.remove('hidden');
-            out.innerText = `আপনার জাকাতের পরিমাণ: ৳${zak.toLocaleString('bn-BD')}`;
+            const amt = parseFloat(document.getElementById('zakAmt').value) || 0; const zak = amt * 0.025;
+            const out = document.getElementById('zakOut'); out.classList.remove('hidden'); out.innerText = `জাকাত: ৳${zak.toLocaleString('bn-BD')}`;
         }
-
         function runGold() {
             const v = parseFloat(document.getElementById('goldV').value) || 0, p = parseFloat(document.getElementById('goldP').value) || 0;
-            const out = document.getElementById('goldOut');
-            out.classList.remove('hidden');
-            out.innerText = `স্বর্ণের মোট দাম: ৳${(v * p).toLocaleString('bn-BD')}`;
+            const out = document.getElementById('goldOut'); out.classList.remove('hidden'); out.innerText = `মোট দাম: ৳${(v * p).toLocaleString('bn-BD')}`;
         }
-
         function runCashout() {
-            const amt = parseFloat(document.getElementById('coAmt').value) || 0;
-            const charge = (amt * 18.5) / 1000;
-            const out = document.getElementById('coOut');
-            out.classList.remove('hidden');
-            out.innerText = `ক্যাশ আউট চার্জ (অ্যাপ): ৳${charge.toFixed(2)}`;
+            const amt = parseFloat(document.getElementById('coAmt').value) || 0; const charge = (amt * 18.5) / 1000;
+            const out = document.getElementById('coOut'); out.classList.remove('hidden'); out.innerText = `চার্জ: ৳${charge.toFixed(2)}`;
         }
 
         function printReceipt() {
             const printWrapper = document.getElementById('print-wrapper');
             const content = document.getElementById('main-receipt-design').innerHTML;
-            printWrapper.innerHTML = `
-                <div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div>
-                <div style="height: 5px;"></div>
-                <div class="receipt-copy"><div class="print-scaling">${content}</div></div>
-            `;
-            window.print();
-            incrementReceiptNo();
+            printWrapper.innerHTML = `<div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div><div style="height: 5px;"></div><div class="receipt-copy"><div class="print-scaling">${content}</div></div>`;
+            window.print(); incrementReceiptNo();
         }
 
         function printMemo() {
             const printWrapper = document.getElementById('print-wrapper');
             const content = document.getElementById('memo-print-content').innerHTML;
-            printWrapper.innerHTML = `<div class="memo-full-page">${content}</div>`;
-            window.print();
+            printWrapper.innerHTML = `<div class="memo-full-page">${content}</div>`; window.print();
         }
 
         function addMemoRow() {
-            const div = document.createElement('div');
-            div.className = 'input-row-memo m_item_row';
+            const div = document.createElement('div'); div.className = 'input-row-memo m_item_row';
             div.innerHTML = `<input type="text" class="mi_desc" placeholder="বিবরণ"><input type="text" class="mi_qty" placeholder="পরিমাণ"><input type="text" class="mi_rate" placeholder="দর">`;
             document.getElementById('m_item_list').appendChild(div);
         }
@@ -946,14 +762,12 @@
             document.getElementById('pm_no').innerText = toBn(document.getElementById('m_no').value || "১");
             let d = document.getElementById('m_date').value;
             document.getElementById('pm_date').innerText = d ? new Date(d).toLocaleDateString('bn-BD') : new Date().toLocaleDateString('bn-BD');
-            const tbody = document.getElementById('pm_items'); tbody.innerHTML = "";
-            let grand = 0;
+            const tbody = document.getElementById('pm_items'); tbody.innerHTML = ""; let grand = 0;
             const ds = document.getElementsByClassName('mi_desc'), qs = document.getElementsByClassName('mi_qty'), rs = document.getElementsByClassName('mi_rate');
             for(let i=0; i<ds.length; i++) {
                 let q = parseBn(qs[i].value), r = parseBn(rs[i].value), t = q * r;
                 if(ds[i].value || q > 0) {
-                    grand += t;
-                    tbody.innerHTML += `<tr><td class="text-center col-sl">${toBn(i+1)}</td><td class="col-desc">${ds[i].value || "পণ্য"}</td><td class="text-center col-qty">${toBn(q)}</td><td class="text-right col-rate">${toBn(r.toFixed(2))}</td><td class="text-right col-total">${toBn(t.toFixed(2))}</td></tr>`;
+                    grand += t; tbody.innerHTML += `<tr><td class="text-center col-sl">${toBn(i+1)}</td><td class="col-desc">${ds[i].value || "পণ্য"}</td><td class="text-center col-qty">${toBn(q)}</td><td class="text-right col-rate">${toBn(r.toFixed(2))}</td><td class="text-right col-total">${toBn(t.toFixed(2))}</td></tr>`;
                 }
             }
             document.getElementById('pm_total').innerText = toBn(grand.toFixed(2));
@@ -963,88 +777,63 @@
 
         function initBankCash() {
             const body = document.getElementById('bankCashBody');
-            body.innerHTML = noteSequence.map(n => `
-                <tr>
-                    <td class="font-bold text-gray-600 w-16 text-sm">${n} ৳</td>
-                    <td class="text-gray-400">×</td>
-                    <td><input type="number" class="bank-note-input" data-val="${n}" placeholder="0" oninput="runBankCash()"></td>
-                    <td class="text-right text-gray-700 font-bold"><span class="bank-row-val">0</span></td>
-                </tr>
-            `).join('');
+            body.innerHTML = noteSequence.map(n => `<tr><td class="font-bold text-gray-600 w-16 text-sm">${n} ৳</td><td class="text-gray-400">×</td><td><input type="number" class="bank-note-input" data-val="${n}" placeholder="0" oninput="runBankCash()"></td><td class="text-right text-gray-700 font-bold"><span class="bank-row-val">0</span></td></tr>`).join('');
         }
 
         function runBankCash() {
-            let grandTotal = BigInt(0);
+            let grandTotal = 0;
             document.querySelectorAll('.bank-note-input').forEach(input => {
-                const noteVal = parseInt(input.getAttribute('data-val'));
-                const count = parseInt(input.value) || 0;
-                const rowTotal = BigInt(noteVal) * BigInt(count);
-                input.closest('tr').querySelector('.bank-row-val').innerText = rowTotal.toLocaleString('bn-BD');
+                const noteVal = parseInt(input.getAttribute('data-val')); const count = parseInt(input.value) || 0;
+                const rowTotal = noteVal * count; input.closest('tr').querySelector('.bank-row-val').innerText = rowTotal.toLocaleString('bn-BD');
                 grandTotal += rowTotal;
             });
             document.getElementById('bankTotal').innerText = grandTotal.toLocaleString('bn-BD');
             document.getElementById('bankWords').innerText = bngAmountInWords(grandTotal.toString());
         }
-
-        function clearBankCash() {
-            document.querySelectorAll('.bank-note-input').forEach(i => i.value = '');
-            runBankCash();
-        }
+        function clearBankCash() { document.querySelectorAll('.bank-note-input').forEach(i => i.value = ''); runBankCash(); }
 
         function handleFocus(el) { if (el.innerText.trim() === '0' || el.innerText.trim().includes('...')) el.innerText = ''; }
         function handleBlur(el, placeholder) { if (el.innerText.trim() === '') el.innerText = placeholder; calculateAll(); }
 
+        function validateNumberInput(el) {
+            const originalValue = el.value; const cleanValue = originalValue.replace(/[^0-9]/g, '');
+            if (originalValue !== cleanValue) { el.value = cleanValue; showAlert("প্লিজ ইংলিস সংখ্যা টাইপ করুন।", "ভুল ইনপুট"); }
+            calculateAll();
+        }
+
+        function handleInpFocus(el) { if (el.value === '0') el.value = ''; }
+        function handleInpBlur(el) { if (el.value === '') el.value = '0'; calculateAll(); }
+
         function addNewRow(shouldFocus = false) {
-            const tableBody = document.getElementById('table-body');
-            const rowCount = tableBody.rows.length;
+            const tableBody = document.getElementById('table-body'); const rowCount = tableBody.rows.length;
             if (rowCount >= noteSequence.length) return;
             const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td>
-                <td class="border border-teal-600 p-1" contenteditable="true"></td>
-                <td class="border border-teal-600 p-1 text-center font-bold text-teal-800 note-val">${noteSequence[rowCount]}</td>
-                <td class="border border-teal-600 p-1 text-center count-val" contenteditable="true" oninput="calculateAll()" onfocus="handleFocus(this)" onblur="handleBlur(this, '0')" onkeydown="checkTab(event, this)">0</td>
-                <td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>
-            `;
-            tableBody.appendChild(newRow);
-            if(shouldFocus) newRow.querySelector('.count-val').focus();
+            newRow.innerHTML = `<td class="border border-teal-600 p-1 text-center">${rowCount + 1}</td><td class="border border-teal-600 p-1" contenteditable="true"></td><td class="border border-teal-600 p-1 text-center font-bold text-teal-800 note-val">${noteSequence[rowCount]}</td><td class="border border-teal-600 p-1 text-center"><input type="text" inputmode="numeric" pattern="[0-9]*" class="count-val count-input" value="0" oninput="validateNumberInput(this)" onfocus="handleInpFocus(this)" onblur="handleInpBlur(this)" onkeydown="checkTab(event, this)"></td><td class="border border-teal-600 p-1 text-right font-bold row-total">0.00</td>`;
+            tableBody.appendChild(newRow); if(shouldFocus) newRow.querySelector('.count-val').focus();
         }
 
-        function checkTab(e, el) {
-            if (e.key === "Tab" || e.key === "Enter") {
-                const tableBody = document.getElementById('table-body');
-                if (el.closest('tr') === tableBody.lastElementChild) { e.preventDefault(); addNewRow(true); }
-            }
-        }
+        function checkTab(e, el) { if (e.key === "Tab" || e.key === "Enter") { const tableBody = document.getElementById('table-body'); if (el.closest('tr') === tableBody.lastElementChild) { e.preventDefault(); addNewRow(true); } } }
 
         function incrementReceiptNo() {
-            let receiptEl = document.getElementById('receiptNo');
-            let nextNo = (parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0) + 1;
-            receiptEl.innerText = nextNo;
-            saveData('receiptNo', nextNo);
+            let receiptEl = document.getElementById('receiptNo'); let nextNo = (parseInt(receiptEl.innerText.replace(/\D/g, '')) || 0) + 1;
+            receiptEl.innerText = nextNo; saveData('receiptNo', nextNo);
         }
-
         function saveData(k, v) { localStorage.setItem(k, v); }
 
         function previewLogo(input) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                document.getElementById('logo-preview').src = e.target.result;
-                document.getElementById('logo-preview').classList.remove('hidden');
-                document.getElementById('upload-placeholder').classList.add('hidden');
-                localStorage.setItem('savedLogo', e.target.result);
+                document.getElementById('logo-preview').src = e.target.result; document.getElementById('logo-preview').classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden'); localStorage.setItem('savedLogo', e.target.result);
             };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
 
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
-            initBankCash(); 
-            showDSR(); 
-            showStudyTasks();
+            initBankCash(); showDSR(); showStudyTasks();
             ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
-                let v = localStorage.getItem(k);
-                if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
+                let v = localStorage.getItem(k); if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
             });
             if(localStorage.getItem('sh_shop_name')) {
                 document.getElementById('m_shop_name').innerText = localStorage.getItem('sh_shop_name');
@@ -1054,30 +843,17 @@
                 document.getElementById('m_shop_email').innerText = localStorage.getItem('sh_shop_email');
             }
             let logo = localStorage.getItem('savedLogo');
-            if(logo) {
-                document.getElementById('logo-preview').src = logo;
-                document.getElementById('logo-preview').classList.remove('hidden');
-                document.getElementById('upload-placeholder').classList.add('hidden');
-            }
+            if(logo) { document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); }
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
 
-        function clearAllData() {
-            document.getElementById('resetModal').style.display = 'flex';
-        }
-
-        function closeResetModal() {
-            document.getElementById('resetModal').style.display = 'none';
-        }
-
+        function clearAllData() { document.getElementById('resetModal').style.display = 'flex'; }
+        function closeResetModal() { document.getElementById('resetModal').style.display = 'none'; }
         function confirmReset() {
             document.getElementById('custName').innerText = '..................................................................';
             document.getElementById('custAcc').innerText = '......................................................';
-            document.getElementById('table-body').innerHTML = '';
-            document.getElementById('grandTotal').innerText = '0.00';
-            document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।';
-            addNewRow(false);
-            closeResetModal();
+            document.getElementById('table-body').innerHTML = ''; document.getElementById('grandTotal').innerText = '0.00';
+            document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।'; addNewRow(false); closeResetModal();
         }
 
         function openTool(t) {
@@ -1085,13 +861,10 @@
             ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
-            modal.classList.replace('hidden', 'flex');
-            const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
+            modal.classList.replace('hidden', 'flex'); const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
         }
-
         function closeModal() { 
-            const video = document.getElementById('tvVideo');
-            if(video) { video.pause(); video.src = ""; }
+            const video = document.getElementById('tvVideo'); if(video) { video.pause(); video.src = ""; }
             document.getElementById('toolModal').classList.replace('flex', 'hidden'); 
         }
 
@@ -1108,184 +881,63 @@
         }
         function runUnit() {
             const i = document.getElementById('unitIn').value || 0;
-            document.getElementById('sootOut').innerText = (i*8).toFixed(1);
-            document.getElementById('feetOut').innerText = (i/12).toFixed(2);
+            document.getElementById('sootOut').innerText = (i*8).toFixed(1); document.getElementById('feetOut').innerText = (i/12).toFixed(2);
         }
         function runFDR() {
             const p = parseFloat(document.getElementById('fdrP').value) || 0, r = parseFloat(document.getElementById('fdrR').value) || 0, m = parseFloat(document.getElementById('fdrM').value) || 0;
             const totalInterest = ((p * r) / 100 / 12) * m, netInterest = totalInterest - (totalInterest * 0.15);
             document.getElementById('fdrOut').classList.remove('hidden');
-            document.getElementById('totalInt').innerText = '৳' + totalInterest.toLocaleString('bn-BD');
-            document.getElementById('netInt').innerText = '৳' + netInterest.toLocaleString('bn-BD');
+            document.getElementById('totalInt').innerText = '৳' + totalInterest.toLocaleString('bn-BD'); document.getElementById('netInt').innerText = '৳' + netInterest.toLocaleString('bn-BD');
         }
         function runQR() {
             const text = document.getElementById('qrText').value, qrDiv = document.getElementById('qrcode');
-            qrDiv.innerHTML = ""; if(!text) return;
-            new QRCode(qrDiv, { text: text, width: 128, height: 128 });
+            qrDiv.innerHTML = ""; if(!text) return; new QRCode(qrDiv, { text: text, width: 128, height: 128 });
         }
         function playChannel(url) {
-            const video = document.getElementById('tvVideo');
-            const placeholder = document.getElementById('videoPlaceholder');
+            const video = document.getElementById('tvVideo'); const placeholder = document.getElementById('videoPlaceholder');
             placeholder.classList.add('hidden'); video.classList.remove('hidden');
-            if (Hls.isSupported()) {
-                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url; video.play();
-            }
+            if (Hls.isSupported()) { const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); }
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = url; video.play(); }
         }
-
         function runLoan() {
-            const income = parseFloat(document.getElementById('loanIncome').value) || 0;
-            const expense = parseFloat(document.getElementById('loanExpense').value) || 0;
-            const months = parseInt(document.getElementById('loanTenure').value) || 12;
-            const surplus = income - expense;
-            if(surplus <= 0) {
-                showAlert("আপনার মাসিক আয় খরচের চেয়ে বেশি হতে হবে।"); 
-                return;
-            }
-            const possibleEMI = surplus * 0.4;
-            const possibleLoan = possibleEMI * months * 0.85; 
-            document.getElementById('loanOut').classList.remove('hidden');
-            document.getElementById('loanResult').innerText = '৳' + possibleLoan.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+            const surplus = (parseFloat(document.getElementById('loanIncome').value) || 0) - (parseFloat(document.getElementById('loanExpense').value) || 0);
+            if(surplus <= 0) { showAlert("আয় খরচের চেয়ে বেশি হতে হবে।"); return; }
+            const loan = (surplus * 0.4) * (parseInt(document.getElementById('loanTenure').value) || 12) * 0.85;
+            document.getElementById('loanOut').classList.remove('hidden'); document.getElementById('loanResult').innerText = '৳' + loan.toLocaleString('bn-BD', {minimumFractionDigits: 2});
         }
-
-        function openGovBirth() {
-            const brn = document.getElementById('brnIn').value;
-            const dob = document.getElementById('brnDate').value;
-            if(brn.length !== 17) {
-                showAlert("দয়া করে ১৭ ডিজিটের জন্ম নিবন্ধন নম্বর লিখুন।"); 
-                return;
-            }
-            if(!dob) {
-                showAlert("জন্ম তারিখ সিলেক্ট করুন।"); 
-                return;
-            }
-            window.open("https://bdris.gov.bd/br/application/status", "_blank");
-        }
-
+        function openGovBirth() { if(document.getElementById('brnIn').value.length !== 17 || !document.getElementById('brnDate').value) { showAlert("সঠিক তথ্য দিন।"); return; } window.open("https://bdris.gov.bd/br/application/status", "_blank"); }
         function runDiscount() {
-            const price = parseFloat(document.getElementById('origPrice').value) || 0;
-            const disc = parseFloat(document.getElementById('discPercent').value) || 0;
-            const savings = (price * disc) / 100;
-            const final = price - savings;
-            document.getElementById('discountOut').classList.remove('hidden');
-            document.getElementById('saveAmt').innerText = '৳' + savings.toLocaleString('bn-BD', {minimumFractionDigits: 2});
-            document.getElementById('finalPrice').innerText = '৳' + final.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+            const p = parseFloat(document.getElementById('origPrice').value) || 0, d = parseFloat(document.getElementById('discPercent').value) || 0; const s = (p * d) / 100;
+            document.getElementById('discountOut').classList.remove('hidden'); document.getElementById('saveAmt').innerText = '৳' + s.toLocaleString('bn-BD'); document.getElementById('finalPrice').innerText = '৳' + (p - s).toLocaleString('bn-BD');
         }
-
         function saveDSR() {
-            const cash = parseFloat(document.getElementById('cashSale').value) || 0;
-            const online = parseFloat(document.getElementById('onlineSale').value) || 0;
-            const total = cash + online;
-            const fullDate = new Date();
-            const dateStr = fullDate.toLocaleDateString('bn-BD');
-            const monthKey = fullDate.getMonth() + "-" + fullDate.getFullYear();
-            
-            if(total <= 0) { showAlert("বিক্রির পরিমাণ লিখুন।"); return; }
-            
-            let reports = JSON.parse(localStorage.getItem('dsr_data') || '[]');
-            reports.unshift({ id: Date.now(), date: dateStr, total: total, month: monthKey });
-            
-            localStorage.setItem('dsr_data', JSON.stringify(reports));
-            document.getElementById('cashSale').value = '';
-            document.getElementById('onlineSale').value = '';
-            showDSR();
-            showAlert("আজকের রিপোর্ট সেভ হয়েছে।", "সফল!");
+            const t = (parseFloat(document.getElementById('cashSale').value) || 0) + (parseFloat(document.getElementById('onlineSale').value) || 0);
+            if(t <= 0) { showAlert("বিক্রির পরিমাণ লিখুন।"); return; }
+            let d = JSON.parse(localStorage.getItem('dsr_data') || '[]'); d.unshift({ id: Date.now(), date: new Date().toLocaleDateString('bn-BD'), total: t, month: new Date().getMonth() + "-" + new Date().getFullYear() });
+            localStorage.setItem('dsr_data', JSON.stringify(d)); document.getElementById('cashSale').value = ''; document.getElementById('onlineSale').value = '';
+            showDSR(); showAlert("সেভ হয়েছে।");
         }
-
-        function deleteDSR(id) {
-            if(confirm("আপনি কি এই রিপোর্টটি মুছে ফেলতে চান?")) {
-                let reports = JSON.parse(localStorage.getItem('dsr_data') || '[]');
-                reports = reports.filter(r => r.id !== id);
-                localStorage.setItem('dsr_data', JSON.stringify(reports));
-                showDSR();
-            }
-        }
-
+        function deleteDSR(id) { if(confirm("মুছবেন?")) { let d = JSON.parse(localStorage.getItem('dsr_data') || '[]').filter(r => r.id !== id); localStorage.setItem('dsr_data', JSON.stringify(d)); showDSR(); } }
         function showDSR() {
-            const reports = JSON.parse(localStorage.getItem('dsr_data') || '[]');
-            const container = document.getElementById('dsrHistory');
-            const monthlyBox = document.getElementById('dsrMonthlyTotal');
-            const monthlyVal = document.getElementById('m_total_val');
-            
-            const currentMonth = new Date().getMonth() + "-" + new Date().getFullYear();
-            let totalMonthSale = 0;
-
+            const reports = JSON.parse(localStorage.getItem('dsr_data') || '[]'); const container = document.getElementById('dsrHistory'); const monthlyVal = document.getElementById('m_total_val');
+            let totalMonthSale = 0; const curMonth = new Date().getMonth() + "-" + new Date().getFullYear();
             if(container) {
-                if(reports.length === 0) {
-                    container.innerHTML = '<div class="text-center text-gray-400 text-[10px] py-4">কোন রিপোর্ট নেই</div>';
-                    monthlyBox.classList.add('hidden');
-                    return;
-                }
-
-                container.innerHTML = reports.map(r => {
-                    if(r.month === currentMonth) totalMonthSale += r.total;
-                    return `
-                    <div class="flex justify-between items-center bg-purple-50 p-2 rounded border border-purple-100 mb-2">
-                        <div class="flex flex-col">
-                            <span class="text-[9px] font-bold text-gray-500">${r.date}</span>
-                            <span class="text-purple-700 font-bold text-xs">৳${r.total.toLocaleString('bn-BD')}</span>
-                        </div>
-                        <button onclick="deleteDSR(${r.id})" class="text-red-400 hover:text-red-600 p-1">
-                            <i class="fas fa-trash-alt text-[10px]"></i>
-                        </button>
-                    </div>
-                `}).join('');
-
-                if(totalMonthSale > 0) {
-                    monthlyBox.classList.remove('hidden');
-                    monthlyVal.innerText = '৳' + totalMonthSale.toLocaleString('bn-BD', {minimumFractionDigits: 2});
-                } else {
-                    monthlyBox.classList.add('hidden');
-                }
+                container.innerHTML = reports.map(r => { if(r.month === curMonth) totalMonthSale += r.total; return `<div class="flex justify-between items-center bg-purple-50 p-2 rounded mb-2"><div class="flex flex-col"><span class="text-[9px] font-bold">${r.date}</span><span class="text-xs font-bold">৳${r.total}</span></div><button onclick="deleteDSR(${r.id})" class="text-red-400 text-[10px]"><i class="fas fa-trash-alt"></i></button></div>`}).join('');
+                document.getElementById('dsrMonthlyTotal').classList.toggle('hidden', totalMonthSale === 0); monthlyVal.innerText = '৳' + totalMonthSale.toLocaleString('bn-BD');
             }
         }
-
         function addStudyTask() {
-            const task = document.getElementById('subjectTask').value;
-            const time = document.getElementById('studyTime').value;
-            const dayNight = document.getElementById('studyDayNight').value;
-            if(!task || !time) { showAlert("বিষয় এবং সময় উভয়ই পূরণ করুন।"); return; }
-            const studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
-            studyData.push({ id: Date.now(), task, time, dayNight });
-            localStorage.setItem('study_plans', JSON.stringify(studyData));
-            document.getElementById('subjectTask').value = '';
-            document.getElementById('studyTime').value = '';
+            const t = document.getElementById('subjectTask').value, tm = document.getElementById('subjectTime').value, dn = document.getElementById('studyDayNight').value;
+            if(!t || !tm) return;
+            let d = JSON.parse(localStorage.getItem('study_plans') || '[]'); d.push({ id: Date.now(), task: t, time: tm, dayNight: dn });
+            localStorage.setItem('study_plans', JSON.stringify(d)); document.getElementById('subjectTask').value = ''; document.getElementById('subjectTime').value = '';
             showStudyTasks();
         }
-
         function showStudyTasks() {
-            const studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
-            const list = document.getElementById('studyList');
-            if(list) {
-                list.innerHTML = studyData.map(item => `
-                    <li class="bg-gray-50 border border-gray-200 p-3 rounded-xl flex justify-between items-center group">
-                        <div class="flex-1">
-                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${item.dayNight} | ${item.time}</div>
-                            <div class="text-sm font-bold text-gray-700" contenteditable="true" onblur="editStudyTask(${item.id}, this.innerText)">${item.task}</div>
-                        </div>
-                        <button onclick="deleteStudyTask(${item.id})" class="text-red-400 hover:text-red-600 ml-2">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </li>
-                `).join('');
-            }
+            const d = JSON.parse(localStorage.getItem('study_plans') || '[]'); const l = document.getElementById('studyList');
+            if(l) l.innerHTML = d.map(i => `<li class="bg-gray-50 p-3 rounded-xl flex justify-between items-center mb-2"><div><div class="text-[10px] font-bold text-gray-400">${i.dayNight} | ${i.time}</div><div class="text-sm font-bold text-gray-700">${i.task}</div></div><button onclick="deleteStudyTask(${i.id})" class="text-red-400"><i class="fas fa-trash-alt"></i></button></li>`).join('');
         }
-
-        function editStudyTask(id, newText) {
-            let studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
-            studyData = studyData.map(item => item.id === id ? { ...item, task: newText } : item);
-            localStorage.setItem('study_plans', JSON.stringify(studyData));
-        }
-
-        function deleteStudyTask(id) {
-            let studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
-            studyData = studyData.filter(item => item.id !== id);
-            localStorage.setItem('study_plans', JSON.stringify(studyData));
-            showStudyTasks();
-        }
-
+        function deleteStudyTask(id) { let d = JSON.parse(localStorage.getItem('study_plans') || '[]').filter(i => i.id !== id); localStorage.setItem('study_plans', JSON.stringify(d)); showStudyTasks(); }
     </script>
 </body>
 </html>
