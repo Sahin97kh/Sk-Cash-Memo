@@ -290,6 +290,9 @@
             <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
             </div>
+            <div onclick="openTool('expense')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">☕</div><div class="text-[10px] font-bold text-gray-700">ব্যক্তিগত খরচ</div>
+            </div>
         </div>
     </div>
 
@@ -299,6 +302,19 @@
             <h3 id="alertTitle" class="text-gray-800 font-bold text-xl mb-2">সতর্কবার্তা</h3>
             <p id="alertMsg" class="text-gray-500 text-sm mb-6 px-2"></p>
             <button onclick="closeAlert()" class="w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-sm shadow-lg">ঠিক আছে</button>
+        </div>
+    </div>
+
+    <div id="expenseConfirmModal" class="reset-alert-overlay no-print">
+        <div class="reset-alert-box">
+            <div class="text-orange-500 text-5xl mb-3"><i class="fas fa-history"></i></div>
+            <h3 class="text-gray-800 font-bold text-xl mb-2">ইতিহাস মুছবেন?</h3>
+            <p class="text-gray-500 text-xs mb-4">ডাটা মুছার জন্য আপনাকে নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিতে হবে।</p>
+            <input type="text" id="expenseConfirmInput" placeholder="এখানে Yes লিখুন" class="w-full border p-2 rounded mb-4 text-center outline-none">
+            <div class="flex gap-2">
+                <button onclick="closeExpConfirm()" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm">বাতিল</button>
+                <button onclick="processExpClear()" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg">সাবমিট</button>
+            </div>
         </div>
     </div>
 
@@ -318,6 +334,54 @@
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
             <div class="p-6 max-h-[90vh] overflow-y-auto">
+                
+                <div id="expenseBox" class="hidden">
+                    <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">ব্যক্তিগত খরচ ট্র্যাকার</h4>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-gray-50 p-2 rounded">
+                            <label class="text-[10px] font-bold block">🍚 ভাত খরচ</label>
+                            <input type="number" id="exRice" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <label class="text-[10px] font-bold block">🚬 সিগারেট</label>
+                            <input type="number" id="exCig" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <label class="text-[10px] font-bold block">☕ চা খরচ</label>
+                            <input type="number" id="exTea" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded">
+                            <label class="text-[10px] font-bold block">🚌 যাতায়াত</label>
+                            <input type="number" id="exTransport" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded col-span-2">
+                            <label class="text-[10px] font-bold block text-teal-600">🛠️ অন্যান্য খরচ</label>
+                            <input type="number" id="exOther" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
+                        </div>
+                    </div>
+                    <button onclick="saveExpense()" class="w-full bg-teal-600 text-white py-2 rounded-lg font-bold shadow mb-4">আজকের খরচ সেভ করুন</button>
+                    
+                    <div id="expense-chart-area" class="bg-white p-1">
+                         <div class="max-h-48 overflow-y-auto mb-4 border rounded p-1">
+                            <table class="w-full text-[10px] text-center">
+                                <thead class="bg-teal-50">
+                                    <tr><th>তারিখ</th><th>ভাত</th><th>সিগা.</th><th>চা</th><th>যাত.</th><th>অন্যান্য</th><th>মোট</th></tr>
+                                </thead>
+                                <tbody id="expenseList"></tbody>
+                            </table>
+                        </div>
+                        <div class="bg-teal-900 text-white p-3 rounded-xl flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold">এই মাসের মোট খরচ:</span>
+                            <span id="monthlyExTotal" class="text-lg font-bold">৳ ০.০০</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                         <button onclick="saveExpenseChart()" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-[10px] shadow"><i class="fas fa-image"></i> চার্ট সেভ (গ্যালারি)</button>
+                         <button onclick="clearExpenseDataPrompt()" class="flex-1 bg-gray-200 text-gray-500 py-2 rounded-lg font-bold text-[10px]">ইতিহাস মুছুন</button>
+                    </div>
+                </div>
+
                 <div id="cardBox" class="hidden">
                     <h4 class="font-bold text-gray-700 mb-4 uppercase text-sm border-b pb-2">প্রফেশনাল কার্ড মেকার</h4>
                     <div id="visiting-card-preview">
@@ -586,7 +650,7 @@
                 </div>
 
                 <div id="dsrBox" class="hidden">
-                    <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">ডেইলি সেলস রিপোর্ট</h4>
+                    <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">데일리 সেলস রিপোর্ট</h4>
                     <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-2"><input type="number" id="cashSale" placeholder="নগদ" class="border p-2 rounded text-sm"><input type="number" id="onlineSale" placeholder="অনলাইন" class="border p-2 rounded text-sm"></div>
                         <button onclick="saveDSR()" class="w-full bg-purple-600 text-white py-2 rounded font-bold">সেভ করুন</button>
@@ -666,38 +730,7 @@
             });
             let finalValue = grandTotal.toFixed(2);
             document.getElementById('grandTotal').innerText = finalValue;
-            // আপনার চাহিদা অনুযায়ী সংখ্যা শো করানো হচ্ছে
             document.getElementById('amountInWords').innerText = finalValue + " টাকা মাত্র।";
-        }
-
-        function bngAmountInWords(amountStr) {
-            let numStr = amountStr.toString().split('.')[0].replace(/[^0-9]/g, '');
-            if (numStr === "" || numStr === "0") return 'শূণ্য টাকা মাত্র।';
-            let n = BigInt(numStr);
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আटाশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-            function getPart(num) {
-                let res = ''; let n = Number(num);
-                if (n >= 100) { res += units[Math.floor(n / 100)] + 'শ '; n %= 100; }
-                if (n > 0) { res += units[n] + ' '; } return res;
-            }
-            let words = '';
-            if (n >= 10000000n) { words += bngAmountInWordsSimple((n / 10000000n).toString()) + ' কোটি '; n %= 10000000n; }
-            if (n >= 100000n) { words += units[Number(n / 100000n)] + ' লাখ '; n %= 100000n; }
-            if (n >= 1000n) { words += units[Number(n / 1000n)] + ' হাজার '; n %= 1000n; }
-            if (n > 0n) { words += getPart(Number(n)); }
-            return words.trim() + ' টাকা মাত্র।';
-        }
-
-        function bngAmountInWordsSimple(numStr) {
-            let n = BigInt(numStr);
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-            let res = '';
-            if (n >= 10000000n) { res += bngAmountInWordsSimple((n / 10000000n).toString()) + ' কোটি '; n %= 10000000n; }
-            if (n >= 100000n) { res += units[Number(n / 100000n)] + ' লাখ '; n %= 100000n; }
-            if (n >= 1000n) { res += units[Number(n / 1000n)] + ' হাজার '; n %= 1000n; }
-            if (n >= 100n) { res += units[Number(n / 100n)] + 'শ '; n %= 100n; }
-            if (n > 0n) { res += units[Number(n)]; }
-            return res.trim();
         }
 
         function runVAT() {
@@ -774,7 +807,6 @@
             }
             let finalMemoTotal = grand.toFixed(2);
             document.getElementById('pm_total').innerText = toBn(finalMemoTotal);
-            // ক্যাশ মেমোতে কথার যায়গায় সংখ্যা এবং 'টাকা মাত্র' যোগ করা হলো
             document.getElementById('pm_words').innerText = finalMemoTotal + " টাকা মাত্র।";
             document.getElementById('memo-preview-area').style.display = 'block';
         }
@@ -793,7 +825,6 @@
             });
             let finalBankVal = grandTotal.toFixed(2);
             document.getElementById('bankTotal').innerText = grandTotal.toLocaleString('bn-BD');
-            // ব্যাংক ক্যাশ হিসাবের কথার ঘর আপডেট করা হলো
             document.getElementById('bankWords').innerText = finalBankVal + " টাকা মাত্র।";
         }
         function clearBankCash() { document.querySelectorAll('.bank-note-input').forEach(i => i.value = ''); runBankCash(); }
@@ -837,7 +868,7 @@
 
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
-            initBankCash(); showDSR(); showStudyTasks();
+            initBankCash(); showDSR(); showStudyTasks(); showExpense();
             ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
                 let v = localStorage.getItem(k); if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
             });
@@ -864,7 +895,7 @@
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox'].forEach(b => {
+            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
             modal.classList.replace('hidden', 'flex'); const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
@@ -944,6 +975,99 @@
             if(l) l.innerHTML = d.map(i => `<li class="bg-gray-50 p-3 rounded-xl flex justify-between items-center mb-2"><div><div class="text-[10px] font-bold text-gray-400">${i.dayNight} | ${i.time}</div><div class="text-sm font-bold text-gray-700">${i.task}</div></div><button onclick="deleteStudyTask(${i.id})" class="text-red-400"><i class="fas fa-trash-alt"></i></button></li>`).join('');
         }
         function deleteStudyTask(id) { let d = JSON.parse(localStorage.getItem('study_plans') || '[]').filter(i => i.id !== id); localStorage.setItem('study_plans', JSON.stringify(d)); showStudyTasks(); }
+
+        // --- খরচ ট্র্যাকার ফাংশনালিটি (আপডেটেড লজিক উইথ "অন্যান্য খরচ") ---
+        function saveExpense() {
+            const r = parseFloat(document.getElementById('exRice').value) || 0, 
+                  c = parseFloat(document.getElementById('exCig').value) || 0, 
+                  t = parseFloat(document.getElementById('exTea').value) || 0, 
+                  tr = parseFloat(document.getElementById('exTransport').value) || 0,
+                  oth = parseFloat(document.getElementById('exOther').value) || 0; // নতুন অন্যান্য খরচ
+            
+            const total = r + c + t + tr + oth;
+            if(total <= 0) { showAlert("খরচের পরিমাণ লিখুন।"); return; }
+            
+            let data = JSON.parse(localStorage.getItem('expense_tracker') || '[]');
+            const today = new Date().toLocaleDateString('bn-BD');
+            
+            const existingIndex = data.findIndex(item => item.date === today);
+
+            if (existingIndex !== -1) {
+                data[existingIndex].rice += r;
+                data[existingIndex].cig += c;
+                data[existingIndex].tea += t;
+                data[existingIndex].transport += tr;
+                data[existingIndex].other = (data[existingIndex].other || 0) + oth; // আপডেট অন্যান্য
+                data[existingIndex].total += total;
+            } else {
+                data.unshift({
+                    id: Date.now(),
+                    date: today,
+                    rice: r, cig: c, tea: t, transport: tr, other: oth, total: total,
+                    month: new Date().getMonth() + "-" + new Date().getFullYear()
+                });
+            }
+            
+            localStorage.setItem('expense_tracker', JSON.stringify(data));
+            ['exRice', 'exCig', 'exTea', 'exTransport', 'exOther'].forEach(id => document.getElementById(id).value = '');
+            showExpense();
+            showAlert("খরচ আপডেট করা হয়েছে।", "সফল");
+        }
+
+        function showExpense() {
+            const data = JSON.parse(localStorage.getItem('expense_tracker') || '[]');
+            const container = document.getElementById('expenseList');
+            const monthlyTotalEl = document.getElementById('monthlyExTotal');
+            let monthlySum = 0;
+            const curMonth = new Date().getMonth() + "-" + new Date().getFullYear();
+
+            if(container) {
+                container.innerHTML = data.map(i => {
+                    if(i.month === curMonth) monthlySum += i.total;
+                    return `<tr class="border-b">
+                        <td class="p-1">${i.date}</td>
+                        <td class="p-1">${i.rice}</td>
+                        <td class="p-1">${i.cig}</td>
+                        <td class="p-1">${i.tea}</td>
+                        <td class="p-1">${i.transport}</td>
+                        <td class="p-1">${i.other || 0}</td>
+                        <td class="p-1 font-bold">৳${i.total}</td>
+                    </tr>`;
+                }).join('');
+                monthlyTotalEl.innerText = '৳ ' + monthlySum.toFixed(2);
+            }
+        }
+
+        function saveExpenseChart() {
+            const chartArea = document.getElementById('expense-chart-area');
+            html2canvas(chartArea, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Monthly-Expense-Chart-' + new Date().toLocaleDateString('bn-BD') + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                showAlert("আপনার গ্যালারিতে চার্টটি সেভ হয়েছে।", "সফল");
+            });
+        }
+
+        // --- ইতিহাস মুছার জন্য "Yes" কনফার্মেশন লজিক ---
+        function clearExpenseDataPrompt() {
+            document.getElementById('expenseConfirmInput').value = '';
+            document.getElementById('expenseConfirmModal').style.display = 'flex';
+        }
+        function closeExpConfirm() {
+            document.getElementById('expenseConfirmModal').style.display = 'none';
+        }
+        function processExpClear() {
+            const inputVal = document.getElementById('expenseConfirmInput').value.trim();
+            if(inputVal === 'Yes') {
+                localStorage.removeItem('expense_tracker');
+                showExpense();
+                closeExpConfirm();
+                showAlert("খরচ ইতিহাস সফলভাবে মুছে ফেলা হয়েছে।", "সফল");
+            } else {
+                showAlert("ভুল কোড দয়া করে Yes লিখে সাবমিট দিন।", "ত্রুটি");
+            }
+        }
     </script>
 </body>
 </html>
