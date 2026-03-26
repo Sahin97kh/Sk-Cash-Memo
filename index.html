@@ -110,7 +110,7 @@
             border: 1px solid #ddd; padding: 8px; border-radius: 6px; font-size: 13px; flex: 1; min-width: 120px; 
         }
 
-        /* কাস্টম রিসেট অ্যালার্ট স্টাইল */
+        /* কাস্টম রিসেট ও অ্যালার্ট স্টাইল */
         .reset-alert-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
             display: none; align-items: center; justify-content: center; z-index: 9999;
@@ -197,6 +197,15 @@
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
+    <div id="customAlert" class="reset-alert-overlay no-print">
+        <div class="reset-alert-box">
+            <div id="alertIcon" class="text-5xl mb-3 text-orange-500"><i class="fas fa-exclamation-circle"></i></div>
+            <h3 id="alertTitle" class="text-gray-800 font-bold text-xl mb-2">সতর্কবার্তা</h3>
+            <p id="alertMsg" class="text-gray-500 text-sm mb-6 px-2"></p>
+            <button onclick="closeAlert()" class="w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-sm shadow-lg">ঠিক আছে</button>
+        </div>
+    </div>
+
     <div id="resetModal" class="reset-alert-overlay no-print">
         <div class="reset-alert-box">
             <div class="text-red-500 text-5xl mb-3"><i class="fas fa-trash-alt"></i></div>
@@ -251,6 +260,14 @@
             <div onclick="openTool('cash')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">💰</div>
                 <div class="text-[10px] font-bold text-gray-700">ক্যাশ হিসাব</div>
+            </div>
+            <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏦</div>
+                <div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
+            </div>
+            <div onclick="openTool('birth')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📄</div>
+                <div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন</div>
             </div>
         </div>
     </div>
@@ -402,12 +419,12 @@
                         <div class="p-4 bg-red-50 rounded-xl border border-red-100">
                             <label class="block text-[10px] font-bold text-red-700 mb-1 uppercase"><i class="fab fa-youtube"></i> YouTube Link</label>
                             <input type="text" id="ytUrl" placeholder="লিংক পেস্ট করুন..." class="w-full border p-2 rounded-lg mb-2 outline-none text-xs">
-                            <button onclick="alert('Downloading...')" class="w-full bg-red-600 text-white py-2 rounded-lg font-bold text-xs">Download YouTube</button>
+                            <button onclick="showAlert('Downloading...', 'অপেক্ষা করুন')" class="w-full bg-red-600 text-white py-2 rounded-lg font-bold text-xs">Download YouTube</button>
                         </div>
                         <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
                             <label class="block text-[10px] font-bold text-blue-700 mb-1 uppercase"><i class="fab fa-facebook"></i> Facebook Link</label>
                             <input type="text" id="fbUrl" placeholder="লিংক পেস্ট করুন..." class="w-full border p-2 rounded-lg mb-2 outline-none text-xs">
-                            <button onclick="alert('Downloading...')" class="w-full bg-blue-700 text-white py-2 rounded-lg font-bold text-xs">Download Facebook</button>
+                            <button onclick="showAlert('Downloading...', 'অপেক্ষা করুন')" class="w-full bg-blue-700 text-white py-2 rounded-lg font-bold text-xs">Download Facebook</button>
                         </div>
                     </div>
                 </div>
@@ -428,12 +445,140 @@
                     </div>
                     <button onclick="clearBankCash()" class="w-full mt-3 bg-gray-100 py-2 rounded font-bold text-gray-500 text-[10px] hover:bg-gray-200">সব ক্লিয়ার করুন</button>
                 </div>
+
+                <div id="loanBox" class="hidden">
+                    <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">লোন যোগ্যতা যাচাই</h4>
+                    <div class="space-y-3">
+                        <input type="number" id="loanIncome" placeholder="আপনার মাসিক আয় (৳)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-teal-500">
+                        <input type="number" id="loanExpense" placeholder="মাসিক খরচ (৳)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-teal-500">
+                        <select id="loanTenure" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-teal-500 bg-white text-gray-500">
+                            <option value="12">মেয়াদ: ১ বছর</option>
+                            <option value="24">মেয়াদ: ২ বছর</option>
+                            <option value="36">মেয়াদ: ৩ বছর</option>
+                            <option value="60">মেয়াদ: ৫ বছর</option>
+                        </select>
+                        <button onclick="runLoan()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-teal-700">যাচাই করুন</button>
+                        <div id="loanOut" class="mt-4 hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-center">
+                            <div class="text-xs text-teal-600 uppercase font-bold">আপনি লোন পেতে পারেন সর্বোচ্চ:</div>
+                            <div id="loanResult" class="text-2xl font-bold text-teal-800 mt-1">৳০.০০</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="birthBox" class="hidden">
+                    <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">জন্ম নিবন্ধন যাচাইকারক</h4>
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                            <label class="block text-[10px] font-bold text-indigo-700 mb-1 uppercase">Birth Registration Number (১৭ ডিজিট)</label>
+                            <input type="text" id="brnIn" placeholder="Ex: 2005xxxxxxxxxxxxx" maxlength="17" class="w-full border p-2 rounded-lg mb-2 outline-none text-sm focus:border-indigo-500">
+                            <label class="block text-[10px] font-bold text-indigo-700 mb-1 uppercase">Date of Birth</label>
+                            <input type="date" id="brnDate" class="w-full border p-2 rounded-lg mb-2 outline-none text-sm focus:border-indigo-500">
+                            <button onclick="openGovBirth()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm shadow-md flex items-center justify-center gap-2">
+                                <i class="fas fa-external-link-alt"></i> যাচাই করতে সরকারি পোর্টালে যান
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-500 italic">* সরকারি সুরক্ষা নীতির কারণে সরাসরি আমাদের সাইটে ডাটা দেখানো সম্ভব নয়, তবে ওপরের বাটনটি আপনাকে সঠিক পেইজে নিয়ে যাবে।</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
+
+        // কাস্টম অ্যালার্ট ফাংশন (নতুন যোগ করা হয়েছে)
+        function showAlert(msg, title = "সতর্কবার্তা") {
+            document.getElementById('alertMsg').innerText = msg;
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        function closeAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
+
+        function parseBn(s) {
+            if (!s) return 0;
+            const b = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+            let cleanStr = s.toString().replace(/[০-৯]/g, x => b[x]).replace(/[^0-9.]/g, '');
+            let val = parseFloat(cleanStr);
+            return isNaN(val) ? 0 : val;
+        }
+
+        function toBn(n) {
+            if (n === null || n === undefined) return "০";
+            const b = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯','.' : '.'};
+            return n.toString().split('').map(x => b[x] || x).join('');
+        }
+
+        function calculateAll() {
+            let grandTotal = BigInt(0);
+            const rows = document.querySelectorAll('#table-body tr');
+            rows.forEach(row => {
+                let note = Math.floor(parseBn(row.querySelector('.note-val').innerText));
+                let count = Math.floor(parseBn(row.querySelector('.count-val').innerText));
+                let rowTotal = BigInt(note) * BigInt(count);
+                row.querySelector('.row-total').innerText = rowTotal.toString() + ".00";
+                grandTotal += rowTotal;
+            });
+            let finalSum = grandTotal.toString();
+            document.getElementById('grandTotal').innerText = finalSum + ".00";
+            document.getElementById('amountInWords').innerText = bngAmountInWords(finalSum);
+        }
+
+        function bngAmountInWords(amountStr) {
+            let numStr = amountStr.toString().split('.')[0].replace(/[^0-9]/g, '');
+            if (numStr === "" || numStr === "0") return 'শূণ্য টাকা মাত্র।';
+            let n = BigInt(numStr);
+            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+
+            function getPart(num) {
+                let res = '';
+                let n = Number(num);
+                if (n >= 100) {
+                    res += units[Math.floor(n / 100)] + 'শ ';
+                    n %= 100;
+                }
+                if (n > 0) {
+                    res += units[n] + ' ';
+                }
+                return res;
+            }
+
+            let words = '';
+            if (n >= 10000000n) {
+                let koti = n / 10000000n;
+                words += bngAmountInWordsSimple(koti.toString()) + ' কোটি ';
+                n %= 10000000n;
+            }
+            if (n >= 100000n) {
+                let lakh = Number(n / 100000n);
+                words += units[lakh] + ' লাখ ';
+                n %= 100000n;
+            }
+            if (n >= 1000n) {
+                let hazar = Number(n / 1000n);
+                words += units[hazar] + ' হাজার ';
+                n %= 1000n;
+            }
+            if (n > 0n) {
+                words += getPart(Number(n));
+            }
+            return words.trim() + ' টাকা মাত্র।';
+        }
+
+        function bngAmountInWordsSimple(numStr) {
+            let n = BigInt(numStr);
+            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেতাল্লিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
+            let res = '';
+            if (n >= 10000000n) { res += bngAmountInWordsSimple((n / 10000000n).toString()) + ' কোটি '; n %= 10000000n; }
+            if (n >= 100000n) { res += units[Number(n / 100000n)] + ' লাখ '; n %= 100000n; }
+            if (n >= 1000n) { res += units[Number(n / 1000n)] + ' হাজার '; n %= 1000n; }
+            if (n >= 100n) { res += units[Number(n / 100n)] + 'শ '; n %= 100n; }
+            if (n > 0n) { res += units[Number(n)]; }
+            return res.trim();
+        }
 
         function printReceipt() {
             const printWrapper = document.getElementById('print-wrapper');
@@ -452,18 +597,6 @@
             const content = document.getElementById('memo-print-content').innerHTML;
             printWrapper.innerHTML = `<div class="memo-full-page">${content}</div>`;
             window.print();
-        }
-
-        function parseBn(s) {
-            const b = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
-            let val = s.toString().replace(/[০-৯]/g, x => b[x]).replace(/[^0-9.]/g, '');
-            return parseFloat(val) || 0;
-        }
-
-        function toBn(n) {
-            if (n === null || n === undefined) return "০";
-            const b = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯','.' : '.'};
-            return n.toString().split('').map(x => b[x] || x).join('');
         }
 
         function addMemoRow() {
@@ -498,7 +631,7 @@
                 }
             }
             document.getElementById('pm_total').innerText = toBn(grand.toFixed(2));
-            document.getElementById('pm_words').innerText = bngAmountInWords(grand);
+            document.getElementById('pm_words').innerText = bngAmountInWords(grand.toString());
             document.getElementById('memo-preview-area').style.display = 'block';
         }
 
@@ -515,16 +648,16 @@
         }
 
         function runBankCash() {
-            let grandTotal = 0;
+            let grandTotal = BigInt(0);
             document.querySelectorAll('.bank-note-input').forEach(input => {
                 const noteVal = parseInt(input.getAttribute('data-val'));
                 const count = parseInt(input.value) || 0;
-                const rowTotal = noteVal * count;
+                const rowTotal = BigInt(noteVal) * BigInt(count);
                 input.closest('tr').querySelector('.bank-row-val').innerText = rowTotal.toLocaleString('bn-BD');
                 grandTotal += rowTotal;
             });
             document.getElementById('bankTotal').innerText = grandTotal.toLocaleString('bn-BD');
-            document.getElementById('bankWords').innerText = bngAmountInWords(grandTotal);
+            document.getElementById('bankWords').innerText = bngAmountInWords(grandTotal.toString());
         }
 
         function clearBankCash() {
@@ -556,55 +689,6 @@
                 const tableBody = document.getElementById('table-body');
                 if (el.closest('tr') === tableBody.lastElementChild) { e.preventDefault(); addNewRow(true); }
             }
-        }
-
-        function calculateAll() {
-            let grandTotal = 0;
-            const rows = document.querySelectorAll('#table-body tr');
-            rows.forEach(row => {
-                let note = parseBn(row.querySelector('.note-val').innerText);
-                let count = parseBn(row.querySelector('.count-val').innerText);
-                let rowTotal = note * count;
-                row.querySelector('.row-total').innerText = rowTotal.toFixed(2);
-                grandTotal += rowTotal;
-            });
-            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
-            document.getElementById('amountInWords').innerText = bngAmountInWords(grandTotal);
-        }
-
-        function bngAmountInWords(num) {
-            if (num === 0) return 'শূণ্য টাকা মাত্র।';
-            if (num < 0) return 'ঋণাত্মক সংখ্যা সমর্থিত নয়';
-            
-            const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তেহাত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'ঊননব্বই', 'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-
-            function convertBase(n) {
-                let res = '';
-                if (n >= 10000000) {
-                    res += convertBase(Math.floor(n / 10000000)) + ' কোটি ';
-                    n %= 10000000;
-                }
-                if (n >= 100000) {
-                    res += units[Math.floor(n / 100000)] + ' লাখ ';
-                    n %= 100000;
-                }
-                if (n >= 1000) {
-                    res += units[Math.floor(n / 1000)] + ' হাজার ';
-                    n %= 1000;
-                }
-                if (n >= 100) {
-                    res += units[Math.floor(n / 100)] + 'শ ';
-                    n %= 100;
-                }
-                if (n > 0) {
-                    res += units[Math.floor(n)];
-                }
-                return res.trim();
-            }
-
-            let mainNumber = Math.floor(num);
-            let result = convertBase(mainNumber);
-            return result ? result + ' টাকা মাত্র।' : 'শূণ্য টাকা মাত্র।';
         }
 
         function incrementReceiptNo() {
@@ -670,7 +754,7 @@
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox'].forEach(b => {
+            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
             modal.classList.replace('hidden', 'flex');
@@ -721,6 +805,38 @@
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url; video.play();
             }
+        }
+
+        function runLoan() {
+            const income = parseFloat(document.getElementById('loanIncome').value) || 0;
+            const expense = parseFloat(document.getElementById('loanExpense').value) || 0;
+            const months = parseInt(document.getElementById('loanTenure').value) || 12;
+            const surplus = income - expense;
+            if(surplus <= 0) {
+                // কাস্টম অ্যালার্ট ব্যবহার করা হয়েছে
+                showAlert("আপনার মাসিক আয় খরচের চেয়ে বেশি হতে হবে।"); 
+                return;
+            }
+            const possibleEMI = surplus * 0.4;
+            const possibleLoan = possibleEMI * months * 0.85; 
+            document.getElementById('loanOut').classList.remove('hidden');
+            document.getElementById('loanResult').innerText = '৳' + possibleLoan.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+        }
+
+        function openGovBirth() {
+            const brn = document.getElementById('brnIn').value;
+            const dob = document.getElementById('brnDate').value;
+            if(brn.length !== 17) {
+                // কাস্টম অ্যালার্ট ব্যবহার করা হয়েছে
+                showAlert("দয়া করে ১৭ ডিজিটের জন্ম নিবন্ধন নম্বর লিখুন।"); 
+                return;
+            }
+            if(!dob) {
+                // কাস্টম অ্যালার্ট ব্যবহার করা হয়েছে
+                showAlert("জন্ম তারিখ সিলেক্ট করুন।"); 
+                return;
+            }
+            window.open("https://bdris.gov.bd/br/application/status", "_blank");
         }
     </script>
 </body>
