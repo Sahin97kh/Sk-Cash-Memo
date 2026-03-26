@@ -764,9 +764,25 @@
             const out = document.getElementById('coOut'); out.classList.remove('hidden'); out.innerText = `চার্জ: ৳${charge.toFixed(2)}`;
         }
 
+        // --- প্রিন্ট ফাংশন ফিক্স: ইনপুট ভ্যালু রেন্ডারিং ---
         function printReceipt() {
             const printWrapper = document.getElementById('print-wrapper');
-            const content = document.getElementById('main-receipt-design').innerHTML;
+            const receiptDesign = document.getElementById('main-receipt-design');
+            
+            // সব ইনপুট বক্সের বর্তমান মান সরাসরি স্টাইলে বসিয়ে ক্লোন তৈরি করছি
+            const clonedDesign = receiptDesign.cloneNode(true);
+            const originalInputs = receiptDesign.querySelectorAll('input');
+            const clonedInputs = clonedDesign.querySelectorAll('input');
+            
+            originalInputs.forEach((input, index) => {
+                // ইনপুটের বদলে টেক্সট দেখানোর জন্য এটি জরুরি
+                const val = input.value || "0";
+                const span = document.createElement('span');
+                span.innerText = val;
+                clonedInputs[index].parentNode.replaceChild(span, clonedInputs[index]);
+            });
+
+            const content = clonedDesign.innerHTML;
             printWrapper.innerHTML = `<div class="receipt-copy"><div class="print-scaling">${content}</div><div class="cut-line"></div></div><div style="height: 5px;"></div><div class="receipt-copy"><div class="print-scaling">${content}</div></div>`;
             window.print(); incrementReceiptNo();
         }
@@ -976,13 +992,12 @@
         }
         function deleteStudyTask(id) { let d = JSON.parse(localStorage.getItem('study_plans') || '[]').filter(i => i.id !== id); localStorage.setItem('study_plans', JSON.stringify(d)); showStudyTasks(); }
 
-        // --- খরচ ট্র্যাকার ফাংশনালিটি (আপডেটেড লজিক উইথ "অন্যান্য খরচ") ---
         function saveExpense() {
             const r = parseFloat(document.getElementById('exRice').value) || 0, 
                   c = parseFloat(document.getElementById('exCig').value) || 0, 
                   t = parseFloat(document.getElementById('exTea').value) || 0, 
                   tr = parseFloat(document.getElementById('exTransport').value) || 0,
-                  oth = parseFloat(document.getElementById('exOther').value) || 0; // নতুন অন্যান্য খরচ
+                  oth = parseFloat(document.getElementById('exOther').value) || 0;
             
             const total = r + c + t + tr + oth;
             if(total <= 0) { showAlert("খরচের পরিমাণ লিখুন।"); return; }
@@ -997,7 +1012,7 @@
                 data[existingIndex].cig += c;
                 data[existingIndex].tea += t;
                 data[existingIndex].transport += tr;
-                data[existingIndex].other = (data[existingIndex].other || 0) + oth; // আপডেট অন্যান্য
+                data[existingIndex].other = (data[existingIndex].other || 0) + oth;
                 data[existingIndex].total += total;
             } else {
                 data.unshift({
@@ -1049,7 +1064,6 @@
             });
         }
 
-        // --- ইতিহাস মুছার জন্য "Yes" কনফার্মেশন লজিক ---
         function clearExpenseDataPrompt() {
             document.getElementById('expenseConfirmInput').value = '';
             document.getElementById('expenseConfirmModal').style.display = 'flex';
