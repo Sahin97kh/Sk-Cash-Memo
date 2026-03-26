@@ -197,6 +197,106 @@
         <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
     </div>
 
+    <div class="max-w-4xl mx-auto no-print mb-8 px-2">
+        <h3 class="text-teal-800 font-bold mb-4 border-l-4 border-teal-600 pl-2">প্রিমিয়াম টুলস</h3>
+        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-9 gap-4">
+            <div onclick="openTool('card')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🪪</div>
+                <div class="text-[10px] font-bold text-gray-700">কার্ড মেকার</div>
+            </div>
+            <div onclick="openTool('qr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏁</div>
+                <div class="text-[10px] font-bold text-gray-700">QR কোড জেনারেট</div>
+            </div>
+            <div onclick="openTool('tv')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📺</div>
+                <div class="text-[10px] font-bold text-gray-700">লাইভ টিভি</div>
+            </div>
+            <div onclick="openTool('video')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🎬</div>
+                <div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
+            </div>
+            <div onclick="openTool('memo')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📝</div>
+                <div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো তৈরি</div>
+            </div>
+            <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏦</div>
+                <div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
+            </div>
+            <div onclick="openTool('birth')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📄</div>
+                <div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন চেক</div>
+            </div>
+            <div onclick="openTool('dsr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📊</div>
+                <div class="text-[10px] font-bold text-gray-700">বিক্রয় রিপোর্ট</div>
+            </div>
+            <div onclick="openTool('study')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📚</div>
+                <div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto no-print mb-20 px-2">
+        <h3 class="text-blue-800 font-bold mb-4 border-l-4 border-blue-600 pl-2">ক্যালকুলেটর টুলস</h3>
+        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-10 gap-4">
+            <div onclick="openTool('age')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🗓️</div>
+                <div class="text-[10px] font-bold text-gray-700">বয়স</div>
+            </div>
+            <div onclick="openTool('unit')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📏</div>
+                <div class="text-[10px] font-bold text-gray-700">ইউনিট</div>
+            </div>
+            <div onclick="openTool('emi')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">💸</div>
+                <div class="text-[10px] font-bold text-gray-700">কিস্তি</div>
+            </div>
+            <div onclick="openTool('vat')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🧾</div>
+                <div class="text-[10px] font-bold text-gray-700">ভ্যাট</div>
+            </div>
+            <div onclick="openTool('tax')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">⚖️</div>
+                <div class="text-[10px] font-bold text-gray-700">ইনকাম ট্যাক্স</div>
+            </div>
+            <div onclick="openTool('curr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">💱</div>
+                <div class="text-[10px] font-bold text-gray-700">কারেন্সি</div>
+            </div>
+            <div onclick="openTool('dps')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📈</div>
+                <div class="text-[10px] font-bold text-gray-700">DPS</div>
+            </div>
+            <div onclick="openTool('zakat')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🕋</div>
+                <div class="text-[10px] font-bold text-gray-700">জাকাত</div>
+            </div>
+            <div onclick="openTool('gold')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏆</div>
+                <div class="text-[10px] font-bold text-gray-700">গোল্ড প্রাইস</div>
+            </div>
+            <div onclick="openTool('cashout')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">💸</div>
+                <div class="text-[10px] font-bold text-gray-700">ক্যাশ আউট</div>
+            </div>
+            <div onclick="openTool('cash')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">💰</div>
+                <div class="text-[10px] font-bold text-gray-700">ব্যাংক ক্যাশ হিসাব</div>
+            </div>
+            <div onclick="openTool('discount')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏷️</div>
+                <div class="text-[10px] font-bold text-gray-700">ডিসকাউন্ট</div>
+            </div>
+            <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏦</div>
+                <div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
+            </div>
+        </div>
+    </div>
+
     <div id="customAlert" class="reset-alert-overlay no-print">
         <div class="reset-alert-box">
             <div id="alertIcon" class="text-5xl mb-3 text-orange-500"><i class="fas fa-exclamation-circle"></i></div>
@@ -218,65 +318,64 @@
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto no-print mb-20 px-2">
-        <h3 class="text-teal-800 font-bold mb-4 border-l-4 border-teal-600 pl-2">প্রিমিয়াম টুলস</h3>
-        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-9 gap-4">
-            <div onclick="openTool('age')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🗓️</div>
-                <div class="text-[10px] font-bold text-gray-700">বয়স</div>
-            </div>
-            <div onclick="openTool('emi')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💸</div>
-                <div class="text-[10px] font-bold text-gray-700">কিস্তি</div>
-            </div>
-            <div onclick="openTool('unit')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📏</div>
-                <div class="text-[10px] font-bold text-gray-700">ইউনিট</div>
-            </div>
-            <div onclick="openTool('card')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🪪</div>
-                <div class="text-[10px] font-bold text-gray-700">কার্ড</div>
-            </div>
-            <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div>
-                <div class="text-[10px] font-bold text-gray-700">FDR</div>
-            </div>
-            <div onclick="openTool('qr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏁</div>
-                <div class="text-[10px] font-bold text-gray-700">QR</div>
-            </div>
-            <div onclick="openTool('tv')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📺</div>
-                <div class="text-[10px] font-bold text-gray-700">লাইভ টিভি</div>
-            </div>
-            <div onclick="openTool('video')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🎬</div>
-                <div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
-            </div>
-            <div onclick="openTool('memo')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📝</div>
-                <div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো</div>
-            </div>
-            <div onclick="openTool('cash')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💰</div>
-                <div class="text-[10px] font-bold text-gray-700">ক্যাশ হিসাব</div>
-            </div>
-            <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div>
-                <div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
-            </div>
-            <div onclick="openTool('birth')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📄</div>
-                <div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন</div>
-            </div>
-        </div>
-    </div>
-
     <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
             <div class="p-6 max-h-[90vh] overflow-y-auto">
                 
+                <div id="vatBox" class="hidden">
+                    <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">ভ্যাট (VAT) ক্যালকুলেটর</h4>
+                    <input type="number" id="vatAmt" placeholder="টাকার পরিমাণ" class="w-full border p-2 mb-2 rounded outline-none text-sm">
+                    <input type="number" id="vatPerc" placeholder="ভ্যাট %" value="15" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runVAT()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
+                    <div id="vatOut" class="mt-4 p-3 bg-blue-50 rounded text-blue-800 font-bold hidden text-sm"></div>
+                </div>
+
+                <div id="taxBox" class="hidden">
+                    <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">ইনকাম ট্যাক্স ক্যালকুলেটর</h4>
+                    <input type="number" id="taxIncome" placeholder="বার্ষিক আয় (টাকা)" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runTax()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">ট্যাক্স দেখুন</button>
+                    <div id="taxOut" class="mt-4 p-3 bg-indigo-50 rounded text-indigo-800 font-bold hidden text-sm"></div>
+                </div>
+
+                <div id="currBox" class="hidden">
+                    <h4 class="font-bold text-green-700 mb-4 uppercase text-sm border-b pb-2">কারেন্সি কনভার্টার (USD to BDT)</h4>
+                    <input type="number" id="usdIn" placeholder="USD পরিমাণ" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runCurr()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">কনভার্ট করুন</button>
+                    <div id="currOut" class="mt-4 p-3 bg-green-50 rounded text-green-800 font-bold hidden text-sm text-center"></div>
+                </div>
+
+                <div id="dpsBox" class="hidden">
+                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">DPS ক্যালকুলেটর</h4>
+                    <input type="number" id="dpsM" placeholder="মাসিক জমা" class="w-full border p-2 mb-2 rounded outline-none text-sm">
+                    <input type="number" id="dpsR" placeholder="সুদ %" class="w-full border p-2 mb-2 rounded outline-none text-sm">
+                    <input type="number" id="dpsY" placeholder="বছর" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runDPS()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
+                    <div id="dpsOut" class="mt-4 p-3 bg-orange-50 rounded text-orange-800 font-bold hidden text-sm"></div>
+                </div>
+
+                <div id="zakatBox" class="hidden">
+                    <h4 class="font-bold text-emerald-700 mb-4 uppercase text-sm border-b pb-2">জাকাত ক্যালকুলেটর</h4>
+                    <input type="number" id="zakAmt" placeholder="মোট সম্পদ/টাকা" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runZakat()" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold">জাকাত হিসাব</button>
+                    <div id="zakOut" class="mt-4 p-3 bg-emerald-50 rounded text-emerald-800 font-bold hidden text-sm"></div>
+                </div>
+
+                <div id="goldBox" class="hidden">
+                    <h4 class="font-bold text-yellow-700 mb-4 uppercase text-sm border-b pb-2">গোল্ড প্রাইস ক্যালকুলেটর</h4>
+                    <input type="number" id="goldV" placeholder="ভরি" class="w-full border p-2 mb-2 rounded outline-none text-sm">
+                    <input type="number" id="goldP" placeholder="প্রতি ভরি মূল্য" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runGold()" class="w-full bg-yellow-600 text-white py-3 rounded-lg font-bold">মোট দাম দেখুন</button>
+                    <div id="goldOut" class="mt-4 p-3 bg-yellow-50 rounded text-yellow-800 font-bold hidden text-sm"></div>
+                </div>
+
+                <div id="cashoutBox" class="hidden">
+                    <h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">বিকাশ/নগদ ক্যাশ আউট চার্জ</h4>
+                    <input type="number" id="coAmt" placeholder="টাকার পরিমাণ" class="w-full border p-2 mb-4 rounded outline-none text-sm">
+                    <button onclick="runCashout()" class="w-full bg-pink-600 text-white py-3 rounded-lg font-bold">চার্জ দেখুন</button>
+                    <div id="coOut" class="mt-4 p-3 bg-pink-50 rounded text-pink-800 font-bold hidden text-sm"></div>
+                </div>
+
                 <div id="memoBox" class="hidden">
                     <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">নতুন ক্যাশ মেমো</h4>
                     <div class="input-row-memo">
@@ -407,9 +506,9 @@
                         <div id="tvLoading" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center text-white">লোডিং হচ্ছে...</div>
                     </div>
                     <div class="channel-grid">
-                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=2202800.m3u8')">📺 চ্যানেল ১</div>
-                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=2202800.m3u8')">📺 চ্যানেল ২</div>
-                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=2202800.m3u8')">📺 চ্যানেল ৩</div>
+                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=2202800.m3u8')">📺 B Vison</div>
+                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=2202800.m3u8')">📺 SomoyTv</div>
+                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=2202800.m3u8')">📺 71 Tv</div>
                     </div>
                 </div>
 
@@ -480,6 +579,54 @@
                         <p class="text-[10px] text-gray-500 italic">* সরকারি সুরক্ষা নীতির কারণে সরাসরি আমাদের সাইটে ডাটা দেখানো সম্ভব নয়, তবে ওপরের বাটনটি আপনাকে সঠিক পেইজে নিয়ে যাবে।</p>
                     </div>
                 </div>
+
+                <div id="discountBox" class="hidden">
+                    <h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">ডিসকাউন্ট ক্যালকুলেটর</h4>
+                    <div class="space-y-3">
+                        <input type="number" id="origPrice" placeholder="আসল দাম (৳)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-pink-500">
+                        <input type="number" id="discPercent" placeholder="ডিসকাউন্ট (%)" class="w-full border p-2 rounded-lg text-sm outline-none focus:border-pink-500">
+                        <button onclick="runDiscount()" class="w-full bg-pink-600 text-white py-3 rounded-lg font-bold shadow-md">হিসাব করুন</button>
+                        <div id="discountOut" class="mt-4 hidden p-4 bg-pink-50 border border-pink-100 rounded-xl">
+                            <div class="flex justify-between text-sm text-pink-700"><span>আপনি সাশ্রয় করবেন:</span> <span id="saveAmt" class="font-bold">৳০.০০</span></div>
+                            <div class="flex justify-between text-lg text-pink-900 font-bold border-t mt-2 pt-2"><span>ফাইনাল দাম:</span> <span id="finalPrice">৳০.০০</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dsrBox" class="hidden">
+                    <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">ডেইলি সেলস রিপোর্ট</h4>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="cashSale" placeholder="নগদ বিক্রি" class="border p-2 rounded text-sm outline-none">
+                            <input type="number" id="onlineSale" placeholder="অনলাইন বিক্রি" class="border p-2 rounded text-sm outline-none">
+                        </div>
+                        <button onclick="saveDSR()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-bold">রিপোর্ট সেভ করুন</button>
+                        <div id="dsrHistory" class="mt-4 max-h-40 overflow-y-auto space-y-2"></div>
+                        <div id="dsrMonthlyTotal" class="p-3 bg-purple-100 rounded-lg text-center mt-3 hidden border border-purple-200">
+                            <div class="text-[10px] text-purple-600 font-bold uppercase">এই মাসের মোট বিক্রি</div>
+                            <div id="m_total_val" class="text-xl font-bold text-purple-800">৳০.০০</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="studyBox" class="hidden">
+                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">স্টাডি প্ল্যানার ও রুটিন</h4>
+                    <div class="space-y-3 mb-4">
+                        <input type="text" id="subjectTask" placeholder="বিষয়/টাস্ক" class="w-full border p-2 rounded text-sm outline-none focus:border-orange-500">
+                        <div class="flex gap-2">
+                            <input type="time" id="studyTime" class="flex-1 border p-2 rounded text-sm outline-none">
+                            <select id="studyDayNight" class="flex-1 border p-2 rounded text-sm bg-white">
+                                <option value="দিন">দিন</option>
+                                <option value="রাত">রাত</option>
+                            </select>
+                        </div>
+                        <button onclick="addStudyTask()" class="w-full bg-orange-600 text-white py-2 rounded font-bold shadow text-sm">পড়াশোনা যোগ করুন</button>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <ul id="studyList" class="space-y-2"></ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -487,7 +634,7 @@
     <script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
-        // কাস্টম অ্যালার্ট ফাংশন (নতুন যোগ করা হয়েছে)
+        // কাস্টম অ্যালার্ট ফাংশন
         function showAlert(msg, title = "সতর্কবার্তা") {
             document.getElementById('alertMsg').innerText = msg;
             document.getElementById('alertTitle').innerText = title;
@@ -547,9 +694,11 @@
             }
 
             let words = '';
+            
+            // নির্ভুল ১০ হাজার কোটি কোটি প্রসেসিং
             if (n >= 10000000n) {
-                let koti = n / 10000000n;
-                words += bngAmountInWordsSimple(koti.toString()) + ' কোটি ';
+                let kotiValue = n / 10000000n;
+                words += bngAmountInWordsSimple(kotiValue.toString()) + ' কোটি ';
                 n %= 10000000n;
             }
             if (n >= 100000n) {
@@ -578,6 +727,63 @@
             if (n >= 100n) { res += units[Number(n / 100n)] + 'শ '; n %= 100n; }
             if (n > 0n) { res += units[Number(n)]; }
             return res.trim();
+        }
+
+        function runVAT() {
+            const amt = parseFloat(document.getElementById('vatAmt').value) || 0;
+            const perc = parseFloat(document.getElementById('vatPerc').value) || 0;
+            const v = (amt * perc) / 100;
+            const out = document.getElementById('vatOut');
+            out.classList.remove('hidden');
+            out.innerText = `ভ্যাটের পরিমাণ: ৳${v.toFixed(2)}\nমোট (ভ্যাটসহ): ৳${(amt + v).toFixed(2)}`;
+        }
+
+        function runTax() {
+            const income = parseFloat(document.getElementById('taxIncome').value) || 0;
+            let tax = 0;
+            if (income > 350000) tax = (income - 350000) * 0.05;
+            const out = document.getElementById('taxOut');
+            out.classList.remove('hidden');
+            out.innerText = `আনুমানিক ইনকাম ট্যাক্স: ৳${tax.toFixed(2)}`;
+        }
+
+        function runCurr() {
+            const usd = parseFloat(document.getElementById('usdIn').value) || 0;
+            const rate = 120.50;
+            const out = document.getElementById('currOut');
+            out.classList.remove('hidden');
+            out.innerText = `${usd} USD = ৳${(usd * rate).toLocaleString('bn-BD')}`;
+        }
+
+        function runDPS() {
+            const m = parseFloat(document.getElementById('dpsM').value) || 0, r = parseFloat(document.getElementById('dpsR').value) || 0, y = parseFloat(document.getElementById('dpsY').value) || 0;
+            const total = (m * ((Math.pow(1 + r/100/12, y*12) - 1) / (r/100/12))) * (1 + r/100/12);
+            const out = document.getElementById('dpsOut');
+            out.classList.remove('hidden');
+            out.innerText = `মেয়াদ শেষে পাবেন: ৳${total.toLocaleString('bn-BD', {maximumFractionDigits:2})}`;
+        }
+
+        function runZakat() {
+            const amt = parseFloat(document.getElementById('zakAmt').value) || 0;
+            const zak = amt * 0.025;
+            const out = document.getElementById('zakOut');
+            out.classList.remove('hidden');
+            out.innerText = `আপনার জাকাতের পরিমাণ: ৳${zak.toLocaleString('bn-BD')}`;
+        }
+
+        function runGold() {
+            const v = parseFloat(document.getElementById('goldV').value) || 0, p = parseFloat(document.getElementById('goldP').value) || 0;
+            const out = document.getElementById('goldOut');
+            out.classList.remove('hidden');
+            out.innerText = `স্বর্ণের মোট দাম: ৳${(v * p).toLocaleString('bn-BD')}`;
+        }
+
+        function runCashout() {
+            const amt = parseFloat(document.getElementById('coAmt').value) || 0;
+            const charge = (amt * 18.5) / 1000;
+            const out = document.getElementById('coOut');
+            out.classList.remove('hidden');
+            out.innerText = `ক্যাশ আউট চার্জ (অ্যাপ): ৳${charge.toFixed(2)}`;
         }
 
         function printReceipt() {
@@ -714,6 +920,8 @@
         function loadSavedData() {
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
             initBankCash(); 
+            showDSR(); 
+            showStudyTasks();
             ['shopName', 'shopAddress', 'shopMobile', 'receiptNo'].forEach(k => {
                 let v = localStorage.getItem(k);
                 if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
@@ -754,7 +962,7 @@
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox'].forEach(b => {
+            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
             modal.classList.replace('hidden', 'flex');
@@ -813,7 +1021,6 @@
             const months = parseInt(document.getElementById('loanTenure').value) || 12;
             const surplus = income - expense;
             if(surplus <= 0) {
-                // কাস্টম অ্যালার্ট ব্যবহার করা হয়েছে
                 showAlert("আপনার মাসিক আয় খরচের চেয়ে বেশি হতে হবে।"); 
                 return;
             }
@@ -827,17 +1034,138 @@
             const brn = document.getElementById('brnIn').value;
             const dob = document.getElementById('brnDate').value;
             if(brn.length !== 17) {
-                // কাস্টম অ্যালার্ট ব্যবহার করা হয়েছে
                 showAlert("দয়া করে ১৭ ডিজিটের জন্ম নিবন্ধন নম্বর লিখুন।"); 
                 return;
             }
             if(!dob) {
-                // কাস্টম অ্যালার্ট ব্যবহার করা হয়েছে
                 showAlert("জন্ম তারিখ সিলেক্ট করুন।"); 
                 return;
             }
             window.open("https://bdris.gov.bd/br/application/status", "_blank");
         }
+
+        function runDiscount() {
+            const price = parseFloat(document.getElementById('origPrice').value) || 0;
+            const disc = parseFloat(document.getElementById('discPercent').value) || 0;
+            const savings = (price * disc) / 100;
+            const final = price - savings;
+            document.getElementById('discountOut').classList.remove('hidden');
+            document.getElementById('saveAmt').innerText = '৳' + savings.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+            document.getElementById('finalPrice').innerText = '৳' + final.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+        }
+
+        function saveDSR() {
+            const cash = parseFloat(document.getElementById('cashSale').value) || 0;
+            const online = parseFloat(document.getElementById('onlineSale').value) || 0;
+            const total = cash + online;
+            const fullDate = new Date();
+            const dateStr = fullDate.toLocaleDateString('bn-BD');
+            const monthKey = fullDate.getMonth() + "-" + fullDate.getFullYear();
+            
+            if(total <= 0) { showAlert("বিক্রির পরিমাণ লিখুন।"); return; }
+            
+            let reports = JSON.parse(localStorage.getItem('dsr_data') || '[]');
+            reports.unshift({ id: Date.now(), date: dateStr, total: total, month: monthKey });
+            
+            localStorage.setItem('dsr_data', JSON.stringify(reports));
+            document.getElementById('cashSale').value = '';
+            document.getElementById('onlineSale').value = '';
+            showDSR();
+            showAlert("আজকের রিপোর্ট সেভ হয়েছে।", "সফল!");
+        }
+
+        function deleteDSR(id) {
+            if(confirm("আপনি কি এই রিপোর্টটি মুছে ফেলতে চান?")) {
+                let reports = JSON.parse(localStorage.getItem('dsr_data') || '[]');
+                reports = reports.filter(r => r.id !== id);
+                localStorage.setItem('dsr_data', JSON.stringify(reports));
+                showDSR();
+            }
+        }
+
+        function showDSR() {
+            const reports = JSON.parse(localStorage.getItem('dsr_data') || '[]');
+            const container = document.getElementById('dsrHistory');
+            const monthlyBox = document.getElementById('dsrMonthlyTotal');
+            const monthlyVal = document.getElementById('m_total_val');
+            
+            const currentMonth = new Date().getMonth() + "-" + new Date().getFullYear();
+            let totalMonthSale = 0;
+
+            if(container) {
+                if(reports.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400 text-[10px] py-4">কোন রিপোর্ট নেই</div>';
+                    monthlyBox.classList.add('hidden');
+                    return;
+                }
+
+                container.innerHTML = reports.map(r => {
+                    if(r.month === currentMonth) totalMonthSale += r.total;
+                    return `
+                    <div class="flex justify-between items-center bg-purple-50 p-2 rounded border border-purple-100 mb-2">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-bold text-gray-500">${r.date}</span>
+                            <span class="text-purple-700 font-bold text-xs">৳${r.total.toLocaleString('bn-BD')}</span>
+                        </div>
+                        <button onclick="deleteDSR(${r.id})" class="text-red-400 hover:text-red-600 p-1">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    </div>
+                `}).join('');
+
+                if(totalMonthSale > 0) {
+                    monthlyBox.classList.remove('hidden');
+                    monthlyVal.innerText = '৳' + totalMonthSale.toLocaleString('bn-BD', {minimumFractionDigits: 2});
+                } else {
+                    monthlyBox.classList.add('hidden');
+                }
+            }
+        }
+
+        function addStudyTask() {
+            const task = document.getElementById('subjectTask').value;
+            const time = document.getElementById('studyTime').value;
+            const dayNight = document.getElementById('studyDayNight').value;
+            if(!task || !time) { showAlert("বিষয় এবং সময় উভয়ই পূরণ করুন।"); return; }
+            const studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
+            studyData.push({ id: Date.now(), task, time, dayNight });
+            localStorage.setItem('study_plans', JSON.stringify(studyData));
+            document.getElementById('subjectTask').value = '';
+            document.getElementById('studyTime').value = '';
+            showStudyTasks();
+        }
+
+        function showStudyTasks() {
+            const studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
+            const list = document.getElementById('studyList');
+            if(list) {
+                list.innerHTML = studyData.map(item => `
+                    <li class="bg-gray-50 border border-gray-200 p-3 rounded-xl flex justify-between items-center group">
+                        <div class="flex-1">
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${item.dayNight} | ${item.time}</div>
+                            <div class="text-sm font-bold text-gray-700" contenteditable="true" onblur="editStudyTask(${item.id}, this.innerText)">${item.task}</div>
+                        </div>
+                        <button onclick="deleteStudyTask(${item.id})" class="text-red-400 hover:text-red-600 ml-2">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </li>
+                `).join('');
+            }
+        }
+
+        function editStudyTask(id, newText) {
+            let studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
+            studyData = studyData.map(item => item.id === id ? { ...item, task: newText } : item);
+            localStorage.setItem('study_plans', JSON.stringify(studyData));
+        }
+
+        function deleteStudyTask(id) {
+            let studyData = JSON.parse(localStorage.getItem('study_plans') || '[]');
+            studyData = studyData.filter(item => item.id !== id);
+            localStorage.setItem('study_plans', JSON.stringify(studyData));
+            showStudyTasks();
+        }
+
     </script>
 </body>
 </html>
