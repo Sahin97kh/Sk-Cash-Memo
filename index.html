@@ -199,7 +199,7 @@
                 </tfoot>
             </table>
 
-            <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">শূণ্য টাকা মাত্র।</span></p>
+            <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">0.00 টাকা মাত্র।</span></p>
 
             <div class="flex justify-between mt-10 text-xs font-bold text-teal-800 signature-area">
                 <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
@@ -541,7 +541,7 @@
                     <div class="max-h-[300px] overflow-y-auto pr-2"><table class="w-full text-xs cash-table"><tbody id="bankCashBody"></tbody></table></div>
                     <div class="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
                         <div class="flex justify-between items-center font-bold text-green-800 text-lg"><span>মোট:</span><span>৳ <span id="bankTotal">0</span></span></div>
-                        <div class="text-[10px] text-green-700 mt-2 italic font-semibold border-t border-green-200 pt-2" id="bankWords">শূণ্য টাকা মাত্র।</div>
+                        <div class="text-[10px] text-green-700 mt-2 italic font-semibold border-t border-green-200 pt-2" id="bankWords">0.00 টাকা মাত্র।</div>
                     </div>
                     <button onclick="clearBankCash()" class="w-full mt-3 bg-gray-100 py-2 rounded font-bold text-gray-500 text-[10px] hover:bg-gray-200">সব ক্লিয়ার করুন</button>
                 </div>
@@ -654,7 +654,7 @@
         }
 
         function calculateAll() {
-            let grandTotal = 0; // ব্যাংকিং কাজের নিখুঁত দশমিক হিসাবের জন্য BigInt থেকে Number এ পরিবর্তন
+            let grandTotal = 0;
             const rows = document.querySelectorAll('#table-body tr');
             rows.forEach(row => {
                 let note = Math.floor(parseBn(row.querySelector('.note-val').innerText));
@@ -664,8 +664,10 @@
                 row.querySelector('.row-total').innerText = rowTotal.toFixed(2);
                 grandTotal += rowTotal;
             });
-            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
-            document.getElementById('amountInWords').innerText = bngAmountInWords(grandTotal.toString());
+            let finalValue = grandTotal.toFixed(2);
+            document.getElementById('grandTotal').innerText = finalValue;
+            // আপনার চাহিদা অনুযায়ী সংখ্যা শো করানো হচ্ছে
+            document.getElementById('amountInWords').innerText = finalValue + " টাকা মাত্র।";
         }
 
         function bngAmountInWords(amountStr) {
@@ -770,8 +772,10 @@
                     grand += t; tbody.innerHTML += `<tr><td class="text-center col-sl">${toBn(i+1)}</td><td class="col-desc">${ds[i].value || "পণ্য"}</td><td class="text-center col-qty">${toBn(q)}</td><td class="text-right col-rate">${toBn(r.toFixed(2))}</td><td class="text-right col-total">${toBn(t.toFixed(2))}</td></tr>`;
                 }
             }
-            document.getElementById('pm_total').innerText = toBn(grand.toFixed(2));
-            document.getElementById('pm_words').innerText = bngAmountInWords(grand.toString());
+            let finalMemoTotal = grand.toFixed(2);
+            document.getElementById('pm_total').innerText = toBn(finalMemoTotal);
+            // ক্যাশ মেমোতে কথার যায়গায় সংখ্যা এবং 'টাকা মাত্র' যোগ করা হলো
+            document.getElementById('pm_words').innerText = finalMemoTotal + " টাকা মাত্র।";
             document.getElementById('memo-preview-area').style.display = 'block';
         }
 
@@ -787,8 +791,10 @@
                 const rowTotal = noteVal * count; input.closest('tr').querySelector('.bank-row-val').innerText = rowTotal.toLocaleString('bn-BD');
                 grandTotal += rowTotal;
             });
+            let finalBankVal = grandTotal.toFixed(2);
             document.getElementById('bankTotal').innerText = grandTotal.toLocaleString('bn-BD');
-            document.getElementById('bankWords').innerText = bngAmountInWords(grandTotal.toString());
+            // ব্যাংক ক্যাশ হিসাবের কথার ঘর আপডেট করা হলো
+            document.getElementById('bankWords').innerText = finalBankVal + " টাকা মাত্র।";
         }
         function clearBankCash() { document.querySelectorAll('.bank-note-input').forEach(i => i.value = ''); runBankCash(); }
 
@@ -853,7 +859,7 @@
             document.getElementById('custName').innerText = '..................................................................';
             document.getElementById('custAcc').innerText = '......................................................';
             document.getElementById('table-body').innerHTML = ''; document.getElementById('grandTotal').innerText = '0.00';
-            document.getElementById('amountInWords').innerText = 'শূণ্য টাকা মাত্র।'; addNewRow(false); closeResetModal();
+            document.getElementById('amountInWords').innerText = '0.00 টাকা মাত্র।'; addNewRow(false); closeResetModal();
         }
 
         function openTool(t) {
