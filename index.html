@@ -763,7 +763,7 @@
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
-        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ (আপনার রিকোয়েস্ট অনুযায়ী পরিবর্তিত) ---
+        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ ---
         function saveLedger() {
             const type = document.getElementById('l_type').value;
             const name = document.getElementById('l_name').value.trim();
@@ -1151,7 +1151,6 @@
         }
 
         function openTool(t) {
-            // যদি এটি রেন্টাল বাটন হয়, সরাসরি গিটহাব লিঙ্ক ওপেন হবে
             if(t === 'rent') {
                 window.open('Other tools/rent.html', '_blank');
                 return;
