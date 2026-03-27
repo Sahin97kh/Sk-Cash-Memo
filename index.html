@@ -152,6 +152,24 @@
         .ledger-red { color: #b91c1c; font-weight: bold; }
         .ledger-popup-inner { background: white; padding: 20px; border-radius: 15px; width: 100%; max-height: 80vh; overflow-y: auto; }
         .name-warning { color: #ef4444; font-size: 10px; font-weight: bold; margin-top: -5px; display: none; }
+
+        /* --- নতুন উন্নত পপ-আপ ডিজাইন --- */
+        .tool-modal-content {
+            background: white; width: 100%; max-width: 450px; border-radius: 24px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 2px solid #0d9488;
+            position: relative; overflow: hidden; animation: modalPop 0.3s ease-out;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-close-btn {
+            position: absolute; top: 12px; right: 12px; width: 32px; height: 32px;
+            background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 20px; font-weight: bold;
+            cursor: pointer; z-index: 100; transition: 0.2s; border: 1px solid #fecaca;
+        }
+        .modal-close-btn:hover { background: #ef4444; color: white; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -316,6 +334,7 @@
             </div>
         </div>
     </div>
+
     <div id="ledgerSubModal" class="fixed inset-0 modal-overlay z-[200] hidden items-center justify-center p-4 no-print">
          <div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600">
              <div class="flex justify-between items-center border-b pb-2 mb-4">
@@ -388,9 +407,10 @@
     </div>
 
     <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
-            <div class="p-6 max-h-[90vh] overflow-y-auto">
+        <div class="tool-modal-content">
+            <button onclick="closeModal()" class="modal-close-btn">&times;</button>
+            
+            <div class="p-6 max-h-[85vh] overflow-y-auto">
                 
                 <div id="ledgerBox" class="hidden">
                     <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">দেনা পাওনা হিসাব</h4>
@@ -416,6 +436,7 @@
                          <div class="border rounded max-h-48 overflow-y-auto" id="ledgerMasterList"></div>
                     </div>
                 </div>
+
                 <div id="expenseBox" class="hidden">
                     <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">ব্যক্তিগত খরচ ট্র্যাকার</h4>
                     <div class="grid grid-cols-2 gap-3 mb-4">
@@ -616,6 +637,7 @@
                     <button onclick="runAge()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
                     <div id="ageOut" class="mt-4 p-3 bg-teal-50 rounded text-teal-800 font-bold hidden"></div>
                 </div>
+
                 <div id="emiBox" class="hidden">
                     <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm">কিস্তি ক্যালকুলেটর</h4>
                     <input type="number" id="emiP" placeholder="মোট টাকা" class="w-full border p-2 mb-2 rounded text-sm">
@@ -624,6 +646,7 @@
                     <button onclick="runEMI()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
                     <div id="emiOut" class="mt-4 text-center font-bold text-blue-800 hidden"></div>
                 </div>
+
                 <div id="unitBox" class="hidden text-center">
                     <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm text-left">ইউনিট কনভার্টার</h4>
                     <input type="number" id="unitIn" placeholder="ইঞ্চি লিখুন" class="w-full border p-3 rounded-lg mb-4" oninput="runUnit()">
@@ -632,6 +655,7 @@
                         <div><div class="text-xs uppercase">ফুট</div><div id="feetOut" class="font-bold text-xl">0</div></div>
                     </div>
                 </div>
+
                 <div id="fdrBox" class="hidden">
                     <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm">FDR মুনাফা ক্যালকুলেটর</h4>
                     <input type="number" id="fdrP" placeholder="জমা (টাকা)" class="w-full border p-2 mb-2 rounded outline-none text-sm">
@@ -645,12 +669,14 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="qrBox" class="hidden text-center">
                     <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm text-left">QR কোড জেনারেটর</h4>
                     <input type="text" id="qrText" placeholder="লিঙ্ক বা টেক্সট লিখুন" class="w-full border p-3 rounded-lg mb-4 outline-none">
                     <button onclick="runQR()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold mb-4">কোড তৈরি করুন</button>
                     <div id="qrcode" class="flex justify-center p-4 bg-white border rounded"></div>
                 </div>
+
                 <div id="tvBox" class="hidden">
                     <h4 class="font-bold text-red-600 mb-4 uppercase text-sm">লাইভ টিভি প্লেয়ার</h4>
                     <div class="tv-screen mb-4 flex items-center justify-center text-xs">
@@ -763,7 +789,7 @@
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
-        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ (আপনার রিকোয়েস্ট অনুযায়ী পরিবর্তিত) ---
+        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ (আপনার রিকোয়েস্ট অনুযায়ী অপরিবর্তিত) ---
         function saveLedger() {
             const type = document.getElementById('l_type').value;
             const name = document.getElementById('l_name').value.trim();
