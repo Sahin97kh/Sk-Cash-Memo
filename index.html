@@ -66,29 +66,7 @@
         }
 
         [contenteditable]:focus { outline: 2px solid #0d9488; background-color: #f0fdfa; border-radius: 4px; }
-        
-        /* --- পপ-আপ অ্যানিমেশন স্টাইল (মেইন সাইটের মতো) --- */
-        .modal-overlay { 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(5px); 
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-        .modal-content-box {
-            transform: scale(0.7);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .modal-overlay.active .modal-content-box {
-            transform: scale(1);
-            opacity: 1;
-        }
-
+        .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         .premium-card:hover { border-color: #0d9488; transform: translateY(-3px); }
         #qrcode img { margin: 0 auto; }
         
@@ -338,9 +316,8 @@
             </div>
         </div>
     </div>
-    
-    <div id="ledgerSubModal" class="fixed inset-0 modal-overlay z-[200] items-center justify-center p-4 no-print">
-         <div class="ledger-popup-inner modal-content-box max-w-lg shadow-2xl border-2 border-teal-600">
+    <div id="ledgerSubModal" class="fixed inset-0 modal-overlay z-[200] hidden items-center justify-center p-4 no-print">
+         <div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600">
              <div class="flex justify-between items-center border-b pb-2 mb-4">
                  <h4 class="font-bold text-teal-700 uppercase text-sm" id="ledgerPersonTitle">স্টেটমেন্ট</h4>
                  <button onclick="closeLedgerSub()" class="text-2xl text-red-500 font-bold">×</button>
@@ -364,7 +341,7 @@
     </div>
 
     <div id="customAlert" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box modal-content-box">
+        <div class="reset-alert-box">
             <div id="alertIcon" class="text-5xl mb-3 text-orange-500"><i class="fas fa-exclamation-circle"></i></div>
             <h3 id="alertTitle" class="text-gray-800 font-bold text-xl mb-2">সতর্কবার্তা</h3>
             <p id="alertMsg" class="text-gray-500 text-sm mb-6 px-2"></p>
@@ -373,7 +350,7 @@
     </div>
 
     <div id="ledgerDeleteModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box modal-content-box">
+        <div class="reset-alert-box">
             <div class="text-red-500 text-5xl mb-3"><i class="fas fa-user-minus"></i></div>
             <h3 class="text-gray-800 font-bold text-xl mb-2">ইউজার মুছবেন?</h3>
             <p class="text-gray-500 text-xs mb-4">এই ইউজারের সকল হিসাব মুছার জন্য নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিন।</p>
@@ -386,7 +363,7 @@
     </div>
 
     <div id="expenseConfirmModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box modal-content-box">
+        <div class="reset-alert-box">
             <div class="text-orange-500 text-5xl mb-3"><i class="fas fa-history"></i></div>
             <h3 class="text-gray-800 font-bold text-xl mb-2">ইতিহাস মুছবেন?</h3>
             <p class="text-gray-500 text-xs mb-4">ডাটা মুছার জন্য আপনাকে নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিতে হবে।</p>
@@ -399,7 +376,7 @@
     </div>
 
     <div id="resetModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box modal-content-box">
+        <div class="reset-alert-box">
             <div class="text-red-500 text-5xl mb-3"><i class="fas fa-trash-alt"></i></div>
             <h3 class="text-gray-800 font-bold text-xl mb-2">রিসেট করবেন?</h3>
             <p class="text-gray-500 text-sm mb-6 px-2">রিসেট বাটনে ক্লিক করলে সকল এন্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?</p>
@@ -410,8 +387,8 @@
         </div>
     </div>
 
-    <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] items-center justify-center p-4 no-print">
-        <div class="bg-white modal-content-box w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
+    <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
             <div class="p-6 max-h-[90vh] overflow-y-auto">
                 
@@ -786,24 +763,7 @@
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
-        // --- পপ-আপ কন্ট্রোল ফাংশন (অ্যানিমেশন সহ) ---
-        function showModal(id) {
-            const modal = document.getElementById(id);
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.add('active');
-            }, 10);
-        }
-
-        function hideModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('active');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-
-        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ ---
+        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ (আপনার রিকোয়েস্ট অনুযায়ী পরিবর্তিত) ---
         function saveLedger() {
             const type = document.getElementById('l_type').value;
             const name = document.getElementById('l_name').value.trim();
@@ -880,11 +840,11 @@
         function confirmLedgerDelete(name) {
             pendingDeleteName = name;
             document.getElementById('ledgerDeleteInput').value = '';
-            showModal('ledgerDeleteModal');
+            document.getElementById('ledgerDeleteModal').style.display = 'flex';
         }
 
         function closeLedgerDelete() {
-            hideModal('ledgerDeleteModal');
+            document.getElementById('ledgerDeleteModal').style.display = 'none';
             pendingDeleteName = "";
         }
 
@@ -933,11 +893,11 @@
             balEl.innerText = (balance >= 0 ? "পাবো: ৳" : "দিবো: ৳") + Math.abs(balance).toFixed(2);
             balEl.className = "border p-1 " + (balance >= 0 ? "text-blue-700" : "text-red-700");
 
-            showModal('ledgerSubModal');
+            document.getElementById('ledgerSubModal').classList.replace('hidden', 'flex');
         }
 
         function closeLedgerSub() {
-            hideModal('ledgerSubModal');
+            document.getElementById('ledgerSubModal').classList.replace('flex', 'hidden');
         }
 
         function downloadLedgerImg() {
@@ -987,9 +947,9 @@
 
         function showAlert(msg, title = "সতর্কবার্তা") {
             document.getElementById('alertMsg').innerText = msg; document.getElementById('alertTitle').innerText = title;
-            showModal('customAlert');
+            document.getElementById('customAlert').style.display = 'flex';
         }
-        function closeAlert() { hideModal('customAlert'); }
+        function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
 
         function parseBn(s) {
             if (!s) return 0;
@@ -1181,8 +1141,8 @@
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
         }
 
-        function clearAllData() { showModal('resetModal'); }
-        function closeResetModal() { hideModal('resetModal'); }
+        function clearAllData() { document.getElementById('resetModal').style.display = 'flex'; }
+        function closeResetModal() { document.getElementById('resetModal').style.display = 'none'; }
         function confirmReset() {
             document.getElementById('custName').innerText = '..................................................................';
             document.getElementById('custAcc').innerText = '......................................................';
@@ -1195,15 +1155,15 @@
                 window.open('Other tools/rent.html', '_blank');
                 return;
             }
+            const modal = document.getElementById('toolModal');
             ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox', 'ledgerBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
-            const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
-            showModal('toolModal');
+            modal.classList.replace('hidden', 'flex'); const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
         }
         function closeModal() { 
             const video = document.getElementById('tvVideo'); if(video) { video.pause(); video.src = ""; }
-            hideModal('toolModal'); 
+            document.getElementById('toolModal').classList.replace('flex', 'hidden'); 
         }
 
         function runAge() {
@@ -1322,8 +1282,8 @@
             });
         }
 
-        function clearExpenseDataPrompt() { document.getElementById('expenseConfirmInput').value = ''; showModal('expenseConfirmModal'); }
-        function closeExpConfirm() { hideModal('expenseConfirmModal'); }
+        function clearExpenseDataPrompt() { document.getElementById('expenseConfirmInput').value = ''; document.getElementById('expenseConfirmModal').style.display = 'flex'; }
+        function closeExpConfirm() { document.getElementById('expenseConfirmModal').style.display = 'none'; }
         function processExpClear() {
             const inputVal = document.getElementById('expenseConfirmInput').value.trim();
             if(inputVal === 'Yes') { localStorage.removeItem('expense_tracker'); showExpense(); closeExpConfirm(); showAlert("খরচ ইতিহাস সফলভাবে মুছে ফেলা হয়েছে।", "সফল"); } else { showAlert("ভুল কোড দয়া করে Yes লিখে সাবমিট দিন।", "ত্রুটি"); }
