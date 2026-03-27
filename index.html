@@ -256,7 +256,7 @@
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto no-print mb-20 px-2">
+    <div class="max-w-4xl mx-auto no-print mb-8 px-2">
         <h3 class="text-blue-800 font-bold mb-4 border-l-4 border-blue-600 pl-2">ক্যালকুলেটর টুলস</h3>
         <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-10 gap-4">
             <div onclick="openTool('age')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
@@ -307,6 +307,15 @@
         </div>
     </div>
 
+    <div class="max-w-4xl mx-auto no-print mb-20 px-2">
+        <h3 class="text-purple-800 font-bold mb-4 border-l-4 border-purple-600 pl-2">অন্যান্য টুলস</h3>
+        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-10 gap-4">
+            <div onclick="openTool('rent')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📜</div>
+                <div class="text-[10px] font-bold text-gray-700">দোকান চুক্তি নামা</div>
+            </div>
+        </div>
+    </div>
     <div id="ledgerSubModal" class="fixed inset-0 modal-overlay z-[200] hidden items-center justify-center p-4 no-print">
          <div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600">
              <div class="flex justify-between items-center border-b pb-2 mb-4">
@@ -740,6 +749,12 @@
                     <div class="max-h-60 overflow-y-auto"><ul id="studyList" class="space-y-2"></ul></div>
                 </div>
 
+                <div id="rentBox" class="hidden">
+                    <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">দোকান চুক্তি নামা</h4>
+                    <p class="text-xs text-gray-500 mb-4">চুক্তি নামা তৈরি করতে নিচের বাটনে ক্লিক করুন:</p>
+                    <button onclick="window.open('Other tools/rent.html', '_blank')" class="w-full bg-purple-600 text-white py-3 rounded-lg font-bold">চুক্তি নামা ওপেন করুন</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -796,7 +811,6 @@
 
             masterList.innerHTML = Object.keys(groups).map(name => {
                 const info = groups[name];
-                // এখানে আপনার চাহিদা অনুযায়ী শুধু 'দেনাদার' বা 'পাওনাদার' শো করানোর লজিক
                 const colorClass = info.total >= 0 ? 'ledger-blue' : 'ledger-red';
                 const labelText = info.total >= 0 ? 'দেনাদার' : 'পাওনাদার';
                 
@@ -815,7 +829,6 @@
             }).join('');
         }
 
-        // বাকি জাভাস্ক্রিপ্ট ফাংশনগুলো (openLedgerDetail, fillLedgerForm, printReceipt, calculateAll, ইত্যাদি) একদম আগের মতোই আছে
         function fillLedgerForm(name, mobile, mode) {
             document.getElementById('l_name').value = name;
             document.getElementById('l_mobile').value = mobile;
@@ -908,7 +921,6 @@
             });
         }
 
-        // --- অন্যান্য সব ইউটিলিটি ফাংশন (অপরিবর্তিত) ---
         function updateCard(id, val) { document.getElementById(id).innerText = val || (id === 'v_name' ? 'YOUR NAME' : ''); }
         function resetCard() {
             document.querySelectorAll('#cardBox input').forEach(i => i.value = '');
@@ -1139,6 +1151,11 @@
         }
 
         function openTool(t) {
+            // যদি এটি রেন্টাল বাটন হয়, সরাসরি গিটহাব লিঙ্ক ওপেন হবে
+            if(t === 'rent') {
+                window.open('Other tools/rent.html', '_blank');
+                return;
+            }
             const modal = document.getElementById('toolModal');
             ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox', 'ledgerBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
