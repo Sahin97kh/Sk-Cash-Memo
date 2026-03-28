@@ -145,7 +145,6 @@
         
         .count-input { width: 100%; background: transparent; text-align: center; border: none; outline: none; font-weight: normal; }
 
-        /* --- দেনা পাওনা বিশেষ স্টাইল (Updated for Premium Look) --- */
         .ledger-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .ledger-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; }
         .ledger-blue { color: #1d4ed8; font-weight: bold; }
@@ -160,7 +159,6 @@
         
         .name-warning { color: #ef4444; font-size: 10px; font-weight: bold; margin-top: -5px; display: none; }
 
-        /* --- New Premium Ledger List Styles --- */
         .ledger-item-card {
             background: #ffffff;
             border: 1px solid #e5e7eb;
@@ -203,6 +201,14 @@
             transition: 0.2s;
         }
         .action-btn-circle:hover { transform: scale(1.1); }
+
+        /* --- New Backup Pop-Up Styles --- */
+        #backupModal .backup-btn {
+            background: #0d9488; color: white; padding: 12px; border-radius: 12px; 
+            width: 100%; font-weight: bold; margin-bottom: 10px; transition: 0.3s;
+        }
+        #backupModal .backup-btn:hover { background: #0b7a70; }
+        .backup-icon { font-size: 40px; color: #0d9488; margin-bottom: 15px; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -355,6 +361,25 @@
             <div onclick="openTool('study')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">📚</div><div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
             </div>
+        </div>
+    </div>
+
+    <div id="backupModal" class="reset-alert-overlay no-print">
+        <div class="reset-alert-box">
+            <div class="backup-icon"><i class="fas fa-database"></i></div>
+            <h3 class="text-gray-800 font-bold text-xl mb-1">ব্যাকআপ ও রিস্টোর</h3>
+            <p class="text-gray-400 text-[10px] mb-6 uppercase tracking-widest">Premium Data Management</p>
+            
+            <button onclick="exportAllData()" class="backup-btn shadow-lg shadow-teal-100">
+                <i class="fas fa-file-export mr-2"></i> ডাটা এক্সপোর্ট করুন
+            </button>
+            
+            <label class="backup-btn bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center justify-center shadow-lg shadow-blue-100">
+                <i class="fas fa-file-import mr-2"></i> রিস্টোর ফাইল সিলেক্ট
+                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importAllData(this)">
+            </label>
+
+            <button onclick="closeBackupModal()" class="mt-4 text-gray-400 text-xs font-bold uppercase">বন্ধ করুন</button>
         </div>
     </div>
 
@@ -819,7 +844,71 @@
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
-        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ ---
+        // --- Triple Tap Backup Feature ---
+        let lastTapTime = 0;
+        let tapCount = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            const screenHeight = window.innerHeight;
+            const touchY = e.touches[0].clientY;
+
+            // Detect touch in bottom 20% of the screen
+            if (touchY > screenHeight * 0.8) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTapTime;
+                
+                if (tapLength < 400 && tapLength > 0) {
+                    tapCount++;
+                } else {
+                    tapCount = 1;
+                }
+                
+                if (tapCount === 3) {
+                    openBackupModal();
+                    tapCount = 0;
+                }
+                lastTapTime = currentTime;
+            }
+        });
+
+        function openBackupModal() { document.getElementById('backupModal').style.display = 'flex'; }
+        function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
+
+        function exportAllData() {
+            const allData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                allData[key] = localStorage.getItem(key);
+            }
+            const blob = new Blob([JSON.stringify(allData)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Premium_Tools_Backup_' + new Date().toLocaleDateString() + '.json';
+            a.click();
+            showAlert("আপনার সকল ডাটা একটি ফাইলে এক্সপোর্ট হয়েছে। ফাইলটি নিরাপদ জায়গায় রাখুন।", "সফল");
+        }
+
+        function importAllData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    localStorage.clear();
+                    for (const key in importedData) {
+                        localStorage.setItem(key, importedData[key]);
+                    }
+                    showAlert("ডাটা রিস্টোর সফল হয়েছে! অ্যাপ রিলোড হচ্ছে...", "সফল");
+                    setTimeout(() => location.reload(), 1500);
+                } catch (err) {
+                    showAlert("ভুল ফাইল সিলেক্ট করেছেন। দয়া করে সঠিক ব্যাকআপ ফাইল দিন।", "ত্রুটি");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function saveLedger() {
             const type = document.getElementById('l_type').value;
             const name = document.getElementById('l_name').value.trim();
