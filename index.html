@@ -145,13 +145,64 @@
         
         .count-input { width: 100%; background: transparent; text-align: center; border: none; outline: none; font-weight: normal; }
 
-        /* --- দেনা পাওনা বিশেষ স্টাইল --- */
+        /* --- দেনা পাওনা বিশেষ স্টাইল (Updated for Premium Look) --- */
         .ledger-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .ledger-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; }
         .ledger-blue { color: #1d4ed8; font-weight: bold; }
         .ledger-red { color: #b91c1c; font-weight: bold; }
-        .ledger-popup-inner { background: white; padding: 20px; border-radius: 15px; width: 100%; max-height: 80vh; overflow-y: auto; }
+        .ledger-popup-inner { background: white; padding: 0; border-radius: 20px; width: 100%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        #ledgerStatementArea { background: white; padding: 25px; }
+        .statement-premium-header { border-bottom: 3px double #0d9488; margin-bottom: 15px; padding-bottom: 10px; text-align: center; }
+        .statement-premium-header h2 { font-size: 20px; font-weight: bold; color: #0d9488; margin: 0; text-transform: uppercase; }
+        .statement-premium-header p { font-size: 10px; color: #666; margin: 2px 0; }
+        .statement-title-bar { background: #f0fdfa; border: 1px solid #ccfbf1; padding: 8px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
         .name-warning { color: #ef4444; font-size: 10px; font-weight: bold; margin-top: -5px; display: none; }
+
+        /* --- New Premium Ledger List Styles --- */
+        .ledger-item-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .ledger-item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #0d9488;
+        }
+        .badge-denadar {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: bold;
+            border: 1px solid #bfdbfe;
+        }
+        .badge-paonadar {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: bold;
+            border: 1px solid #fecaca;
+        }
+        .action-btn-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .action-btn-circle:hover { transform: scale(1.1); }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -241,17 +292,17 @@
             <div onclick="openTool('memo')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">📝</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো তৈরি</div>
             </div>
-            <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
-            </div>
             <div onclick="openTool('birth')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">📄</div><div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন চেক</div>
             </div>
             <div onclick="openTool('dsr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">📊</div><div class="text-[10px] font-bold text-gray-700">বিক্রয় রিপোর্ট</div>
             </div>
-            <div onclick="openTool('study')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📚</div><div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
+            <div onclick="openTool('ledger')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📒</div><div class="text-[10px] font-bold text-gray-700">দেনা পাওনা</div>
+            </div>
+            <div onclick="openTool('expense')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">☕</div><div class="text-[10px] font-bold text-gray-700">ব্যক্তিগত খরচ</div>
             </div>
         </div>
     </div>
@@ -298,35 +349,54 @@
             <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
                 <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
             </div>
-            <div onclick="openTool('expense')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">☕</div><div class="text-[10px] font-bold text-gray-700">ব্যক্তিগত খরচ</div>
+            <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
             </div>
-            <div onclick="openTool('ledger')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📒</div><div class="text-[10px] font-bold text-gray-700">দেনা পাওনা</div>
+            <div onclick="openTool('study')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
+                <div class="text-2xl mb-2">📚</div><div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
             </div>
         </div>
     </div>
 
     <div id="ledgerSubModal" class="fixed inset-0 modal-overlay z-[200] hidden items-center justify-center p-4 no-print">
-         <div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600">
-             <div class="flex justify-between items-center border-b pb-2 mb-4">
-                 <h4 class="font-bold text-teal-700 uppercase text-sm" id="ledgerPersonTitle">স্টেটমেন্ট</h4>
-                 <button onclick="closeLedgerSub()" class="text-2xl text-red-500 font-bold">×</button>
+         <div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600 bg-white">
+             <div class="flex justify-between items-center bg-teal-600 p-4 text-white">
+                 <h4 class="font-bold uppercase text-sm"><i class="fas fa-file-invoice"></i> লেনদেন স্টেটমেন্ট</h4>
+                 <button onclick="closeLedgerSub()" class="text-2xl font-bold leading-none">&times;</button>
              </div>
-             <div id="ledgerStatementArea" class="bg-white p-2">
-                 <table class="w-full text-xs text-center border">
-                     <thead class="bg-gray-100">
-                         <tr><th class="border p-1">তারিখ</th><th class="border p-1">বিবরণ</th><th class="border p-1">টাকা</th></tr>
+             
+             <div id="ledgerStatementArea">
+                 <div class="statement-premium-header">
+                     <h2 id="st_shop_name">ব্যাক্তির হিসাব স্টেটমেন্ট</h2>
+                     <p>সঠিক হিসাব, স্বচ্ছ লেনদেন</p>
+                     <p id="st_print_date" class="text-[8px]"></p>
+                 </div>
+
+                 <div class="statement-title-bar">
+                    <div class="text-xs font-bold text-teal-800" id="ledgerPersonTitle">নাম: ---</div>
+                    <div class="text-[10px] bg-white px-2 py-1 rounded border border-teal-200 shadow-sm font-bold" id="ledgerFinalBalance">0.00</div>
+                 </div>
+
+                 <table class="w-full text-[10px] text-center border-collapse border border-gray-200">
+                     <thead class="bg-teal-50 text-teal-700">
+                         <tr>
+                            <th class="border p-2">তারিখ</th>
+                            <th class="border p-2 text-left">বিবরণ</th>
+                            <th class="border p-2">টাকা</th>
+                         </tr>
                      </thead>
                      <tbody id="ledgerDetailBody"></tbody>
-                     <tfoot>
-                         <tr class="font-bold bg-teal-50"><td colspan="2" class="border p-1 text-right">মোটঃ</td><td class="border p-1" id="ledgerFinalBalance">0.00</td></tr>
-                     </tfoot>
                  </table>
+                 
+                 <div class="mt-6 flex justify-between items-center border-t pt-4">
+                    <div class="text-[8px] text-gray-400 italic font-bold uppercase">Generated by Sk Premium Tools</div>
+                    <div class="border-t border-gray-400 w-24 text-center text-[9px] font-bold pt-1">কর্তৃপক্ষের স্বাক্ষর</div>
+                 </div>
              </div>
-             <div class="flex gap-2 mt-4">
-                <button onclick="downloadLedgerImg()" class="flex-1 bg-green-600 text-white py-2 rounded font-bold text-[10px]">গ্যালারি সেভ</button>
-                <button onclick="downloadLedgerPDF()" class="flex-1 bg-red-600 text-white py-2 rounded font-bold text-[10px]">PDF সেভ</button>
+
+             <div class="flex gap-2 p-4 bg-gray-50 border-t">
+                <button onclick="downloadLedgerImg()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg transition hover:bg-green-700"><i class="fas fa-image mr-1"></i> গ্যালারি সেভ</button>
+                <button onclick="downloadLedgerPDF()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg transition hover:bg-red-700"><i class="fas fa-file-pdf mr-1"></i> PDF সেভ</button>
              </div>
          </div>
     </div>
@@ -403,10 +473,11 @@
                     <button onclick="openLedgerSummary()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-bold text-xs mb-4">সামারি লিস্ট ও পপ-আপ দেখুন</button>
 
                     <div id="ledger-summary-list" class="hidden">
-                         <h5 class="font-bold text-xs mb-2">ব্যক্তি ভিত্তিক সামারি:</h5>
-                         <div class="border rounded max-h-48 overflow-y-auto" id="ledgerMasterList"></div>
+                         <h5 class="font-bold text-xs mb-2 text-gray-600"><i class="fas fa-users-cog mr-1"></i> ব্যক্তি ভিত্তিক সামারি:</h5>
+                         <div class="max-h-60 overflow-y-auto pr-1" id="ledgerMasterList"></div>
                     </div>
                 </div>
+
                 <div id="expenseBox" class="hidden">
                     <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">ব্যক্তিগত খরচ ট্র্যাকার</h4>
                     <div class="grid grid-cols-2 gap-3 mb-4">
@@ -748,7 +819,7 @@
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
-        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ (আপনার রিকোয়েস্ট অনুযায়ী পরিবর্তিত) ---
+        // --- দেনা পাওনা বিশেষ ফাংশন সমূহ ---
         function saveLedger() {
             const type = document.getElementById('l_type').value;
             const name = document.getElementById('l_name').value.trim();
@@ -796,26 +867,36 @@
 
             masterList.innerHTML = Object.keys(groups).map(name => {
                 const info = groups[name];
-                // এখানে আপনার চাহিদা অনুযায়ী শুধু 'দেনাদার' বা 'পাওনাদার' শো করানোর লজিক
-                const colorClass = info.total >= 0 ? 'ledger-blue' : 'ledger-red';
+                const badgeClass = info.total >= 0 ? 'badge-denadar' : 'badge-paonadar';
                 const labelText = info.total >= 0 ? 'দেনাদার' : 'পাওনাদার';
                 
-                return `<div class="flex justify-between items-center p-3 border-b hover:bg-gray-50">
+                return `
+                <div class="ledger-item-card flex justify-between items-center">
                     <div class="cursor-pointer flex-1" onclick="openLedgerDetail('${name}')">
-                        <div class="font-bold text-sm">${name}</div>
-                        <div class="text-[10px] text-gray-500">${info.mobile}</div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-gray-800 text-sm">${name}</span>
+                            <span class="${badgeClass}">${labelText}</span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 font-medium"><i class="fas fa-phone-alt mr-1"></i> ${info.mobile}</div>
                     </div>
                     <div class="flex items-center gap-1">
-                        <div class="${colorClass} text-xs font-bold mr-2">${labelText}</div>
-                        <button onclick="fillLedgerForm('${name}', '${info.mobile}', 'denadar')" class="text-green-600 p-2 text-lg" title="প্লাস (+) হিসাব"><i class="fas fa-plus-circle"></i></button>
-                        <button onclick="fillLedgerForm('${name}', '${info.mobile}', 'paonadar')" class="text-red-500 p-2 text-lg" title="মাইনাস (-) হিসাব"><i class="fas fa-minus-circle"></i></button>
-                        <button onclick="confirmLedgerDelete('${name}')" class="text-gray-400 p-2 ml-1" title="ইউজার মুছুন"><i class="fas fa-trash-alt"></i></button>
+                        <button onclick="fillLedgerForm('${name}', '${info.mobile}', 'denadar')" 
+                                class="action-btn-circle bg-green-50 text-green-600 hover:bg-green-100" title="জমা (+)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button onclick="fillLedgerForm('${name}', '${info.mobile}', 'paonadar')" 
+                                class="action-btn-circle bg-red-50 text-red-600 hover:bg-red-100" title="খরচ (-)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button onclick="confirmLedgerDelete('${name}')" 
+                                class="action-btn-circle bg-gray-50 text-gray-400 hover:bg-gray-200" title="মুছুন">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // বাকি জাভাস্ক্রিপ্ট ফাংশনগুলো (openLedgerDetail, fillLedgerForm, printReceipt, calculateAll, ইত্যাদি) একদম আগের মতোই আছে
         function fillLedgerForm(name, mobile, mode) {
             document.getElementById('l_name').value = name;
             document.getElementById('l_mobile').value = mobile;
@@ -859,7 +940,10 @@
             const data = JSON.parse(localStorage.getItem('ledger_data') || '[]');
             const personData = data.filter(item => item.name === name).sort((a,b) => new Date(a.date) - new Date(b.date));
             
-            document.getElementById('ledgerPersonTitle').innerText = name + " - এর স্টেটমেন্ট";
+            document.getElementById('st_shop_name').innerText = name + " - এর ব্যক্তিগত হিসাব";
+            document.getElementById('st_print_date').innerText = "প্রিন্ট তারিখ: " + new Date().toLocaleString('bn-BD');
+
+            document.getElementById('ledgerPersonTitle').innerText = "নাম: " + name;
             const body = document.getElementById('ledgerDetailBody');
             body.innerHTML = '';
             
@@ -869,16 +953,16 @@
                 const sign = item.type === 'denadar' ? '+' : '-';
                 if(item.type === 'denadar') balance += item.amount; else balance -= item.amount;
                 
-                body.innerHTML += `<tr>
-                    <td class="border p-1">${item.date}</td>
-                    <td class="border p-1 text-left">${item.desc}</td>
-                    <td class="border p-1 font-bold ${rowColor}">${sign} ${item.amount.toFixed(2)}</td>
+                body.innerHTML += `<tr class="border-b border-gray-100">
+                    <td class="border p-2">${item.date}</td>
+                    <td class="border p-2 text-left font-semibold text-gray-700">${item.desc}</td>
+                    <td class="border p-2 font-bold ${rowColor}">${sign} ${item.amount.toFixed(2)}</td>
                 </tr>`;
             });
 
             const balEl = document.getElementById('ledgerFinalBalance');
             balEl.innerText = (balance >= 0 ? "পাবো: ৳" : "দিবো: ৳") + Math.abs(balance).toFixed(2);
-            balEl.className = "border p-1 " + (balance >= 0 ? "text-blue-700" : "text-red-700");
+            balEl.className = "text-[10px] bg-white px-2 py-1 rounded border shadow-sm font-bold " + (balance >= 0 ? "text-blue-700 border-blue-200" : "text-red-700 border-red-200");
 
             document.getElementById('ledgerSubModal').classList.replace('hidden', 'flex');
         }
@@ -889,11 +973,16 @@
 
         function downloadLedgerImg() {
             const area = document.getElementById('ledgerStatementArea');
-            html2canvas(area, { scale: 3 }).then(canvas => {
+            html2canvas(area, { 
+                scale: 4, 
+                backgroundColor: "#ffffff",
+                useCORS: true 
+            }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'statement.png';
-                link.href = canvas.toDataURL();
+                link.download = 'Statement_' + Date.now() + '.png';
+                link.href = canvas.toDataURL('image/png');
                 link.click();
+                showAlert("স্টেটমেন্ট গ্যালারিতে সেভ হয়েছে।", "সফল");
             });
         }
 
@@ -903,12 +992,14 @@
             html2canvas(area, { scale: 3 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
                 pdf.save('Statement.pdf');
             });
         }
 
-        // --- অন্যান্য সব ইউটিলিটি ফাংশন (অপরিবর্তিত) ---
         function updateCard(id, val) { document.getElementById(id).innerText = val || (id === 'v_name' ? 'YOUR NAME' : ''); }
         function resetCard() {
             document.querySelectorAll('#cardBox input').forEach(i => i.value = '');
