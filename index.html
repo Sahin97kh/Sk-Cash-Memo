@@ -974,9 +974,12 @@
                 const key = localStorage.key(i);
                 allData[key] = localStorage.getItem(key);
             }
-            const jsonStr = JSON.stringify(allData, null, 2);
-            const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
-            smartDownload(dataUrl, 'Premium_Tools_Backup_' + new Date().toLocaleDateString() + '.json');
+            const blob = new Blob([JSON.stringify(allData)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Premium_Tools_Backup_' + new Date().toLocaleDateString() + '.json';
+            a.click();
             showAlert("আপনার সকল ডাটা একটি ফাইলে এক্সপোর্ট হয়েছে। ফাইলটি নিরাপদ জায়গায় রাখুন।", "সফল");
         }
 
@@ -1158,7 +1161,10 @@
                 backgroundColor: "#ffffff",
                 useCORS: true 
             }).then(canvas => {
-                smartDownload(canvas.toDataURL('image/png'), 'Statement_' + Date.now() + '.png');
+                const link = document.createElement('a');
+                link.download = 'Statement_' + Date.now() + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
                 showAlert("স্টেটমেন্ট গ্যালারিতে সেভ হয়েছে।", "সফল");
             });
         }
@@ -1173,7 +1179,7 @@
                 const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                 pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-                smartDownload(pdf.output('datauristring'), 'Statement.pdf');
+                pdf.save('Statement.pdf');
             });
         }
 
@@ -1188,7 +1194,7 @@
         function saveCardImg() {
             const card = document.getElementById('visiting-card-preview');
             html2canvas(card, { scale: 3 }).then(canvas => {
-                smartDownload(canvas.toDataURL(), 'visiting-card-sksocial.png');
+                const link = document.createElement('a'); link.download = 'visiting-card-sksocial.png'; link.href = canvas.toDataURL(); link.click();
             });
         }
 
@@ -1197,7 +1203,7 @@
             const card = document.getElementById('visiting-card-preview');
             html2canvas(card, { scale: 3 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png'); const pdf = new jsPDF('l', 'mm', [90, 55]);
-                pdf.addImage(imgData, 'PNG', 0, 0, 90, 55); smartDownload(pdf.output('datauristring'), 'visiting-card.pdf');
+                pdf.addImage(imgData, 'PNG', 0, 0, 90, 55); pdf.save('visiting-card.pdf');
             });
         }
 
@@ -1440,7 +1446,7 @@
             document.getElementById('totalInt').innerText = '৳' + totalInterest.toLocaleString('bn-BD'); document.getElementById('netInt').innerText = '৳' + netInterest.toLocaleString('bn-BD');
         }
         let currentQRType = 'url';
-        let currentQRSize = 200;
+        let currentQRSize = 240;
 
         function setQRType(type) {
             currentQRType = type;
@@ -1514,7 +1520,10 @@
             if (!text) { showAlert("প্রথমে QR তথ্য দিন।", "সতর্কবার্তা"); return; }
             const canvas = document.querySelector('#qrCodeCanvas canvas');
             if (!canvas) { showAlert("QR কোড তৈরি হয়নি।", "ত্রুটি"); return; }
-            smartDownload(canvas.toDataURL('image/png'), 'QR_Code_Premium_' + Date.now() + '.png');
+            const link = document.createElement('a');
+            link.download = 'QR_Code_Premium_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
             showAlert("QR কোড সফলভাবে ডাউনলোড হয়েছে!", "সফল");
         }
 
@@ -1530,7 +1539,7 @@
             document.getElementById('qrPlaceholder').style.display = 'block';
             const rGT = document.getElementById('qrGeneratedText'); if(rGT) rGT.innerText = '';
             setQRType('url');
-            setQRSize(200);
+            setQRSize(240);
         }
         function playChannel(url) {
             const video = document.getElementById('tvVideo'); const placeholder = document.getElementById('videoPlaceholder');
@@ -1617,7 +1626,9 @@
         function saveExpenseChart() {
             const chartArea = document.getElementById('expense-chart-area');
             html2canvas(chartArea, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
-                smartDownload(canvas.toDataURL(), 'Monthly-Expense-Chart-' + new Date().toLocaleDateString('bn-BD') + '.png'); showAlert("আপনার গ্যালারিতে চার্টটি সেভ হয়েছে।", "সফল");
+                const link = document.createElement('a');
+                link.download = 'Monthly-Expense-Chart-' + new Date().toLocaleDateString('bn-BD') + '.png';
+                link.href = canvas.toDataURL(); link.click(); showAlert("আপনার গ্যালারিতে চার্টটি সেভ হয়েছে।", "সফল");
             });
         }
 
@@ -1627,43 +1638,6 @@
             const inputVal = document.getElementById('expenseConfirmInput').value.trim();
             if(inputVal === 'Yes') { localStorage.removeItem('expense_tracker'); showExpense(); closeExpConfirm(); showAlert("খরচ ইতিহাস সফলভাবে মুছে ফেলা হয়েছে।", "সফল"); } else { showAlert("ভুল কোড দয়া করে Yes লিখে সাবমিট দিন।", "ত্রুটি"); }
         }
-
-          // ✅ Universal download - data URL → Blob URL → anchor click (works everywhere)
-          function smartDownload(dataUrl, filename) {
-              try {
-                  var blobUrl;
-                  if (dataUrl.indexOf(';base64,') > -1) {
-                      var arr = dataUrl.split(',');
-                      var mime = arr[0].match(/:(.*?);/)[1];
-                      var bstr = atob(arr[1]);
-                      var n = bstr.length;
-                      var u8arr = new Uint8Array(n);
-                      while (n--) u8arr[n] = bstr.charCodeAt(n);
-                      var blob = new Blob([u8arr], { type: mime });
-                      blobUrl = URL.createObjectURL(blob);
-                  } else if (dataUrl.indexOf('data:') === 0) {
-                      var mimeMatch = dataUrl.match(/^data:([^;,]+)/);
-                      var mime2 = mimeMatch ? mimeMatch[1] : 'text/plain';
-                      var content = decodeURIComponent(dataUrl.split(',')[1]);
-                      var blob2 = new Blob([content], { type: mime2 });
-                      blobUrl = URL.createObjectURL(blob2);
-                  } else {
-                      blobUrl = dataUrl;
-                  }
-                  var link = document.createElement('a');
-                  link.href = blobUrl;
-                  link.download = filename;
-                  link.style.display = 'none';
-                  document.body.appendChild(link);
-                  link.click();
-                  setTimeout(function() {
-                      document.body.removeChild(link);
-                      if (blobUrl !== dataUrl) URL.revokeObjectURL(blobUrl);
-                  }, 1000);
-              } catch(e) {
-                  console.error('Download error:', e);
-              }
-          }
-      </script>
+    </script>
 </body>
 </html>
