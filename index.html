@@ -209,6 +209,21 @@
         }
         #backupModal .backup-btn:hover { background: #0b7a70; }
         .backup-icon { font-size: 40px; color: #0d9488; margin-bottom: 15px; }
+
+        /* --- Premium QR Generator Styles --- */
+        .qr-type-btn { flex: 1; padding: 6px 2px; border-radius: 8px; font-size: 9px; font-weight: bold; border: none; cursor: pointer; transition: all 0.2s; }
+        .qr-type-btn.active { background: #4f46e5; color: white; }
+        .qr-type-btn.inactive { background: #f3f4f6; color: #374151; }
+        .qr-input-section { display: none; }
+        .qr-input-section.active { display: block; }
+        .qr-premium-input { width: 100%; border: 1px solid #e5e7eb; padding: 8px 10px; border-radius: 8px; font-size: 12px; outline: none; margin-bottom: 7px; box-sizing: border-box; transition: border-color 0.2s; font-family: 'Hind Siliguri', sans-serif; }
+        .qr-premium-input:focus { border-color: #4f46e5; }
+        .qr-size-btn { flex: 1; padding: 5px 2px; border-radius: 7px; font-size: 9px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: 1px solid #e5e7eb; background: white; color: #374151; }
+        .qr-size-btn.active { background: #eef2ff; color: #4f46e5; border-color: #4f46e5; }
+        #qrPreviewFrame { background: white; border-radius: 10px; padding: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; display: inline-block; }
+        @keyframes qrFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        #qrCodeCanvas { animation: qrFadeIn 0.25s ease; }
+        #qrCodeCanvas img, #qrCodeCanvas canvas { display: block !important; max-width: 180px !important; max-height: 180px !important; }
     </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -474,9 +489,9 @@
     </div>
 
     <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative overflow-hidden">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-2xl text-gray-400 z-50">×</button>
-            <div class="p-6 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative overflow-hidden">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-2xl text-gray-400 z-50">×</button>
+            <div class="p-4 max-h-[85vh] overflow-y-auto">
                 
                 <div id="ledgerBox" class="hidden">
                     <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">দেনা পাওনা হিসাব</h4>
@@ -732,11 +747,90 @@
                         </div>
                     </div>
                 </div>
-                <div id="qrBox" class="hidden text-center">
-                    <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm text-left">QR কোড জেনারেটর</h4>
-                    <input type="text" id="qrText" placeholder="লিঙ্ক বা টেক্সট লিখুন" class="w-full border p-3 rounded-lg mb-4 outline-none">
-                    <button onclick="runQR()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold mb-4">কোড তৈরি করুন</button>
-                    <div id="qrcode" class="flex justify-center p-4 bg-white border rounded"></div>
+                <div id="qrBox" class="hidden">
+                    <!-- Compact Header -->
+                    <div style="background: #4f46e5; margin: -16px -16px 12px -16px; padding: 10px 14px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">📱</span>
+                        <div>
+                            <div style="color: white; font-size: 13px; font-weight: bold;">QR কোড জেনারেটর</div>
+                        </div>
+                    </div>
+
+                    <!-- QR Type Selector -->
+                    <div style="display: flex; gap: 4px; margin-bottom: 10px;">
+                        <button class="qr-type-btn active" id="qrType_url" onclick="setQRType('url')">🔗 URL</button>
+                        <button class="qr-type-btn inactive" id="qrType_text" onclick="setQRType('text')">📝 টেক্সট</button>
+                        <button class="qr-type-btn inactive" id="qrType_phone" onclick="setQRType('phone')">📞 ফোন</button>
+                        <button class="qr-type-btn inactive" id="qrType_email" onclick="setQRType('email')">✉️ ইমেইল</button>
+                        <button class="qr-type-btn inactive" id="qrType_wifi" onclick="setQRType('wifi')">📶 WiFi</button>
+                    </div>
+
+                    <!-- Dynamic Input Fields -->
+                    <div id="qr_input_url" class="qr-input-section active">
+                        <input type="url" id="qrUrl" placeholder="https://example.com" class="qr-premium-input" oninput="liveQR()">
+                    </div>
+                    <div id="qr_input_text" class="qr-input-section">
+                        <textarea id="qrTextFull" placeholder="যেকোনো টেক্সট লিখুন..." class="qr-premium-input" style="height: 60px; resize: none;" oninput="liveQR()"></textarea>
+                    </div>
+                    <div id="qr_input_phone" class="qr-input-section">
+                        <input type="tel" id="qrPhone" placeholder="+8801XXXXXXXXX" class="qr-premium-input" oninput="liveQR()">
+                    </div>
+                    <div id="qr_input_email" class="qr-input-section">
+                        <input type="email" id="qrEmail" placeholder="example@mail.com" class="qr-premium-input" oninput="liveQR()">
+                        <input type="text" id="qrEmailSubj" placeholder="বিষয় (Subject)" class="qr-premium-input" oninput="liveQR()">
+                    </div>
+                    <div id="qr_input_wifi" class="qr-input-section">
+                        <input type="text" id="qrWifiName" placeholder="WiFi নাম (SSID)" class="qr-premium-input" oninput="liveQR()">
+                        <input type="text" id="qrWifiPass" placeholder="পাসওয়ার্ড" class="qr-premium-input" oninput="liveQR()">
+                        <select id="qrWifiEnc" class="qr-premium-input" onchange="liveQR()" style="background: white;">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">কোনো পাসওয়ার্ড নেই</option>
+                        </select>
+                    </div>
+
+                    <!-- Compact Settings Row -->
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; border: 1px solid #e5e7eb;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <span style="font-size: 10px; color: #6b7280;">QR রং:</span>
+                                <input type="color" id="qrColorDark" value="#000000" style="width: 24px; height: 22px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; padding: 1px;" onchange="liveQR()">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <span style="font-size: 10px; color: #6b7280;">পটভূমি:</span>
+                                <input type="color" id="qrColorLight" value="#ffffff" style="width: 24px; height: 22px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; padding: 1px;" onchange="liveQR()">
+                            </div>
+                            <div style="display: flex; gap: 4px; margin-left: auto;">
+                                <button onclick="setQRSize(150)" id="qrSize_sm" class="qr-size-btn">ছোট</button>
+                                <button onclick="setQRSize(200)" id="qrSize_md" class="qr-size-btn active">মাঝারি</button>
+                                <button onclick="setQRSize(260)" id="qrSize_lg" class="qr-size-btn">বড়</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Preview Area -->
+                    <div style="background: #f5f3ff; border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 10px; border: 1px solid #ddd6fe; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <div id="qrPlaceholder" style="color: #a78bfa; font-size: 11px;">
+                            <div style="font-size: 32px; margin-bottom: 6px; opacity: 0.5;">⬛</div>
+                            <div style="font-weight: bold;">উপরে তথ্য দিন</div>
+                            <div style="font-size: 10px; margin-top: 2px; opacity: 0.7;">QR কোড লাইভ তৈরি হবে</div>
+                        </div>
+                        <div id="qrcode" style="display: none;">
+                            <div id="qrPreviewFrame">
+                                <div id="qrCodeCanvas"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button onclick="downloadQR()" style="background: #4f46e5; color: white; padding: 9px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;">
+                            <i class="fas fa-download" style="margin-right: 4px;"></i> PNG ডাউনলোড
+                        </button>
+                        <button onclick="resetQR()" style="background: #f3f4f6; color: #374151; padding: 9px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;">
+                            <i class="fas fa-redo" style="margin-right: 4px;"></i> রিসেট
+                        </button>
+                    </div>
                 </div>
                 <div id="tvBox" class="hidden">
                     <h4 class="font-bold text-red-600 mb-4 uppercase text-sm">লাইভ টিভি প্লেয়ার</h4>
@@ -1136,7 +1230,7 @@
             let grandTotal = 0;
             const rows = document.querySelectorAll('#table-body tr');
             rows.forEach(row => {
-                let note = Math.floor(parseBn(row.querySelector('.note-val').innerText));
+                let noteEl = row.querySelector('.note-val'); let note = noteEl ? Math.floor(parseBn(noteEl.innerText)) : 0;
                 let countInput = row.querySelector('.count-val');
                 let count = countInput ? Math.floor(parseBn(countInput.value)) : 0;
                 let rowTotal = note * count;
@@ -1168,7 +1262,7 @@
         }
         function runZakat() {
             const amt = parseFloat(document.getElementById('zakAmt').value) || 0; const zak = amt * 0.025;
-            const out = document.getElementById('zakatBox').querySelector('div[id="zakOut"]'); out.classList.remove('hidden'); out.innerText = `জাকাত: ৳${zak.toLocaleString('bn-BD')}`;
+            const out = document.getElementById('zakOut'); out.classList.remove('hidden'); out.innerText = `জাকাত: ৳${zak.toLocaleString('bn-BD')}`;
         }
         function runGold() {
             const v = parseFloat(document.getElementById('goldV').value) || 0, p = parseFloat(document.getElementById('goldP').value) || 0;
@@ -1298,12 +1392,12 @@
                 let v = localStorage.getItem(k); if (v && document.getElementById(k)) document.getElementById(k).innerText = v;
             });
             if(localStorage.getItem('sh_shop_name')) {
-                document.getElementById('m_shop_name').innerText = localStorage.getItem('sh_shop_name');
-                document.getElementById('m_shop_prop').innerText = localStorage.getItem('sh_shop_prop');
-                document.getElementById('m_shop_addr').innerText = localStorage.getItem('sh_shop_addr');
-                document.getElementById('m_shop_phone').innerText = localStorage.getItem('sh_shop_phone');
-                document.getElementById('m_shop_email').innerText = localStorage.getItem('sh_shop_email');
-            }
+                  var e_sn = document.getElementById('m_shop_name'); if(e_sn) e_sn.innerText = localStorage.getItem('sh_shop_name');
+                  var e_sp = document.getElementById('m_shop_prop'); if(e_sp) e_sp.innerText = localStorage.getItem('sh_shop_prop');
+                  var e_sa = document.getElementById('m_shop_addr'); if(e_sa) e_sa.innerText = localStorage.getItem('sh_shop_addr');
+                  var e_ph = document.getElementById('m_shop_phone'); if(e_ph) e_ph.innerText = localStorage.getItem('sh_shop_phone');
+                  var e_em = document.getElementById('m_shop_email'); if(e_em) e_em.innerText = localStorage.getItem('sh_shop_email');
+              }
             let logo = localStorage.getItem('savedLogo');
             if(logo) { document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').classList.remove('hidden'); document.getElementById('upload-placeholder').classList.add('hidden'); }
             if(document.getElementById('table-body').rows.length === 0) addNewRow(false);
@@ -1351,9 +1445,101 @@
             document.getElementById('fdrOut').classList.remove('hidden');
             document.getElementById('totalInt').innerText = '৳' + totalInterest.toLocaleString('bn-BD'); document.getElementById('netInt').innerText = '৳' + netInterest.toLocaleString('bn-BD');
         }
-        function runQR() {
-            const text = document.getElementById('qrText').value, qrDiv = document.getElementById('qrcode');
-            qrDiv.innerHTML = ""; if(!text) return; new QRCode(qrDiv, { text: text, width: 128, height: 128 });
+        let currentQRType = 'url';
+        let currentQRSize = 240;
+
+        function setQRType(type) {
+            currentQRType = type;
+            ['url','text','phone','email','wifi'].forEach(t => {
+                const btn = document.getElementById('qrType_' + t);
+                const section = document.getElementById('qr_input_' + t);
+                if (btn) { btn.className = 'qr-type-btn ' + (t === type ? 'active' : 'inactive'); }
+                if (section) { section.className = 'qr-input-section' + (t === type ? ' active' : ''); }
+            });
+            liveQR();
+        }
+
+        function setQRSize(size) {
+            currentQRSize = size;
+            const sizeMap = {150: 'sm', 200: 'md', 260: 'lg'};
+            const labelMap = {150: 'ছোট', 200: 'মাঝারি', 260: 'বড়'};
+            Object.keys(sizeMap).forEach(s => {
+                const btn = document.getElementById('qrSize_' + sizeMap[s]);
+                if (btn) {
+                    if (parseInt(s) === size) { btn.className = 'qr-size-btn active'; btn.innerText = labelMap[s] + ' ✓'; }
+                    else { btn.className = 'qr-size-btn'; btn.innerText = labelMap[s]; }
+                }
+            });
+            liveQR();
+        }
+
+        function getQRText() {
+            if (currentQRType === 'url') return document.getElementById('qrUrl').value.trim();
+            if (currentQRType === 'text') return document.getElementById('qrTextFull').value.trim();
+            if (currentQRType === 'phone') { const p = document.getElementById('qrPhone').value.trim(); return p ? 'tel:' + p : ''; }
+            if (currentQRType === 'email') {
+                const e = document.getElementById('qrEmail').value.trim();
+                const s = document.getElementById('qrEmailSubj').value.trim();
+                return e ? 'mailto:' + e + (s ? '?subject=' + encodeURIComponent(s) : '') : '';
+            }
+            if (currentQRType === 'wifi') {
+                const n = document.getElementById('qrWifiName').value.trim();
+                const p = document.getElementById('qrWifiPass').value.trim();
+                const enc = document.getElementById('qrWifiEnc').value;
+                return n ? 'WIFI:T:' + enc + ';S:' + n + ';P:' + p + ';;' : '';
+            }
+            return '';
+        }
+
+        function liveQR() {
+            const text = getQRText();
+            const qrWrapper = document.getElementById('qrcode');
+            const placeholder = document.getElementById('qrPlaceholder');
+            const qrCanvas = document.getElementById('qrCodeCanvas');
+            const darkColorEl = document.getElementById('qrColorDark'); const darkColor = darkColorEl ? darkColorEl.value : '#000000';
+            const lightColorEl = document.getElementById('qrColorLight'); const lightColor = lightColorEl ? lightColorEl.value : '#ffffff';
+            const errLevelEl = document.getElementById('qrErrorLevel'); const errLevel = errLevelEl ? errLevelEl.value : 'M';
+            const levelMap = { L: QRCode.CorrectLevel.L, M: QRCode.CorrectLevel.M, Q: QRCode.CorrectLevel.Q, H: QRCode.CorrectLevel.H };
+            const dHex = document.getElementById('qrDarkHex'); if(dHex) dHex.innerText = darkColor;
+            const lHex = document.getElementById('qrLightHex'); if(lHex) lHex.innerText = lightColor;
+            if (!text) {
+                qrWrapper.style.display = 'none'; placeholder.style.display = 'block'; return;
+            }
+            qrCanvas.innerHTML = '';
+            placeholder.style.display = 'none';
+            qrWrapper.style.display = 'block';
+            new QRCode(qrCanvas, { text: text, width: currentQRSize, height: currentQRSize, colorDark: darkColor, colorLight: lightColor, correctLevel: levelMap[errLevel] || QRCode.CorrectLevel.M });
+            const shortText = text.length > 40 ? text.substring(0, 40) + '...' : text;
+            const genTextEl = document.getElementById('qrGeneratedText'); if(genTextEl) genTextEl.innerText = shortText;
+        }
+
+        function runQR() { liveQR(); }
+
+        function downloadQR() {
+            const text = getQRText();
+            if (!text) { showAlert("প্রথমে QR তথ্য দিন।", "সতর্কবার্তা"); return; }
+            const canvas = document.querySelector('#qrCodeCanvas canvas');
+            if (!canvas) { showAlert("QR কোড তৈরি হয়নি।", "ত্রুটি"); return; }
+            const link = document.createElement('a');
+            link.download = 'QR_Code_Premium_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showAlert("QR কোড সফলভাবে ডাউনলোড হয়েছে!", "সফল");
+        }
+
+        function resetQR() {
+            ['qrUrl','qrPhone','qrEmail','qrEmailSubj','qrWifiName','qrWifiPass'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            const ta = document.getElementById('qrTextFull'); if (ta) ta.value = '';
+            const rDark = document.getElementById('qrColorDark'); if(rDark) rDark.value = '#000000';
+            const rLight = document.getElementById('qrColorLight'); if(rLight) rLight.value = '#ffffff';
+            const rDH = document.getElementById('qrDarkHex'); if(rDH) rDH.innerText = '#000000';
+            const rLH = document.getElementById('qrLightHex'); if(rLH) rLH.innerText = '#ffffff';
+            document.getElementById('qrCodeCanvas').innerHTML = '';
+            document.getElementById('qrcode').style.display = 'none';
+            document.getElementById('qrPlaceholder').style.display = 'block';
+            const rGT = document.getElementById('qrGeneratedText'); if(rGT) rGT.innerText = '';
+            setQRType('url');
+            setQRSize(240);
         }
         function playChannel(url) {
             const video = document.getElementById('tvVideo'); const placeholder = document.getElementById('videoPlaceholder');
@@ -1433,7 +1619,7 @@
                     if(i.month === curMonth) monthlySum += i.total;
                     return `<tr class="border-b"><td class="p-1">${i.date}</td><td class="p-1">${i.rice}</td><td class="p-1">${i.cig}</td><td class="p-1">${i.tea}</td><td class="p-1">${i.transport}</td><td class="p-1">${i.other || 0}</td><td class="p-1 font-bold">৳${i.total.toFixed(2)}</td></tr>`;
                 }).join('');
-                monthlyTotalEl.innerText = '৳ ' + monthlySum.toFixed(2);
+                if(monthlyTotalEl) monthlyTotalEl.innerText = '৳ ' + monthlySum.toFixed(2);
             }
         }
 
