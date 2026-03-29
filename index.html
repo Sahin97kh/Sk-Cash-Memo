@@ -7,7 +7,7 @@
 <title>জমা রিসিট - ফাইনাল ফিক্স</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
@@ -862,14 +862,14 @@ transform:scale(0.96);
 <div class="hidden" id="tvBox">
 <h4 class="font-bold text-red-600 mb-4 uppercase text-sm">লাইভ টিভি প্লেয়ার</h4>
 <div class="tv-screen mb-4 flex items-center justify-center text-xs">
-<video class="w-full h-full hidden" controls="" id="tvVideo"></video>
+<video class="w-full h-full hidden" controls id="tvVideo" playsinline preload="none" webkit-playsinline x-webkit-airplay="allow"></video>
 <div class="text-white text-center" id="videoPlaceholder"><div class="text-4xl mb-2">▶️</div><div>চ্যানেল সিলেক্ট করুন</div></div>
 <div class="hidden absolute inset-0 bg-black/70 flex items-center justify-center text-white" id="tvLoading">লোডিং হচ্ছে...</div>
 </div>
-<div class="channel-grid">
-<div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=2202800.m3u8')">Bangla Vison</div>
-<div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=2202800.m3u8')">Somoy Tv</div>
-<div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=2202800.m3u8')">71 Television</div>
+<div class="channel-grid" id="channelGrid">
+<div class="channel-item text-xs" data-src="https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=2202800.m3u8">Bangla Vision</div>
+<div class="channel-item text-xs" data-src="https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=2202800.m3u8">Somoy TV</div>
+<div class="channel-item text-xs" data-src="https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=2202800.m3u8">71 Television</div>
 <div class="channel-item text-xs">Channel 4</div><div class="channel-item text-xs">Channel 5</div><div class="channel-item text-xs">Channel 6</div><div class="channel-item text-xs">Channel 7</div><div class="channel-item text-xs">Channel 8</div><div class="channel-item text-xs">Channel 9</div></div>
 </div>
 <div class="hidden" id="videoBox">
@@ -1244,6 +1244,83 @@ transform:scale(0.96);
             return n.toString().split('').map(x => b[x] || x).join('');
         }
 
+        /* =====================================================
+           বাংলায় সংখ্যাকে কথায় রূপান্তর - নির্ভুল ও সম্পূর্ণ
+           ১ থেকে ৫০,০০০ কোটি পর্যন্ত সঠিক কাজ করে
+           বাংলার ১–৯৯ সব শব্দ হার্ডকোড (গণনা নয়)
+           ===================================================== */
+        function numberToWordsBn(amount) {
+            if (isNaN(amount) || amount === null || amount === undefined) return "শূন্য টাকা মাত্র।";
+            amount = parseFloat(amount);
+            if (amount === 0) return "শূন্য টাকা মাত্র।";
+
+            /* বাংলায় ১ থেকে ৯৯ পর্যন্ত সম্পূর্ণ শব্দ তালিকা */
+            const bn = [
+                '', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়',
+                'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ',
+                'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ',
+                'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাতত্রিশ', 'আটত্রিশ', 'উনচল্লিশ',
+                'চল্লিশ', 'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চৌচল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'উনপঞ্চাশ',
+                'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপান্ন', 'সাতান্ন', 'আটান্ন', 'উনষাট',
+                'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর',
+                'সত্তর', 'একাত্তর', 'বাহাত্তর', 'তিয়াত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি',
+                'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশি', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'উননব্বই',
+                'নব্বই', 'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'
+            ];
+
+            /* ১ থেকে ৯৯৯ পর্যন্ত শব্দে রূপান্তর */
+            function upTo999(n) {
+                n = Math.floor(n);
+                if (n <= 0) return '';
+                const h = Math.floor(n / 100);
+                const rem = n % 100;
+                let out = '';
+                if (h > 0) out += bn[h] + ' শত';
+                if (rem > 0) out += (out ? ' ' : '') + bn[rem];
+                return out;
+            }
+
+            /* ১ থেকে ৯৯,৯৯৯ পর্যন্ত শব্দে রূপান্তর (কোটি গণনার জন্য) */
+            function upTo99999(n) {
+                n = Math.floor(n);
+                if (n <= 0) return '';
+                const th = Math.floor(n / 1000);   /* হাজার (০–৯৯) */
+                const rem = n % 1000;               /* বাকি (০–৯৯৯) */
+                let out = '';
+                if (th > 0) out += bn[th] + ' হাজার';
+                if (rem > 0) out += (out ? ' ' : '') + upTo999(rem);
+                return out;
+            }
+
+            /* পূর্ণাঙ্গ সংখ্যা ও পয়সা আলাদা করা */
+            const intPart = Math.floor(amount);
+            const paisa  = Math.round((amount - intPart) * 100);
+
+            if (intPart === 0 && paisa === 0) return 'শূন্য টাকা মাত্র।';
+
+            let result = '';
+
+            if (intPart > 0) {
+                /* ধাপে ধাপে ভাঙা: কোটি / লক্ষ / হাজার / শত / বাকি */
+                const crore   = Math.floor(intPart / 10000000);          /* কোটি (সর্বোচ্চ ৫০,০০০) */
+                const lakh    = Math.floor((intPart % 10000000) / 100000); /* লক্ষ (০–৯৯) */
+                const thousand= Math.floor((intPart % 100000)  / 1000);   /* হাজার (০–৯৯) */
+                const hundred = Math.floor((intPart % 1000)    / 100);    /* শত (০–৯) */
+                const remainder = intPart % 100;                          /* বাকি (০–৯৯) */
+
+                if (crore > 0)    result += upTo99999(crore) + ' কোটি';
+                if (lakh > 0)     result += (result ? ' ' : '') + bn[lakh] + ' লক্ষ';
+                if (thousand > 0) result += (result ? ' ' : '') + bn[thousand] + ' হাজার';
+                if (hundred > 0)  result += (result ? ' ' : '') + bn[hundred] + ' শত';
+                if (remainder > 0)result += (result ? ' ' : '') + bn[remainder];
+            }
+
+            result += ' টাকা';
+            if (paisa > 0) result += ' ' + bn[paisa] + ' পয়সা';
+            result += ' মাত্র।';
+            return result;
+        }
+
         function calculateAll() {
             let grandTotal = 0;
             const rows = document.querySelectorAll('#table-body tr');
@@ -1257,7 +1334,7 @@ transform:scale(0.96);
             });
             let finalValue = grandTotal.toFixed(2);
             document.getElementById('grandTotal').innerText = finalValue;
-            document.getElementById('amountInWords').innerText = finalValue + " টাকা মাত্র।";
+            document.getElementById('amountInWords').innerText = numberToWordsBn(grandTotal);
         }
 
         function runVAT() {
@@ -1344,7 +1421,7 @@ transform:scale(0.96);
             }
             let finalMemoTotal = grand.toFixed(2);
             document.getElementById('pm_total').innerText = toBn(finalMemoTotal);
-            document.getElementById('pm_words').innerText = finalMemoTotal + " টাকা মাত্র।";
+            document.getElementById('pm_words').innerText = numberToWordsBn(grand);
             document.getElementById('memo-preview-area').style.display = 'block';
         }
 
@@ -1362,7 +1439,7 @@ transform:scale(0.96);
             });
             let finalBankVal = grandTotal.toFixed(2);
             document.getElementById('bankTotal').innerText = grandTotal.toLocaleString('bn-BD');
-            document.getElementById('bankWords').innerText = finalBankVal + " টাকা মাত্র।";
+            document.getElementById('bankWords').innerText = numberToWordsBn(grandTotal);
         }
         function clearBankCash() { document.querySelectorAll('.bank-note-input').forEach(i => i.value = ''); runBankCash(); }
 
@@ -1427,7 +1504,7 @@ transform:scale(0.96);
             document.getElementById('custName').innerText = '..................................................................';
             document.getElementById('custAcc').innerText = '......................................................';
             document.getElementById('table-body').innerHTML = ''; document.getElementById('grandTotal').innerText = '0.00';
-            document.getElementById('amountInWords').innerText = '0.00 টাকা মাত্র।'; addNewRow(false); closeResetModal();
+            document.getElementById('amountInWords').innerText = 'শূন্য টাকা মাত্র।'; addNewRow(false); closeResetModal();
         }
 
         function openTool(t) {
@@ -1438,7 +1515,11 @@ transform:scale(0.96);
             modal.classList.replace('hidden', 'flex'); const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
         }
         function closeModal() { 
-            const video = document.getElementById('tvVideo'); if(video) { video.pause(); video.src = ""; }
+            /* HLS ইন্সট্যান্স সম্পূর্ণ ধ্বংস করো */
+            if (_activeHls) { _activeHls.destroy(); _activeHls = null; }
+            const video = document.getElementById('tvVideo');
+            if (video) { video.pause(); video.removeAttribute('src'); video.load(); video.classList.add('hidden'); }
+            const ph = document.getElementById('videoPlaceholder'); if (ph) ph.classList.remove('hidden');
             document.getElementById('toolModal').classList.replace('flex', 'hidden'); 
         }
 
@@ -1559,12 +1640,78 @@ transform:scale(0.96);
             setQRType('url');
             setQRSize(240);
         }
-        function playChannel(url) {
-            const video = document.getElementById('tvVideo'); const placeholder = document.getElementById('videoPlaceholder');
-            placeholder.classList.add('hidden'); video.classList.remove('hidden');
-            if (Hls.isSupported()) { const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); }
-            else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = url; video.play(); }
+        /* HLS গ্লোবাল ইন্সট্যান্স — চ্যানেল বদলালে আগেরটা ধ্বংস হবে */
+        var _activeHls = null;
+
+        /* চ্যানেল গ্রিডে ক্লিক লিসেনার — onclick অ্যাট্রিবিউটে URL নেই */
+        document.addEventListener('DOMContentLoaded', function() {
+            var grid = document.getElementById('channelGrid');
+            if (!grid) return;
+            grid.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var item = e.target.closest('.channel-item');
+                if (!item) return;
+                var url = item.getAttribute('data-src');
+                if (!url) return;
+                /* সক্রিয় চিহ্ন আপডেট */
+                grid.querySelectorAll('.channel-item').forEach(function(el) { el.classList.remove('active'); });
+                item.classList.add('active');
+                _startHls(url);
+            });
+        });
+
+        function _startHls(url) {
+            var video = document.getElementById('tvVideo');
+            var placeholder = document.getElementById('videoPlaceholder');
+            var loading = document.getElementById('tvLoading');
+
+            /* পুরনো HLS ইন্সট্যান্স পরিষ্কার */
+            if (_activeHls) { _activeHls.destroy(); _activeHls = null; }
+            video.pause();
+            video.removeAttribute('src');
+            video.load();
+
+            placeholder.classList.add('hidden');
+            video.classList.add('hidden');
+            if (loading) { loading.classList.remove('hidden'); loading.classList.add('flex'); }
+
+            function onReady() {
+                if (loading) { loading.classList.add('hidden'); loading.classList.remove('flex'); }
+                video.classList.remove('hidden');
+                video.play().catch(function() {});
+            }
+
+            function onError() {
+                if (loading) { loading.classList.add('hidden'); loading.classList.remove('flex'); }
+                placeholder.classList.remove('hidden');
+                video.classList.add('hidden');
+                showAlert("এই চ্যানেলটি এখন লাইভ নেই বা সংযোগ সমস্যা আছে।", "চ্যানেল ত্রুটি");
+            }
+
+            if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                var hls = new Hls({
+                    enableWorker: false,
+                    lowLatencyMode: false,
+                    maxBufferLength: 20,
+                    liveDurationInfinity: true
+                });
+                _activeHls = hls;
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, onReady);
+                hls.on(Hls.Events.ERROR, function(ev, data) {
+                    if (data.fatal) { onError(); hls.destroy(); _activeHls = null; }
+                });
+            } else {
+                if (loading) { loading.classList.add('hidden'); loading.classList.remove('flex'); }
+                placeholder.classList.remove('hidden');
+                showAlert("আপনার ব্রাউজার লাইভ স্ট্রিম সাপোর্ট করে না। Chrome ব্রাউজার ব্যবহার করুন।", "সাপোর্ট নেই");
+            }
         }
+
+        /* পিছনের সাথে সামঞ্জস্যের জন্য — onclick ডেকে থাকলেও ক্ষতি নেই */
+        function playChannel(url) { if (url) _startHls(url); }
         function runLoan() {
             const surplus = (parseFloat(document.getElementById('loanIncome').value) || 0) - (parseFloat(document.getElementById('loanExpense').value) || 0);
             if(surplus <= 0) { showAlert("আয় খরচের চেয়ে বেশি হতে হবে।"); return; }
@@ -1658,89 +1805,45 @@ transform:scale(0.96);
         }
     </script>
 <script>
-let channels = [];
-let currentIndex = 0;
+(function() {
+    var tvChannels = [];
+    var tvIndex = 0;
+    var lastSwitch = 0;
 
-window.addEventListener('load', ()=>{
-    channels = Array.from(document.querySelectorAll('.channel-item'));
-    channels.forEach((el,i)=>{
-        el.setAttribute('data-index', i);
-        el.addEventListener('click', ()=>{
-            currentIndex = i;
-        });
-    });
-});
-
-document.addEventListener('keydown', function(e){
-    if(e.key === "ArrowRight" || e.key === "ArrowDown"){
-        nextChannel();
-    }
-    if(e.key === "ArrowLeft" || e.key === "ArrowUp"){
-        prevChannel();
-    }
-});
-
-function nextChannel(){
-    if(channels.length===0) return;
-    currentIndex = (currentIndex + 1) % channels.length;
-    channels[currentIndex].click();
-    channels[currentIndex].scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-function prevChannel(){
-    if(channels.length===0) return;
-    currentIndex = (currentIndex - 1 + channels.length) % channels.length;
-    channels[currentIndex].click();
-    channels[currentIndex].scrollIntoView({behavior:'smooth',block:'center'});
-}
-</script><script>
-if(!window.tvFixed){
-
-window.tvFixed=true;
-
-let channels=[];
-let currentIndex=0;
-let lastSwitch=0;
-
-window.addEventListener('load',()=>{
-    channels=Array.from(document.querySelectorAll('#tvBox .channel-item'));
-
-    channels.forEach((el,i)=>{
-        el.addEventListener('click',()=>{
-            currentIndex=i;
-            setActive(i);
-        });
+    window.addEventListener('load', function() {
+        tvChannels = Array.from(document.querySelectorAll('#channelGrid .channel-item[data-src]'));
+        if (tvChannels.length > 0) tvChannels[0].classList.add('active');
     });
 
-    setActive(0);
-});
-
-function setActive(i){
-    channels.forEach(btn=>btn.classList.remove('active'));
-    if(channels[i]){
-        channels[i].classList.add('active');
-        channels[i].scrollIntoView({behavior:'smooth',block:'center'});
-    }
-}
-
-document.addEventListener('keydown',(e)=>{
-    let now=Date.now();
-    if(now-lastSwitch<400) return; // prevent spam
-    lastSwitch=now;
-
-    if(document.getElementById('tvBox').classList.contains('hidden')) return;
-
-    if(e.key==="ArrowRight" || e.key==="ArrowDown"){
-        currentIndex=(currentIndex+1)%channels.length;
-        channels[currentIndex].click();
+    function tvSetActive(i) {
+        tvChannels.forEach(function(btn) { btn.classList.remove('active'); });
+        if (tvChannels[i]) {
+            tvChannels[i].classList.add('active');
+            tvChannels[i].scrollIntoView({behavior:'smooth', block:'center'});
+        }
     }
 
-    if(e.key==="ArrowLeft" || e.key==="ArrowUp"){
-        currentIndex=(currentIndex-1+channels.length)%channels.length;
-        channels[currentIndex].click();
-    }
-});
-
-}
-</script></body>
+    document.addEventListener('keydown', function(e) {
+        var tvBox = document.getElementById('tvBox');
+        if (!tvBox || tvBox.classList.contains('hidden')) return;
+        if (tvChannels.length === 0) return;
+        var now = Date.now();
+        if (now - lastSwitch < 400) return;
+        lastSwitch = now;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            tvIndex = (tvIndex + 1) % tvChannels.length;
+            tvSetActive(tvIndex);
+            var url = tvChannels[tvIndex].getAttribute('data-src');
+            if (url) _startHls(url);
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            tvIndex = (tvIndex - 1 + tvChannels.length) % tvChannels.length;
+            tvSetActive(tvIndex);
+            var url2 = tvChannels[tvIndex].getAttribute('data-src');
+            if (url2) _startHls(url2);
+        }
+    });
+})();
+</script>
+</body>
 </html>
