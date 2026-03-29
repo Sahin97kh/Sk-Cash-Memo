@@ -1,16 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>জমা রিসিট - ফাইনাল ফিক্স</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>জমা রিসিট - ফাইনাল ফিক্স</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         
@@ -236,717 +237,692 @@
     transform: translateY(-3px);
 }
 
+
+.channel-grid{
+max-height:220px;
+overflow-y:auto;
+scroll-behavior:smooth;
+}
+
+/* premium clean */
+.channel-item{
+background:#ffffff;
+color:#0f172a;
+padding:10px;
+border-radius:10px;
+text-align:center;
+cursor:pointer;
+font-weight:600;
+border:1px solid #e5e7eb;
+box-shadow:0 2px 6px rgba(0,0,0,0.08);
+transition:all 0.2s ease;
+}
+.channel-item:hover{
+background:#0d9488;
+color:#fff;
+border-color:#0d9488;
+transform:translateY(-2px);
+box-shadow:0 6px 14px rgba(13,148,136,0.25);
+}
+.channel-item:active{
+transform:scale(0.97);
+}
 </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
-    <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
-        <div class="p-4 md:p-8" id="main-receipt-design">
-            <div class="flex justify-between items-start mb-4">
-                <div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
-                    <input type="file" id="logoInput" class="hidden" accept="image/*" onchange="previewLogo(this)">
-                    <img id="logo-preview" class="hidden object-contain w-full h-full">
-                    <span id="upload-placeholder" class="text-gray-400 text-[10px]">লোগো</span>
-                </div>
-                <div class="text-right flex-1 ml-4">
-                    <h2 id="shopName" class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
-                    <div class="flex flex-wrap gap-2 justify-end text-xs mt-2">
-                        <span id="shopAddress" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
-                        <span id="shopMobile" class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between text-sm font-bold mb-4 text-gray-700">
-                <div>রিসিট নং: <span id="receiptNo" contenteditable="true" oninput="saveData('receiptNo', this.innerText)">101</span></div>
-                <div>তারিখ: <span id="currentDate"></span></div>
-            </div>
-
-            <div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
-                <div class="flex items-center">
-                    <span class="w-16">Name:</span>
-                    <div id="custName" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '..................................................................')">..................................................................</div>
-                </div>
-                <div class="flex items-center">
-                    <span class="w-32">Account Number:</span>
-                    <div id="custAcc" class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" onfocus="handleFocus(this)" onblur="handleBlur(this, '......................................................')">......................................................</div>
-                </div>
-            </div>
-
-            <table class="w-full border-collapse border border-teal-600 text-sm mb-3">
-                <thead>
-                    <tr class="bg-teal-600 text-white">
-                        <th class="border border-teal-600 p-1 w-10">SL</th>
-                        <th class="border border-teal-600 p-1 text-left">বিবরণ</th>
-                        <th class="border border-teal-600 p-1 w-20">নোট</th>
-                        <th class="border border-teal-600 p-1 w-20">সংখ্যা</th>
-                        <th class="border border-teal-600 p-1 w-28 text-right">মোট টাকা</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-                <tfoot>
-                    <tr class="text-teal-700 font-bold bg-teal-50">
-                        <td colspan="4" class="border border-teal-600 p-1 text-right">মোট জমাকৃত টাকা:</td>
-                        <td id="grandTotal" class="border border-teal-600 p-1 text-right">0.00</td>
-                    </tr>
-                </tfoot>
-            </table>
-
-            <p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">0.00 টাকা মাত্র।</span></p>
-
-            <div class="flex justify-between mt-10 text-xs font-bold text-teal-800 signature-area">
-                <div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
-                <div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="print-wrapper" class="hidden"></div>
-
-    <div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
-        <button onclick="printReceipt()" class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl">প্রিন্ট করুন</button>
-        <button onclick="clearAllData()" class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold">রিসেট</button>
-    </div>
-
-    <div class="max-w-4xl mx-auto no-print mb-8 px-2">
-        <h3 class="text-teal-800 font-bold mb-4 border-l-4 border-teal-600 pl-2">প্রিমিয়াম টুলস</h3>
-        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div onclick="openTool('card')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🪪</div><div class="text-[10px] font-bold text-gray-700">কার্ড মেকার</div>
-            </div>
-            <div onclick="openTool('qr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏁</div><div class="text-[10px] font-bold text-gray-700">QR কোড জেনারেট</div>
-            </div>
-            <div onclick="openTool('tv')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📺</div><div class="text-[10px] font-bold text-gray-700">লাইভ টিভি</div>
-            </div>
-            <div onclick="openTool('video')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🎬</div><div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
-            </div>
-            <div onclick="openTool('memo')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📝</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো তৈরি</div>
-            </div>
-            <div onclick="openTool('birth')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📄</div><div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন চেক</div>
-            </div>
-            <div onclick="openTool('dsr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📊</div><div class="text-[10px] font-bold text-gray-700">বিক্রয় রিপোর্ট</div>
-            </div>
-            <div onclick="openTool('ledger')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📒</div><div class="text-[10px] font-bold text-gray-700">দেনা পাওনা</div>
-            </div>
-            <div onclick="openTool('expense')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">☕</div><div class="text-[10px] font-bold text-gray-700">ব্যক্তিগত খরচ</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="max-w-4xl mx-auto no-print mb-20 px-2">
-        <h3 class="text-blue-800 font-bold mb-4 border-l-4 border-blue-600 pl-2">ক্যালকুলেটর টুলস</h3>
-        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div onclick="openTool('age')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🗓️</div><div class="text-[10px] font-bold text-gray-700">বয়স</div>
-            </div>
-            <div onclick="openTool('unit')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📏</div><div class="text-[10px] font-bold text-gray-700">ইউনিট</div>
-            </div>
-            <div onclick="openTool('emi')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💸</div><div class="text-[10px] font-bold text-gray-700">কিস্তি</div>
-            </div>
-            <div onclick="openTool('vat')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🧾</div><div class="text-[10px] font-bold text-gray-700">ভ্যাট</div>
-            </div>
-            <div onclick="openTool('tax')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">⚖️</div><div class="text-[10px] font-bold text-gray-700">ইনকাম ট্যাক্স</div>
-            </div>
-            <div onclick="openTool('curr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💱</div><div class="text-[10px] font-bold text-gray-700">কারেন্সি</div>
-            </div>
-            <div onclick="openTool('dps')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📈</div><div class="text-[10px] font-bold text-gray-700">DPS</div>
-            </div>
-            <div onclick="openTool('zakat')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🕋</div><div class="text-[10px] font-bold text-gray-700">জাকাত</div>
-            </div>
-            <div onclick="openTool('gold')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏆</div><div class="text-[10px] font-bold text-gray-700">গোল্ড প্রাইস</div>
-            </div>
-            <div onclick="openTool('cashout')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💸</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ আউট</div>
-            </div>
-            <div onclick="openTool('cash')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">💰</div><div class="text-[10px] font-bold text-gray-700">ব্যাংক ক্যাশ হিসাব</div>
-            </div>
-            <div onclick="openTool('discount')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏷️</div><div class="text-[10px] font-bold text-gray-700">ডিসকাউন্ট</div>
-            </div>
-            <div onclick="openTool('fdr')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
-            </div>
-            <div onclick="openTool('loan')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
-            </div>
-            <div onclick="openTool('study')" class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg">
-                <div class="text-2xl mb-2">📚</div><div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="backupModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box">
-            <div class="backup-icon"><i class="fas fa-database"></i></div>
-            <h3 class="text-gray-800 font-bold text-xl mb-1">ব্যাকআপ ও রিস্টোর</h3>
-            <p class="text-gray-400 text-[10px] mb-6 uppercase tracking-widest">Premium Data Management</p>
-            
-            <button onclick="exportAllData()" class="backup-btn shadow-lg shadow-teal-100">
-                <i class="fas fa-file-export mr-2"></i> ডাটা এক্সপোর্ট করুন
+<div class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden" id="editor-container">
+<div class="p-4 md:p-8" id="main-receipt-design">
+<div class="flex justify-between items-start mb-4">
+<div class="relative w-24 h-24 border-2 border-dashed border-teal-300 rounded flex flex-col items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logoInput').click()">
+<input accept="image/*" class="hidden" id="logoInput" onchange="previewLogo(this)" type="file"/>
+<img class="hidden object-contain w-full h-full" id="logo-preview"/>
+<span class="text-gray-400 text-[10px]" id="upload-placeholder">লোগো</span>
+</div>
+<div class="text-right flex-1 ml-4">
+<h2 class="text-2xl font-bold text-teal-700 italic uppercase" contenteditable="true" id="shopName" oninput="saveData('shopName', this.innerText)">YOUR SHOP NAME</h2>
+<div class="flex flex-wrap gap-2 justify-end text-xs mt-2">
+<span class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" id="shopAddress" oninput="saveData('shopAddress', this.innerText)">ঠিকানা</span>
+<span class="border border-teal-500 px-3 py-1 text-teal-600 rounded" contenteditable="true" id="shopMobile" oninput="saveData('shopMobile', this.innerText)">মোবাইল</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between text-sm font-bold mb-4 text-gray-700">
+<div>রিসিট নং: <span contenteditable="true" id="receiptNo" oninput="saveData('receiptNo', this.innerText)">101</span></div>
+<div>তারিখ: <span id="currentDate"></span></div>
+</div>
+<div class="text-sm font-bold mb-4 text-gray-700 space-y-3">
+<div class="flex items-center">
+<span class="w-16">Name:</span>
+<div class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" id="custName" onblur="handleBlur(this, '..................................................................')" onfocus="handleFocus(this)">..................................................................</div>
+</div>
+<div class="flex items-center">
+<span class="w-32">Account Number:</span>
+<div class="flex-1 ml-2 border-b border-dotted border-teal-400 focus:outline-none px-1" contenteditable="true" id="custAcc" onblur="handleBlur(this, '......................................................')" onfocus="handleFocus(this)">......................................................</div>
+</div>
+</div>
+<table class="w-full border-collapse border border-teal-600 text-sm mb-3">
+<thead>
+<tr class="bg-teal-600 text-white">
+<th class="border border-teal-600 p-1 w-10">SL</th>
+<th class="border border-teal-600 p-1 text-left">বিবরণ</th>
+<th class="border border-teal-600 p-1 w-20">নোট</th>
+<th class="border border-teal-600 p-1 w-20">সংখ্যা</th>
+<th class="border border-teal-600 p-1 w-28 text-right">মোট টাকা</th>
+</tr>
+</thead>
+<tbody id="table-body"></tbody>
+<tfoot>
+<tr class="text-teal-700 font-bold bg-teal-50">
+<td class="border border-teal-600 p-1 text-right" colspan="4">মোট জমাকৃত টাকা:</td>
+<td class="border border-teal-600 p-1 text-right" id="grandTotal">0.00</td>
+</tr>
+</tfoot>
+</table>
+<p class="text-xs italic text-teal-800 font-semibold border-b border-dotted border-teal-300 inline-block">কথায়: <span id="amountInWords">0.00 টাকা মাত্র।</span></p>
+<div class="flex justify-between mt-10 text-xs font-bold text-teal-800 signature-area">
+<div class="border-t border-teal-600 pt-1 w-32 text-center">গ্রাহকের স্বাক্ষর</div>
+<div class="border-t border-teal-600 pt-1 w-32 text-center">ক্যাশিয়ারের স্বাক্ষর</div>
+</div>
+</div>
+</div>
+<div class="hidden" id="print-wrapper"></div>
+<div class="max-w-4xl mx-auto flex gap-4 mt-8 no-print pb-10 px-2">
+<button class="flex-1 bg-blue-600 text-white py-4 rounded-lg font-bold shadow-xl" onclick="printReceipt()">প্রিন্ট করুন</button>
+<button class="bg-red-500 text-white py-4 px-6 rounded-lg font-bold" onclick="clearAllData()">রিসেট</button>
+</div>
+<div class="max-w-4xl mx-auto no-print mb-8 px-2">
+<h3 class="text-teal-800 font-bold mb-4 border-l-4 border-teal-600 pl-2">প্রিমিয়াম টুলস</h3>
+<div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('card')">
+<div class="text-2xl mb-2">🪪</div><div class="text-[10px] font-bold text-gray-700">কার্ড মেকার</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('qr')">
+<div class="text-2xl mb-2">🏁</div><div class="text-[10px] font-bold text-gray-700">QR কোড জেনারেট</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('tv')">
+<div class="text-2xl mb-2">📺</div><div class="text-[10px] font-bold text-gray-700">লাইভ টিভি</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('video')">
+<div class="text-2xl mb-2">🎬</div><div class="text-[10px] font-bold text-gray-700">ভিডিও ডাউনলোড</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('memo')">
+<div class="text-2xl mb-2">📝</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ মেমো তৈরি</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('birth')">
+<div class="text-2xl mb-2">📄</div><div class="text-[10px] font-bold text-gray-700">জন্ম নিবন্ধন চেক</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('dsr')">
+<div class="text-2xl mb-2">📊</div><div class="text-[10px] font-bold text-gray-700">বিক্রয় রিপোর্ট</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('ledger')">
+<div class="text-2xl mb-2">📒</div><div class="text-[10px] font-bold text-gray-700">দেনা পাওনা</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('expense')">
+<div class="text-2xl mb-2">☕</div><div class="text-[10px] font-bold text-gray-700">ব্যক্তিগত খরচ</div>
+</div>
+</div>
+</div>
+<div class="max-w-4xl mx-auto no-print mb-20 px-2">
+<h3 class="text-blue-800 font-bold mb-4 border-l-4 border-blue-600 pl-2">ক্যালকুলেটর টুলস</h3>
+<div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('age')">
+<div class="text-2xl mb-2">🗓️</div><div class="text-[10px] font-bold text-gray-700">বয়স</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('unit')">
+<div class="text-2xl mb-2">📏</div><div class="text-[10px] font-bold text-gray-700">ইউনিট</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('emi')">
+<div class="text-2xl mb-2">💸</div><div class="text-[10px] font-bold text-gray-700">কিস্তি</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('vat')">
+<div class="text-2xl mb-2">🧾</div><div class="text-[10px] font-bold text-gray-700">ভ্যাট</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('tax')">
+<div class="text-2xl mb-2">⚖️</div><div class="text-[10px] font-bold text-gray-700">ইনকাম ট্যাক্স</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('curr')">
+<div class="text-2xl mb-2">💱</div><div class="text-[10px] font-bold text-gray-700">কারেন্সি</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('dps')">
+<div class="text-2xl mb-2">📈</div><div class="text-[10px] font-bold text-gray-700">DPS</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('zakat')">
+<div class="text-2xl mb-2">🕋</div><div class="text-[10px] font-bold text-gray-700">জাকাত</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('gold')">
+<div class="text-2xl mb-2">🏆</div><div class="text-[10px] font-bold text-gray-700">গোল্ড প্রাইস</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('cashout')">
+<div class="text-2xl mb-2">💸</div><div class="text-[10px] font-bold text-gray-700">ক্যাশ আউট</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('cash')">
+<div class="text-2xl mb-2">💰</div><div class="text-[10px] font-bold text-gray-700">ব্যাংক ক্যাশ হিসাব</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('discount')">
+<div class="text-2xl mb-2">🏷️</div><div class="text-[10px] font-bold text-gray-700">ডিসকাউন্ট</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('fdr')">
+<div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">FDR ক্যালকুলেটর</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('loan')">
+<div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">লোন যোগ্যতা</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('study')">
+<div class="text-2xl mb-2">📚</div><div class="text-[10px] font-bold text-gray-700">স্টাডি প্ল্যানার</div>
+</div>
+</div>
+</div>
+<div class="reset-alert-overlay no-print" id="backupModal">
+<div class="reset-alert-box">
+<div class="backup-icon"><i class="fas fa-database"></i></div>
+<h3 class="text-gray-800 font-bold text-xl mb-1">ব্যাকআপ ও রিস্টোর</h3>
+<p class="text-gray-400 text-[10px] mb-6 uppercase tracking-widest">Premium Data Management</p>
+<button class="backup-btn shadow-lg shadow-teal-100" onclick="exportAllData()">
+<i class="fas fa-file-export mr-2"></i> ডাটা এক্সপোর্ট করুন
             </button>
-            
-            <label class="backup-btn bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center justify-center shadow-lg shadow-blue-100">
-                <i class="fas fa-file-import mr-2"></i> রিস্টোর ফাইল সিলেক্ট
-                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importAllData(this)">
-            </label>
-
-            <button onclick="closeBackupModal()" class="mt-4 text-gray-400 text-xs font-bold uppercase">বন্ধ করুন</button>
-        </div>
-    </div>
-
-    <div id="ledgerSubModal" class="fixed inset-0 modal-overlay z-[200] hidden items-center justify-center p-4 no-print">
-         <div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600 bg-white">
-             <div class="flex justify-between items-center bg-teal-600 p-4 text-white">
-                 <h4 class="font-bold uppercase text-sm"><i class="fas fa-file-invoice"></i> লেনদেন স্টেটমেন্ট</h4>
-                 <button onclick="closeLedgerSub()" class="text-2xl font-bold leading-none">&times;</button>
-             </div>
-             
-             <div id="ledgerStatementArea">
-                 <div class="statement-premium-header">
-                     <h2 id="st_shop_name">ব্যাক্তির হিসাব স্টেটমেন্ট</h2>
-                     <p>সঠিক হিসাব, স্বচ্ছ লেনদেন</p>
-                     <p id="st_print_date" class="text-[8px]"></p>
-                 </div>
-
-                 <div class="statement-title-bar">
-                    <div class="text-xs font-bold text-teal-800" id="ledgerPersonTitle">নাম: ---</div>
-                    <div class="text-[10px] bg-white px-2 py-1 rounded border border-teal-200 shadow-sm font-bold" id="ledgerFinalBalance">0.00</div>
-                 </div>
-
-                 <table class="w-full text-[10px] text-center border-collapse border border-gray-200">
-                     <thead class="bg-teal-50 text-teal-700">
-                         <tr>
-                            <th class="border p-2">তারিখ</th>
-                            <th class="border p-2 text-left">বিবরণ</th>
-                            <th class="border p-2">টাকা</th>
-                         </tr>
-                     </thead>
-                     <tbody id="ledgerDetailBody"></tbody>
-                 </table>
-                 
-                 <div class="mt-6 flex justify-between items-center border-t pt-4">
-                    <div class="text-[8px] text-gray-400 italic font-bold uppercase">Generated by Sk Premium Tools</div>
-                    <div class="border-t border-gray-400 w-24 text-center text-[9px] font-bold pt-1">কর্তৃপক্ষের স্বাক্ষর</div>
-                 </div>
-             </div>
-
-             <div class="flex gap-2 p-4 bg-gray-50 border-t">
-                <button onclick="downloadLedgerImg()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg transition hover:bg-green-700"><i class="fas fa-image mr-1"></i> গ্যালারি সেভ</button>
-                <button onclick="downloadLedgerPDF()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg transition hover:bg-red-700"><i class="fas fa-file-pdf mr-1"></i> PDF সেভ</button>
-             </div>
-         </div>
-    </div>
-
-    <div id="customAlert" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box">
-            <div id="alertIcon" class="text-5xl mb-3 text-orange-500"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 id="alertTitle" class="text-gray-800 font-bold text-xl mb-2">সতর্কবার্তা</h3>
-            <p id="alertMsg" class="text-gray-500 text-sm mb-6 px-2"></p>
-            <button onclick="closeAlert()" class="w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-sm shadow-lg">ঠিক আছে</button>
-        </div>
-    </div>
-
-    <div id="ledgerDeleteModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box">
-            <div class="text-red-500 text-5xl mb-3"><i class="fas fa-user-minus"></i></div>
-            <h3 class="text-gray-800 font-bold text-xl mb-2">ইউজার মুছবেন?</h3>
-            <p class="text-gray-500 text-xs mb-4">এই ইউজারের সকল হিসাব মুছার জন্য নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিন।</p>
-            <input type="text" id="ledgerDeleteInput" placeholder="এখানে Yes লিখুন" class="w-full border p-2 rounded mb-4 text-center outline-none">
-            <div class="flex gap-2">
-                <button onclick="closeLedgerDelete()" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm">বাতিল</button>
-                <button onclick="processLedgerDelete()" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg">সাবমিট</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="expenseConfirmModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box">
-            <div class="text-orange-500 text-5xl mb-3"><i class="fas fa-history"></i></div>
-            <h3 class="text-gray-800 font-bold text-xl mb-2">ইতিহাস মুছবেন?</h3>
-            <p class="text-gray-500 text-xs mb-4">ডাটা মুছার জন্য আপনাকে নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিতে হবে।</p>
-            <input type="text" id="expenseConfirmInput" placeholder="এখানে Yes লিখুন" class="w-full border p-2 rounded mb-4 text-center outline-none">
-            <div class="flex gap-2">
-                <button onclick="closeExpConfirm()" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm">বাতিল</button>
-                <button onclick="processExpClear()" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg">সাবমিট</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="resetModal" class="reset-alert-overlay no-print">
-        <div class="reset-alert-box">
-            <div class="text-red-500 text-5xl mb-3"><i class="fas fa-trash-alt"></i></div>
-            <h3 class="text-gray-800 font-bold text-xl mb-2">রিসেট করবেন?</h3>
-            <p class="text-gray-500 text-sm mb-6 px-2">রিসেট বাটনে ক্লিক করলে সকল এন্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?</p>
-            <div class="flex gap-3">
-                <button onclick="closeResetModal()" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm">বাতিল</button>
-                <button onclick="confirmReset()" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-200">হ্যাঁ, মুছুন</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toolModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative overflow-hidden">
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-2xl text-gray-400 z-50">×</button>
-            <div class="p-4 max-h-[85vh] overflow-y-auto">
-                
-                <div id="ledgerBox" class="hidden">
-                    <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">দেনা পাওনা হিসাব</h4>
-                    <div class="ledger-input-group">
-                        <select id="l_type" class="w-full border p-2 rounded text-sm bg-gray-50 outline-none">
-                            <option value="denadar">দেনাদার (আমি পাবো - নীল)</option>
-                            <option value="paonadar">পাওনাদার (সে পাবে - লাল)</option>
-                        </select>
-                        <div class="relative">
-                            <input type="text" id="l_name" placeholder="নাম" class="w-full border p-2 rounded text-sm">
-                        </div>
-                        <input type="number" id="l_mobile" placeholder="মোবাইল নাম্বার" class="w-full border p-2 rounded text-sm">
-                        <input type="date" id="l_date" class="w-full border p-2 rounded text-sm">
-                        <input type="number" id="l_amount" placeholder="টাকার পরিমাণ" class="w-full border p-2 rounded text-sm">
-                        <input type="text" id="l_desc" placeholder="বিবরণ (ঐচ্ছিক)" class="w-full border p-2 rounded text-sm">
-                    </div>
-                    <button id="l_save_btn" onclick="saveLedger()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow mb-4">হিসাব এন্ট্রি করুন</button>
-                    
-                    <button onclick="openLedgerSummary()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-bold text-xs mb-4">সামারি লিস্ট ও পপ-আপ দেখুন</button>
-
-                    <div id="ledger-summary-list" class="hidden">
-                         <h5 class="font-bold text-xs mb-2 text-gray-600"><i class="fas fa-users-cog mr-1"></i> ব্যক্তি ভিত্তিক সামারি:</h5>
-                         <div class="max-h-60 overflow-y-auto pr-1" id="ledgerMasterList"></div>
-                    </div>
-                </div>
-
-                <div id="expenseBox" class="hidden">
-                    <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">ব্যক্তিগত খরচ ট্র্যাকার</h4>
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div class="bg-gray-50 p-2 rounded">
-                            <label class="text-[10px] font-bold block">🍚 ভাত খরচ</label>
-                            <input type="number" id="exRice" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
-                        </div>
-                        <div class="bg-gray-50 p-2 rounded">
-                            <label class="text-[10px] font-bold block">🚬 সিগারেট</label>
-                            <input type="number" id="exCig" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
-                        </div>
-                        <div class="bg-gray-50 p-2 rounded">
-                            <label class="text-[10px] font-bold block">☕ চা খরচ</label>
-                            <input type="number" id="exTea" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
-                        </div>
-                        <div class="bg-gray-50 p-2 rounded">
-                            <label class="text-[10px] font-bold block">🚌 যাতায়াত</label>
-                            <input type="number" id="exTransport" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
-                        </div>
-                        <div class="bg-gray-50 p-2 rounded col-span-2">
-                            <label class="text-[10px] font-bold block text-teal-600">🛠️ অন্যান্য খরচ</label>
-                            <input type="number" id="exOther" placeholder="৳ ০" class="w-full border p-1 rounded text-sm outline-none">
-                        </div>
-                    </div>
-                    <button onclick="saveExpense()" class="w-full bg-teal-600 text-white py-2 rounded-lg font-bold shadow mb-4">আজকের খরচ সেভ করুন</button>
-                    
-                    <div id="expense-chart-area" class="bg-white p-1">
-                         <div class="max-h-48 overflow-y-auto mb-4 border rounded p-1">
-                            <table class="w-full text-[10px] text-center">
-                                <thead class="bg-teal-50">
-                                    <tr><th>তারিখ</th><th>ভাত</th><th>সিগা.</th><th>চা</th><th>যাত.</th><th>অন্যান্য</th><th>মোট</th></tr>
-                                </thead>
-                                <tbody id="expenseList"></tbody>
-                            </table>
-                        </div>
-                        <div class="bg-teal-900 text-white p-3 rounded-xl flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold">এই মাসের মোট খরচ:</span>
-                            <span id="monthlyExTotal" class="text-lg font-bold">৳ ০.০০</span>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                         <button onclick="saveExpenseChart()" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-[10px] shadow"><i class="fas fa-image"></i> চার্ট সেভ (গ্যালারি)</button>
-                         <button onclick="clearExpenseDataPrompt()" class="flex-1 bg-gray-200 text-gray-500 py-2 rounded-lg font-bold text-[10px]">ইতিহাস মুছুন</button>
-                    </div>
-                </div>
-
-                <div id="cardBox" class="hidden">
-                    <h4 class="font-bold text-gray-700 mb-4 uppercase text-sm border-b pb-2">প্রফেশনাল কার্ড মেকার</h4>
-                    <div id="visiting-card-preview">
-                        <div class="card-top-design"><div class="card-top-pattern"></div></div>
-                        <div class="card-content">
-                            <div class="card-header-texts">
-                                <div id="v_h1">HEADER TEXT 1</div><div id="v_h2">Header text 2 example</div>
-                            </div>
-                            <div class="card-body-main">
-                                <div class="card-left">
-                                    <div id="v_name" class="card-name">SAHIN KHAN</div>
-                                    <div id="v_mobile" class="card-info">📞 +880 1835303883</div>
-                                    <div id="v_email" class="card-info">✉️ example@mail.com</div>
-                                </div>
-                                <div class="card-right">
-                                    <div id="v_r1">Designation Box 1</div><div id="v_r2">Organization Box 2</div><div id="v_r3">Location Box 3</div>
-                                </div>
-                            </div>
-                            <div class="card-footer"><span>SAHIN SOCIAL PLATFORM</span><span>|</span><span>PREMIUM MEMBER</span></div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mb-3 mt-4">
-                        <input type="text" placeholder="হেডার ১" class="border p-2 rounded text-xs" oninput="updateCard('v_h1', this.value)">
-                        <input type="text" placeholder="হেডার ২" class="border p-2 rounded text-xs" oninput="updateCard('v_h2', this.value)">
-                        <input type="text" placeholder="আপনার নাম" class="border p-2 rounded text-xs font-bold" oninput="updateCard('v_name', this.value)">
-                        <input type="text" placeholder="মোবাইল নাম্বার" class="border p-2 rounded text-xs" oninput="updateCard('v_mobile', '📞 ' + this.value)">
-                        <input type="text" placeholder="ইমেইল" class="border p-2 rounded text-xs" oninput="updateCard('v_email', '✉️ ' + this.value)">
-                        <input type="text" placeholder="ডান বক্স ১" class="border p-2 rounded text-xs" oninput="updateCard('v_r1', this.value)">
-                        <input type="text" placeholder="ডান বক্স ২" class="border p-2 rounded text-xs" oninput="updateCard('v_r2', this.value)">
-                        <input type="text" placeholder="ডান বক্স ৩" class="border p-2 rounded text-xs" oninput="updateCard('v_r3', this.value)">
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="saveCardImg()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold text-xs shadow-md"><i class="fas fa-image"></i> গ্যালারি সেভ</button>
-                        <button onclick="saveCardPDF()" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold text-xs shadow-md"><i class="fas fa-file-pdf"></i> PDF সেভ</button>
-                        <button onclick="resetCard()" class="bg-gray-500 text-white px-4 py-3 rounded-lg font-bold text-xs shadow-md">মুছুন</button>
-                    </div>
-                </div>
-
-                <div id="vatBox" class="hidden">
-                    <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">ভ্যাট (VAT) ক্যালকুলেটর</h4>
-                    <input type="number" id="vatAmt" placeholder="টাকার পরিমাণ" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="vatPerc" placeholder="ভ্যাট %" value="15" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runVAT()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
-                    <div id="vatOut" class="mt-4 p-3 bg-blue-50 rounded text-blue-800 font-bold hidden text-sm"></div>
-                </div>
-
-                <div id="taxBox" class="hidden">
-                    <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">ইনকাম ট্যাক্স ক্যালকুলেটর</h4>
-                    <input type="number" id="taxIncome" placeholder="বার্ষিক আয় (টাকা)" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runTax()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">ট্যাক্স দেখুন</button>
-                    <div id="taxOut" class="mt-4 p-3 bg-indigo-50 rounded text-indigo-800 font-bold hidden text-sm"></div>
-                </div>
-
-                <div id="currBox" class="hidden">
-                    <h4 class="font-bold text-green-700 mb-4 uppercase text-sm border-b pb-2">কারেন্সি কনভার্টার (USD to BDT)</h4>
-                    <input type="number" id="usdIn" placeholder="USD পরিমাণ" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runCurr()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">কনভার্ট করুন</button>
-                    <div id="currOut" class="mt-4 p-3 bg-green-50 rounded text-green-800 font-bold hidden text-sm text-center"></div>
-                </div>
-
-                <div id="dpsBox" class="hidden">
-                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">DPS ক্যালকুলেটর</h4>
-                    <input type="number" id="dpsM" placeholder="মাসিক জমা" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="dpsR" placeholder="সুদ %" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="dpsY" placeholder="বছর" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runDPS()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
-                    <div id="dpsOut" class="mt-4 p-3 bg-orange-50 rounded text-orange-800 font-bold hidden text-sm"></div>
-                </div>
-
-                <div id="zakatBox" class="hidden">
-                    <h4 class="font-bold text-emerald-700 mb-4 uppercase text-sm border-b pb-2">জাকাত ক্যালকুলেটর</h4>
-                    <input type="number" id="zakAmt" placeholder="মোট সম্পদ/টাকা" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runZakat()" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold">জাকাত হিসাব</button>
-                    <div id="zakOut" class="mt-4 p-3 bg-emerald-50 rounded text-emerald-800 font-bold hidden text-sm"></div>
-                </div>
-
-                <div id="goldBox" class="hidden">
-                    <h4 class="font-bold text-yellow-700 mb-4 uppercase text-sm border-b pb-2">গোল্ড প্রাইস ক্যালকুলেটর</h4>
-                    <input type="number" id="goldV" placeholder="ভরি" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="goldP" placeholder="প্রতি ভরি মূল্য" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runGold()" class="w-full bg-yellow-600 text-white py-3 rounded-lg font-bold">মোট দাম দেখুন</button>
-                    <div id="goldOut" class="mt-4 p-3 bg-yellow-50 rounded text-yellow-800 font-bold hidden text-sm"></div>
-                </div>
-
-                <div id="cashoutBox" class="hidden">
-                    <h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">বিকাশ/নগদ ক্যাশ আউট চার্জ</h4>
-                    <input type="number" id="coAmt" placeholder="টাকার পরিমাণ" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runCashout()" class="w-full bg-pink-600 text-white py-3 rounded-lg font-bold">চার্জ দেখুন</button>
-                    <div id="coOut" class="mt-4 p-3 bg-pink-50 rounded text-pink-800 font-bold hidden text-sm"></div>
-                </div>
-
-                <div id="memoBox" class="hidden">
-                    <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">নতুন ক্যাশ মেমো</h4>
-                    <div class="input-row-memo">
-                        <input type="text" id="m_c_name" placeholder="ক্রেতার নাম">
-                        <input type="text" id="m_c_addr" placeholder="ঠিকানা">
-                    </div>
-                    <div class="input-row-memo">
-                        <input type="text" id="m_no" placeholder="মেমো নং">
-                        <input type="date" id="m_date">
-                    </div>
-                    <div id="m_item_list" class="space-y-2 mt-3">
-                        <div class="input-row-memo m_item_row">
-                            <input type="text" class="mi_desc" placeholder="বিবরণ">
-                            <input type="text" class="mi_qty" placeholder="পরিমাণ">
-                            <input type="text" class="mi_rate" placeholder="দর">
-                        </div>
-                    </div>
-                    <button onclick="addMemoRow()" class="w-full bg-blue-50 text-blue-600 py-2 rounded mt-2 font-bold text-xs">+ আরও পণ্য যোগ করুন</button>
-                    <button onclick="generateMemo()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold mt-4 shadow-lg">মেমো তৈরি করুন</button>
-
-                    <div id="memo-preview-area">
-                        <button class="bg-black text-white px-4 py-1 rounded text-[10px] mb-2 no-print" onclick="printMemo()">প্রিন্ট করুন</button>
-                        <div id="memo-print-content">
-                            <div class="memo-header">
-                                <div class="memo-header-left">
-                                    <h1 id="m_shop_name" contenteditable="true" oninput="saveMHeader()">শাহিন ভ্যারাইটিজ স্টোর</h1>
-                                    <p id="m_shop_prop" contenteditable="true" oninput="saveMHeader()">প্রোপাইটর: শাহিন খান</p>
-                                    <p id="m_shop_addr" contenteditable="true" oninput="saveMHeader()">জনতা বাজার, হাইমচর, চাঁদপুর।</p>
-                                </div>
-                                <div class="memo-header-right">
-                                    <p id="m_shop_phone" contenteditable="true" oninput="saveMHeader()">📞 +৮৮০ ১৮৩৫৩০৩৮৮৩</p>
-                                    <p id="m_shop_email" contenteditable="true" oninput="saveMHeader()">✉️ sahinkhan8585@gmail.com</p>
-                                </div>
-                            </div>
-                            <div class="memo-meta"><span>মেমো নং: <span id="pm_no"></span></span><span>তারিখ: <span id="pm_date"></span></span></div>
-                            <table class="memo-table" style="margin-bottom: 5px;">
-                                <tr><td class="memo-label">নাম:</td><td id="pm_name" style="white-space: normal;"></td></tr>
-                                <tr><td class="memo-label">ঠিকানা:</td><td id="pm_addr" style="white-space: normal;"></td></tr>
-                            </table>
-                            <table class="memo-table">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="col-sl">ক্র.নং</th><th class="col-desc">বিবরণ</th><th class="col-qty">পরিমাণ</th><th class="col-rate">দর</th><th class="col-total">মোট</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pm_items"></tbody>
-                                <tfoot><tr><td colspan="4" class="text-right font-bold">সর্বমোট:</td><td id="pm_total" class="text-right font-bold"></td></tr></tfoot>
-                            </table>
-                            <div class="text-[11px] italic border-b border-black pb-1">কথায়: <span id="pm_words"></span></div>
-                            <div class="memo-signatures">
-                                <div class="memo-sig-box">ক্রেতার স্বাক্ষর</div><div class="memo-sig-box">বিক্রেতার স্বাক্ষর</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="ageBox" class="hidden">
-                    <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm">বয়স ক্যালকুলেটর</h4>
-                    <input type="date" id="dobIn" class="w-full border p-3 rounded-lg mb-4 outline-none">
-                    <button onclick="runAge()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
-                    <div id="ageOut" class="mt-4 p-3 bg-teal-50 rounded text-teal-800 font-bold hidden"></div>
-                </div>
-                <div id="emiBox" class="hidden">
-                    <h4 class="font-bold text-blue-700 mb-4 uppercase text-sm">কিস্তি ক্যালকুলেটর</h4>
-                    <input type="number" id="emiP" placeholder="মোট টাকা" class="w-full border p-2 mb-2 rounded text-sm">
-                    <input type="number" id="emiR" placeholder="সুদ %" class="w-full border p-2 mb-2 rounded text-sm">
-                    <input type="number" id="emiM" placeholder="মাস" class="w-full border p-2 mb-4 rounded text-sm">
-                    <button onclick="runEMI()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
-                    <div id="emiOut" class="mt-4 text-center font-bold text-blue-800 hidden"></div>
-                </div>
-                <div id="unitBox" class="hidden text-center">
-                    <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm text-left">ইউনিট কনভার্টার</h4>
-                    <input type="number" id="unitIn" placeholder="ইঞ্চি লিখুন" class="w-full border p-3 rounded-lg mb-4" oninput="runUnit()">
-                    <div class="flex justify-around bg-purple-50 p-4 rounded-xl">
-                        <div><div class="text-xs uppercase">সুতা</div><div id="sootOut" class="font-bold text-xl">0</div></div>
-                        <div><div class="text-xs uppercase">ফুট</div><div id="feetOut" class="font-bold text-xl">0</div></div>
-                    </div>
-                </div>
-                <div id="fdrBox" class="hidden">
-                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm">FDR মুনাফা ক্যালকুলেটর</h4>
-                    <input type="number" id="fdrP" placeholder="জমা (টাকা)" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="fdrR" placeholder="মুনাফার হার %" class="w-full border p-2 mb-2 rounded outline-none text-sm">
-                    <input type="number" id="fdrM" placeholder="সময় (মাস)" class="w-full border p-2 mb-4 rounded outline-none text-sm">
-                    <button onclick="runFDR()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">হিসাব করুন</button>
-                    <div id="fdrOut" class="mt-4 hidden">
-                        <div class="bg-gray-800 text-white p-4 rounded-lg space-y-2">
-                            <div class="flex justify-between border-b border-gray-600 pb-2 text-xs"><span>মোট মুনাফা:</span><span id="totalInt" class="font-bold text-orange-400">৳০.০০</span></div>
-                            <div class="flex justify-between pt-1 text-xs"><span class="font-bold text-green-400">নীট মুনাফা (ভ্যাট বাদে):</span><span id="netInt" class="font-bold text-lg text-green-400">৳০.০০</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="qrBox" class="hidden">
-                    <!-- Compact Header -->
-                    <div style="background: #4f46e5; margin: -16px -16px 12px -16px; padding: 10px 14px; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 16px;">📱</span>
-                        <div>
-                            <div style="color: white; font-size: 13px; font-weight: bold;">QR কোড জেনারেটর</div>
-                        </div>
-                    </div>
-
-                    <!-- QR Type Selector -->
-                    <div style="display: flex; gap: 4px; margin-bottom: 10px;">
-                        <button class="qr-type-btn active" id="qrType_url" onclick="setQRType('url')">🔗 URL</button>
-                        <button class="qr-type-btn inactive" id="qrType_text" onclick="setQRType('text')">📝 টেক্সট</button>
-                        <button class="qr-type-btn inactive" id="qrType_phone" onclick="setQRType('phone')">📞 ফোন</button>
-                        <button class="qr-type-btn inactive" id="qrType_email" onclick="setQRType('email')">✉️ ইমেইল</button>
-                        <button class="qr-type-btn inactive" id="qrType_wifi" onclick="setQRType('wifi')">📶 WiFi</button>
-                    </div>
-
-                    <!-- Dynamic Input Fields -->
-                    <div id="qr_input_url" class="qr-input-section active">
-                        <input type="url" id="qrUrl" placeholder="https://example.com" class="qr-premium-input" oninput="liveQR()">
-                    </div>
-                    <div id="qr_input_text" class="qr-input-section">
-                        <textarea id="qrTextFull" placeholder="যেকোনো টেক্সট লিখুন..." class="qr-premium-input" style="height: 60px; resize: none;" oninput="liveQR()"></textarea>
-                    </div>
-                    <div id="qr_input_phone" class="qr-input-section">
-                        <input type="tel" id="qrPhone" placeholder="+8801XXXXXXXXX" class="qr-premium-input" oninput="liveQR()">
-                    </div>
-                    <div id="qr_input_email" class="qr-input-section">
-                        <input type="email" id="qrEmail" placeholder="example@mail.com" class="qr-premium-input" oninput="liveQR()">
-                        <input type="text" id="qrEmailSubj" placeholder="বিষয় (Subject)" class="qr-premium-input" oninput="liveQR()">
-                    </div>
-                    <div id="qr_input_wifi" class="qr-input-section">
-                        <input type="text" id="qrWifiName" placeholder="WiFi নাম (SSID)" class="qr-premium-input" oninput="liveQR()">
-                        <input type="text" id="qrWifiPass" placeholder="পাসওয়ার্ড" class="qr-premium-input" oninput="liveQR()">
-                        <select id="qrWifiEnc" class="qr-premium-input" onchange="liveQR()" style="background: white;">
-                            <option value="WPA">WPA/WPA2</option>
-                            <option value="WEP">WEP</option>
-                            <option value="nopass">কোনো পাসওয়ার্ড নেই</option>
-                        </select>
-                    </div>
-
-                    <!-- Compact Settings Row -->
-                    <div style="background: #f8fafc; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; border: 1px solid #e5e7eb;">
-                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <span style="font-size: 10px; color: #6b7280;">QR রং:</span>
-                                <input type="color" id="qrColorDark" value="#000000" style="width: 24px; height: 22px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; padding: 1px;" onchange="liveQR()">
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <span style="font-size: 10px; color: #6b7280;">পটভূমি:</span>
-                                <input type="color" id="qrColorLight" value="#ffffff" style="width: 24px; height: 22px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; padding: 1px;" onchange="liveQR()">
-                            </div>
-                            <div style="display: flex; gap: 4px; margin-left: auto;">
-                                <button onclick="setQRSize(150)" id="qrSize_sm" class="qr-size-btn">ছোট</button>
-                                <button onclick="setQRSize(200)" id="qrSize_md" class="qr-size-btn active">মাঝারি</button>
-                                <button onclick="setQRSize(260)" id="qrSize_lg" class="qr-size-btn">বড়</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- QR Preview Area -->
-                    <div style="background: #f5f3ff; border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 10px; border: 1px solid #ddd6fe; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                        <div id="qrPlaceholder" style="color: #a78bfa; font-size: 11px;">
-                            <div style="font-size: 32px; margin-bottom: 6px; opacity: 0.5;">⬛</div>
-                            <div style="font-weight: bold;">উপরে তথ্য দিন</div>
-                            <div style="font-size: 10px; margin-top: 2px; opacity: 0.7;">QR কোড লাইভ তৈরি হবে</div>
-                        </div>
-                        <div id="qrcode" style="display: none;">
-                            <div id="qrPreviewFrame">
-                                <div id="qrCodeCanvas"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <button onclick="downloadQR()" style="background: #4f46e5; color: white; padding: 9px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;">
-                            <i class="fas fa-download" style="margin-right: 4px;"></i> PNG ডাউনলোড
+<label class="backup-btn bg-blue-600 hover:bg-blue-700 cursor-pointer flex items-center justify-center shadow-lg shadow-blue-100">
+<i class="fas fa-file-import mr-2"></i> রিস্টোর ফাইল সিলেক্ট
+                <input accept=".json" class="hidden" id="importFile" onchange="importAllData(this)" type="file"/>
+</label>
+<button class="mt-4 text-gray-400 text-xs font-bold uppercase" onclick="closeBackupModal()">বন্ধ করুন</button>
+</div>
+</div>
+<div class="fixed inset-0 modal-overlay z-[200] hidden items-center justify-center p-4 no-print" id="ledgerSubModal">
+<div class="ledger-popup-inner max-w-lg shadow-2xl border-2 border-teal-600 bg-white">
+<div class="flex justify-between items-center bg-teal-600 p-4 text-white">
+<h4 class="font-bold uppercase text-sm"><i class="fas fa-file-invoice"></i> লেনদেন স্টেটমেন্ট</h4>
+<button class="text-2xl font-bold leading-none" onclick="closeLedgerSub()">×</button>
+</div>
+<div id="ledgerStatementArea">
+<div class="statement-premium-header">
+<h2 id="st_shop_name">ব্যাক্তির হিসাব স্টেটমেন্ট</h2>
+<p>সঠিক হিসাব, স্বচ্ছ লেনদেন</p>
+<p class="text-[8px]" id="st_print_date"></p>
+</div>
+<div class="statement-title-bar">
+<div class="text-xs font-bold text-teal-800" id="ledgerPersonTitle">নাম: ---</div>
+<div class="text-[10px] bg-white px-2 py-1 rounded border border-teal-200 shadow-sm font-bold" id="ledgerFinalBalance">0.00</div>
+</div>
+<table class="w-full text-[10px] text-center border-collapse border border-gray-200">
+<thead class="bg-teal-50 text-teal-700">
+<tr>
+<th class="border p-2">তারিখ</th>
+<th class="border p-2 text-left">বিবরণ</th>
+<th class="border p-2">টাকা</th>
+</tr>
+</thead>
+<tbody id="ledgerDetailBody"></tbody>
+</table>
+<div class="mt-6 flex justify-between items-center border-t pt-4">
+<div class="text-[8px] text-gray-400 italic font-bold uppercase">Generated by Sk Premium Tools</div>
+<div class="border-t border-gray-400 w-24 text-center text-[9px] font-bold pt-1">কর্তৃপক্ষের স্বাক্ষর</div>
+</div>
+</div>
+<div class="flex gap-2 p-4 bg-gray-50 border-t">
+<button class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg transition hover:bg-green-700" onclick="downloadLedgerImg()"><i class="fas fa-image mr-1"></i> গ্যালারি সেভ</button>
+<button class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg transition hover:bg-red-700" onclick="downloadLedgerPDF()"><i class="fas fa-file-pdf mr-1"></i> PDF সেভ</button>
+</div>
+</div>
+</div>
+<div class="reset-alert-overlay no-print" id="customAlert">
+<div class="reset-alert-box">
+<div class="text-5xl mb-3 text-orange-500" id="alertIcon"><i class="fas fa-exclamation-circle"></i></div>
+<h3 class="text-gray-800 font-bold text-xl mb-2" id="alertTitle">সতর্কবার্তা</h3>
+<p class="text-gray-500 text-sm mb-6 px-2" id="alertMsg"></p>
+<button class="w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-sm shadow-lg" onclick="closeAlert()">ঠিক আছে</button>
+</div>
+</div>
+<div class="reset-alert-overlay no-print" id="ledgerDeleteModal">
+<div class="reset-alert-box">
+<div class="text-red-500 text-5xl mb-3"><i class="fas fa-user-minus"></i></div>
+<h3 class="text-gray-800 font-bold text-xl mb-2">ইউজার মুছবেন?</h3>
+<p class="text-gray-500 text-xs mb-4">এই ইউজারের সকল হিসাব মুছার জন্য নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিন।</p>
+<input class="w-full border p-2 rounded mb-4 text-center outline-none" id="ledgerDeleteInput" placeholder="এখানে Yes লিখুন" type="text"/>
+<div class="flex gap-2">
+<button class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm" onclick="closeLedgerDelete()">বাতিল</button>
+<button class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg" onclick="processLedgerDelete()">সাবমিট</button>
+</div>
+</div>
+</div>
+<div class="reset-alert-overlay no-print" id="expenseConfirmModal">
+<div class="reset-alert-box">
+<div class="text-orange-500 text-5xl mb-3"><i class="fas fa-history"></i></div>
+<h3 class="text-gray-800 font-bold text-xl mb-2">ইতিহাস মুছবেন?</h3>
+<p class="text-gray-500 text-xs mb-4">ডাটা মুছার জন্য আপনাকে নিচের বক্সে <span class="font-bold text-red-600">Yes</span> লিখে সাবমিট দিতে হবে।</p>
+<input class="w-full border p-2 rounded mb-4 text-center outline-none" id="expenseConfirmInput" placeholder="এখানে Yes লিখুন" type="text"/>
+<div class="flex gap-2">
+<button class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm" onclick="closeExpConfirm()">বাতিল</button>
+<button class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg" onclick="processExpClear()">সাবমিট</button>
+</div>
+</div>
+</div>
+<div class="reset-alert-overlay no-print" id="resetModal">
+<div class="reset-alert-box">
+<div class="text-red-500 text-5xl mb-3"><i class="fas fa-trash-alt"></i></div>
+<h3 class="text-gray-800 font-bold text-xl mb-2">রিসেট করবেন?</h3>
+<p class="text-gray-500 text-sm mb-6 px-2">রিসেট বাটনে ক্লিক করলে সকল এন্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?</p>
+<div class="flex gap-3">
+<button class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm" onclick="closeResetModal()">বাতিল</button>
+<button class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-200" onclick="confirmReset()">হ্যাঁ, মুছুন</button>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 no-print" id="toolModal">
+<div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl relative overflow-hidden">
+<button class="absolute top-3 right-3 text-2xl text-gray-400 z-50" onclick="closeModal()">×</button>
+<div class="p-4 max-h-[85vh] overflow-y-auto">
+<div class="hidden" id="ledgerBox">
+<h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">দেনা পাওনা হিসাব</h4>
+<div class="ledger-input-group">
+<select class="w-full border p-2 rounded text-sm bg-gray-50 outline-none" id="l_type">
+<option value="denadar">দেনাদার (আমি পাবো - নীল)</option>
+<option value="paonadar">পাওনাদার (সে পাবে - লাল)</option>
+</select>
+<div class="relative">
+<input class="w-full border p-2 rounded text-sm" id="l_name" placeholder="নাম" type="text"/>
+</div>
+<input class="w-full border p-2 rounded text-sm" id="l_mobile" placeholder="মোবাইল নাম্বার" type="number"/>
+<input class="w-full border p-2 rounded text-sm" id="l_date" type="date"/>
+<input class="w-full border p-2 rounded text-sm" id="l_amount" placeholder="টাকার পরিমাণ" type="number"/>
+<input class="w-full border p-2 rounded text-sm" id="l_desc" placeholder="বিবরণ (ঐচ্ছিক)" type="text"/>
+</div>
+<button class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow mb-4" id="l_save_btn" onclick="saveLedger()">হিসাব এন্ট্রি করুন</button>
+<button class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-bold text-xs mb-4" onclick="openLedgerSummary()">সামারি লিস্ট ও পপ-আপ দেখুন</button>
+<div class="hidden" id="ledger-summary-list">
+<h5 class="font-bold text-xs mb-2 text-gray-600"><i class="fas fa-users-cog mr-1"></i> ব্যক্তি ভিত্তিক সামারি:</h5>
+<div class="max-h-60 overflow-y-auto pr-1" id="ledgerMasterList"></div>
+</div>
+</div>
+<div class="hidden" id="expenseBox">
+<h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">ব্যক্তিগত খরচ ট্র্যাকার</h4>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-gray-50 p-2 rounded">
+<label class="text-[10px] font-bold block">🍚 ভাত খরচ</label>
+<input class="w-full border p-1 rounded text-sm outline-none" id="exRice" placeholder="৳ ০" type="number"/>
+</div>
+<div class="bg-gray-50 p-2 rounded">
+<label class="text-[10px] font-bold block">🚬 সিগারেট</label>
+<input class="w-full border p-1 rounded text-sm outline-none" id="exCig" placeholder="৳ ০" type="number"/>
+</div>
+<div class="bg-gray-50 p-2 rounded">
+<label class="text-[10px] font-bold block">☕ চা খরচ</label>
+<input class="w-full border p-1 rounded text-sm outline-none" id="exTea" placeholder="৳ ০" type="number"/>
+</div>
+<div class="bg-gray-50 p-2 rounded">
+<label class="text-[10px] font-bold block">🚌 যাতায়াত</label>
+<input class="w-full border p-1 rounded text-sm outline-none" id="exTransport" placeholder="৳ ০" type="number"/>
+</div>
+<div class="bg-gray-50 p-2 rounded col-span-2">
+<label class="text-[10px] font-bold block text-teal-600">🛠️ অন্যান্য খরচ</label>
+<input class="w-full border p-1 rounded text-sm outline-none" id="exOther" placeholder="৳ ০" type="number"/>
+</div>
+</div>
+<button class="w-full bg-teal-600 text-white py-2 rounded-lg font-bold shadow mb-4" onclick="saveExpense()">আজকের খরচ সেভ করুন</button>
+<div class="bg-white p-1" id="expense-chart-area">
+<div class="max-h-48 overflow-y-auto mb-4 border rounded p-1">
+<table class="w-full text-[10px] text-center">
+<thead class="bg-teal-50">
+<tr><th>তারিখ</th><th>ভাত</th><th>সিগা.</th><th>চা</th><th>যাত.</th><th>অন্যান্য</th><th>মোট</th></tr>
+</thead>
+<tbody id="expenseList"></tbody>
+</table>
+</div>
+<div class="bg-teal-900 text-white p-3 rounded-xl flex justify-between items-center mb-2">
+<span class="text-xs font-bold">এই মাসের মোট খরচ:</span>
+<span class="text-lg font-bold" id="monthlyExTotal">৳ ০.০০</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-[10px] shadow" onclick="saveExpenseChart()"><i class="fas fa-image"></i> চার্ট সেভ (গ্যালারি)</button>
+<button class="flex-1 bg-gray-200 text-gray-500 py-2 rounded-lg font-bold text-[10px]" onclick="clearExpenseDataPrompt()">ইতিহাস মুছুন</button>
+</div>
+</div>
+<div class="hidden" id="cardBox">
+<h4 class="font-bold text-gray-700 mb-4 uppercase text-sm border-b pb-2">প্রফেশনাল কার্ড মেকার</h4>
+<div id="visiting-card-preview">
+<div class="card-top-design"><div class="card-top-pattern"></div></div>
+<div class="card-content">
+<div class="card-header-texts">
+<div id="v_h1">HEADER TEXT 1</div><div id="v_h2">Header text 2 example</div>
+</div>
+<div class="card-body-main">
+<div class="card-left">
+<div class="card-name" id="v_name">SAHIN KHAN</div>
+<div class="card-info" id="v_mobile">📞 +880 1835303883</div>
+<div class="card-info" id="v_email">✉️ example@mail.com</div>
+</div>
+<div class="card-right">
+<div id="v_r1">Designation Box 1</div><div id="v_r2">Organization Box 2</div><div id="v_r3">Location Box 3</div>
+</div>
+</div>
+<div class="card-footer"><span>SAHIN SOCIAL PLATFORM</span><span>|</span><span>PREMIUM MEMBER</span></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mb-3 mt-4">
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_h1', this.value)" placeholder="হেডার ১" type="text"/>
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_h2', this.value)" placeholder="হেডার ২" type="text"/>
+<input class="border p-2 rounded text-xs font-bold" oninput="updateCard('v_name', this.value)" placeholder="আপনার নাম" type="text"/>
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_mobile', '📞 ' + this.value)" placeholder="মোবাইল নাম্বার" type="text"/>
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_email', '✉️ ' + this.value)" placeholder="ইমেইল" type="text"/>
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_r1', this.value)" placeholder="ডান বক্স ১" type="text"/>
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_r2', this.value)" placeholder="ডান বক্স ২" type="text"/>
+<input class="border p-2 rounded text-xs" oninput="updateCard('v_r3', this.value)" placeholder="ডান বক্স ৩" type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold text-xs shadow-md" onclick="saveCardImg()"><i class="fas fa-image"></i> গ্যালারি সেভ</button>
+<button class="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold text-xs shadow-md" onclick="saveCardPDF()"><i class="fas fa-file-pdf"></i> PDF সেভ</button>
+<button class="bg-gray-500 text-white px-4 py-3 rounded-lg font-bold text-xs shadow-md" onclick="resetCard()">মুছুন</button>
+</div>
+</div>
+<div class="hidden" id="vatBox">
+<h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">ভ্যাট (VAT) ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-2 rounded outline-none text-sm" id="vatAmt" placeholder="টাকার পরিমাণ" type="number"/>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="vatPerc" placeholder="ভ্যাট %" type="number" value="15"/>
+<button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold" onclick="runVAT()">হিসাব করুন</button>
+<div class="mt-4 p-3 bg-blue-50 rounded text-blue-800 font-bold hidden text-sm" id="vatOut"></div>
+</div>
+<div class="hidden" id="taxBox">
+<h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">ইনকাম ট্যাক্স ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="taxIncome" placeholder="বার্ষিক আয় (টাকা)" type="number"/>
+<button class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold" onclick="runTax()">ট্যাক্স দেখুন</button>
+<div class="mt-4 p-3 bg-indigo-50 rounded text-indigo-800 font-bold hidden text-sm" id="taxOut"></div>
+</div>
+<div class="hidden" id="currBox">
+<h4 class="font-bold text-green-700 mb-4 uppercase text-sm border-b pb-2">কারেন্সি কনভার্টার (USD to BDT)</h4>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="usdIn" placeholder="USD পরিমাণ" type="number"/>
+<button class="w-full bg-green-600 text-white py-3 rounded-lg font-bold" onclick="runCurr()">কনভার্ট করুন</button>
+<div class="mt-4 p-3 bg-green-50 rounded text-green-800 font-bold hidden text-sm text-center" id="currOut"></div>
+</div>
+<div class="hidden" id="dpsBox">
+<h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">DPS ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-2 rounded outline-none text-sm" id="dpsM" placeholder="মাসিক জমা" type="number"/>
+<input class="w-full border p-2 mb-2 rounded outline-none text-sm" id="dpsR" placeholder="সুদ %" type="number"/>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="dpsY" placeholder="বছর" type="number"/>
+<button class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold" onclick="runDPS()">হিসাব করুন</button>
+<div class="mt-4 p-3 bg-orange-50 rounded text-orange-800 font-bold hidden text-sm" id="dpsOut"></div>
+</div>
+<div class="hidden" id="zakatBox">
+<h4 class="font-bold text-emerald-700 mb-4 uppercase text-sm border-b pb-2">জাকাত ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="zakAmt" placeholder="মোট সম্পদ/টাকা" type="number"/>
+<button class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold" onclick="runZakat()">জাকাত হিসাব</button>
+<div class="mt-4 p-3 bg-emerald-50 rounded text-emerald-800 font-bold hidden text-sm" id="zakOut"></div>
+</div>
+<div class="hidden" id="goldBox">
+<h4 class="font-bold text-yellow-700 mb-4 uppercase text-sm border-b pb-2">গোল্ড প্রাইস ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-2 rounded outline-none text-sm" id="goldV" placeholder="ভরি" type="number"/>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="goldP" placeholder="প্রতি ভরি মূল্য" type="number"/>
+<button class="w-full bg-yellow-600 text-white py-3 rounded-lg font-bold" onclick="runGold()">মোট দাম দেখুন</button>
+<div class="mt-4 p-3 bg-yellow-50 rounded text-yellow-800 font-bold hidden text-sm" id="goldOut"></div>
+</div>
+<div class="hidden" id="cashoutBox">
+<h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">বিকাশ/নগদ ক্যাশ আউট চার্জ</h4>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="coAmt" placeholder="টাকার পরিমাণ" type="number"/>
+<button class="w-full bg-pink-600 text-white py-3 rounded-lg font-bold" onclick="runCashout()">চার্জ দেখুন</button>
+<div class="mt-4 p-3 bg-pink-50 rounded text-pink-800 font-bold hidden text-sm" id="coOut"></div>
+</div>
+<div class="hidden" id="memoBox">
+<h4 class="font-bold text-blue-700 mb-4 uppercase text-sm border-b pb-2">নতুন ক্যাশ মেমো</h4>
+<div class="input-row-memo">
+<input id="m_c_name" placeholder="ক্রেতার নাম" type="text"/>
+<input id="m_c_addr" placeholder="ঠিকানা" type="text"/>
+</div>
+<div class="input-row-memo">
+<input id="m_no" placeholder="মেমো নং" type="text"/>
+<input id="m_date" type="date"/>
+</div>
+<div class="space-y-2 mt-3" id="m_item_list">
+<div class="input-row-memo m_item_row">
+<input class="mi_desc" placeholder="বিবরণ" type="text"/>
+<input class="mi_qty" placeholder="পরিমাণ" type="text"/>
+<input class="mi_rate" placeholder="দর" type="text"/>
+</div>
+</div>
+<button class="w-full bg-blue-50 text-blue-600 py-2 rounded mt-2 font-bold text-xs" onclick="addMemoRow()">+ আরও পণ্য যোগ করুন</button>
+<button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold mt-4 shadow-lg" onclick="generateMemo()">মেমো তৈরি করুন</button>
+<div id="memo-preview-area">
+<button class="bg-black text-white px-4 py-1 rounded text-[10px] mb-2 no-print" onclick="printMemo()">প্রিন্ট করুন</button>
+<div id="memo-print-content">
+<div class="memo-header">
+<div class="memo-header-left">
+<h1 contenteditable="true" id="m_shop_name" oninput="saveMHeader()">শাহিন ভ্যারাইটিজ স্টোর</h1>
+<p contenteditable="true" id="m_shop_prop" oninput="saveMHeader()">প্রোপাইটর: শাহিন খান</p>
+<p contenteditable="true" id="m_shop_addr" oninput="saveMHeader()">জনতা বাজার, হাইমচর, চাঁদপুর।</p>
+</div>
+<div class="memo-header-right">
+<p contenteditable="true" id="m_shop_phone" oninput="saveMHeader()">📞 +৮৮০ ১৮৩৫৩০৩৮৮৩</p>
+<p contenteditable="true" id="m_shop_email" oninput="saveMHeader()">✉️ sahinkhan8585@gmail.com</p>
+</div>
+</div>
+<div class="memo-meta"><span>মেমো নং: <span id="pm_no"></span></span><span>তারিখ: <span id="pm_date"></span></span></div>
+<table class="memo-table" style="margin-bottom: 5px;">
+<tr><td class="memo-label">নাম:</td><td id="pm_name" style="white-space: normal;"></td></tr>
+<tr><td class="memo-label">ঠিকানা:</td><td id="pm_addr" style="white-space: normal;"></td></tr>
+</table>
+<table class="memo-table">
+<thead>
+<tr class="bg-gray-100">
+<th class="col-sl">ক্র.নং</th><th class="col-desc">বিবরণ</th><th class="col-qty">পরিমাণ</th><th class="col-rate">দর</th><th class="col-total">মোট</th>
+</tr>
+</thead>
+<tbody id="pm_items"></tbody>
+<tfoot><tr><td class="text-right font-bold" colspan="4">সর্বমোট:</td><td class="text-right font-bold" id="pm_total"></td></tr></tfoot>
+</table>
+<div class="text-[11px] italic border-b border-black pb-1">কথায়: <span id="pm_words"></span></div>
+<div class="memo-signatures">
+<div class="memo-sig-box">ক্রেতার স্বাক্ষর</div><div class="memo-sig-box">বিক্রেতার স্বাক্ষর</div>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden" id="ageBox">
+<h4 class="font-bold text-teal-700 mb-4 uppercase text-sm">বয়স ক্যালকুলেটর</h4>
+<input class="w-full border p-3 rounded-lg mb-4 outline-none" id="dobIn" type="date"/>
+<button class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold" onclick="runAge()">হিসাব করুন</button>
+<div class="mt-4 p-3 bg-teal-50 rounded text-teal-800 font-bold hidden" id="ageOut"></div>
+</div>
+<div class="hidden" id="emiBox">
+<h4 class="font-bold text-blue-700 mb-4 uppercase text-sm">কিস্তি ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-2 rounded text-sm" id="emiP" placeholder="মোট টাকা" type="number"/>
+<input class="w-full border p-2 mb-2 rounded text-sm" id="emiR" placeholder="সুদ %" type="number"/>
+<input class="w-full border p-2 mb-4 rounded text-sm" id="emiM" placeholder="মাস" type="number"/>
+<button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold" onclick="runEMI()">হিসাব করুন</button>
+<div class="mt-4 text-center font-bold text-blue-800 hidden" id="emiOut"></div>
+</div>
+<div class="hidden text-center" id="unitBox">
+<h4 class="font-bold text-purple-700 mb-4 uppercase text-sm text-left">ইউনিট কনভার্টার</h4>
+<input class="w-full border p-3 rounded-lg mb-4" id="unitIn" oninput="runUnit()" placeholder="ইঞ্চি লিখুন" type="number"/>
+<div class="flex justify-around bg-purple-50 p-4 rounded-xl">
+<div><div class="text-xs uppercase">সুতা</div><div class="font-bold text-xl" id="sootOut">0</div></div>
+<div><div class="text-xs uppercase">ফুট</div><div class="font-bold text-xl" id="feetOut">0</div></div>
+</div>
+</div>
+<div class="hidden" id="fdrBox">
+<h4 class="font-bold text-orange-700 mb-4 uppercase text-sm">FDR মুনাফা ক্যালকুলেটর</h4>
+<input class="w-full border p-2 mb-2 rounded outline-none text-sm" id="fdrP" placeholder="জমা (টাকা)" type="number"/>
+<input class="w-full border p-2 mb-2 rounded outline-none text-sm" id="fdrR" placeholder="মুনাফার হার %" type="number"/>
+<input class="w-full border p-2 mb-4 rounded outline-none text-sm" id="fdrM" placeholder="সময় (মাস)" type="number"/>
+<button class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold" onclick="runFDR()">হিসাব করুন</button>
+<div class="mt-4 hidden" id="fdrOut">
+<div class="bg-gray-800 text-white p-4 rounded-lg space-y-2">
+<div class="flex justify-between border-b border-gray-600 pb-2 text-xs"><span>মোট মুনাফা:</span><span class="font-bold text-orange-400" id="totalInt">৳০.০০</span></div>
+<div class="flex justify-between pt-1 text-xs"><span class="font-bold text-green-400">নীট মুনাফা (ভ্যাট বাদে):</span><span class="font-bold text-lg text-green-400" id="netInt">৳০.০০</span></div>
+</div>
+</div>
+</div>
+<div class="hidden" id="qrBox">
+<!-- Compact Header -->
+<div style="background: #4f46e5; margin: -16px -16px 12px -16px; padding: 10px 14px; display: flex; align-items: center; gap: 8px;">
+<span style="font-size: 16px;">📱</span>
+<div>
+<div style="color: white; font-size: 13px; font-weight: bold;">QR কোড জেনারেটর</div>
+</div>
+</div>
+<!-- QR Type Selector -->
+<div style="display: flex; gap: 4px; margin-bottom: 10px;">
+<button class="qr-type-btn active" id="qrType_url" onclick="setQRType('url')">🔗 URL</button>
+<button class="qr-type-btn inactive" id="qrType_text" onclick="setQRType('text')">📝 টেক্সট</button>
+<button class="qr-type-btn inactive" id="qrType_phone" onclick="setQRType('phone')">📞 ফোন</button>
+<button class="qr-type-btn inactive" id="qrType_email" onclick="setQRType('email')">✉️ ইমেইল</button>
+<button class="qr-type-btn inactive" id="qrType_wifi" onclick="setQRType('wifi')">📶 WiFi</button>
+</div>
+<!-- Dynamic Input Fields -->
+<div class="qr-input-section active" id="qr_input_url">
+<input class="qr-premium-input" id="qrUrl" oninput="liveQR()" placeholder="https://example.com" type="url"/>
+</div>
+<div class="qr-input-section" id="qr_input_text">
+<textarea class="qr-premium-input" id="qrTextFull" oninput="liveQR()" placeholder="যেকোনো টেক্সট লিখুন..." style="height: 60px; resize: none;"></textarea>
+</div>
+<div class="qr-input-section" id="qr_input_phone">
+<input class="qr-premium-input" id="qrPhone" oninput="liveQR()" placeholder="+8801XXXXXXXXX" type="tel"/>
+</div>
+<div class="qr-input-section" id="qr_input_email">
+<input class="qr-premium-input" id="qrEmail" oninput="liveQR()" placeholder="example@mail.com" type="email"/>
+<input class="qr-premium-input" id="qrEmailSubj" oninput="liveQR()" placeholder="বিষয় (Subject)" type="text"/>
+</div>
+<div class="qr-input-section" id="qr_input_wifi">
+<input class="qr-premium-input" id="qrWifiName" oninput="liveQR()" placeholder="WiFi নাম (SSID)" type="text"/>
+<input class="qr-premium-input" id="qrWifiPass" oninput="liveQR()" placeholder="পাসওয়ার্ড" type="text"/>
+<select class="qr-premium-input" id="qrWifiEnc" onchange="liveQR()" style="background: white;">
+<option value="WPA">WPA/WPA2</option>
+<option value="WEP">WEP</option>
+<option value="nopass">কোনো পাসওয়ার্ড নেই</option>
+</select>
+</div>
+<!-- Compact Settings Row -->
+<div style="background: #f8fafc; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; border: 1px solid #e5e7eb;">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 5px;">
+<span style="font-size: 10px; color: #6b7280;">QR রং:</span>
+<input id="qrColorDark" onchange="liveQR()" style="width: 24px; height: 22px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; padding: 1px;" type="color" value="#000000"/>
+</div>
+<div style="display: flex; align-items: center; gap: 5px;">
+<span style="font-size: 10px; color: #6b7280;">পটভূমি:</span>
+<input id="qrColorLight" onchange="liveQR()" style="width: 24px; height: 22px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; padding: 1px;" type="color" value="#ffffff"/>
+</div>
+<div style="display: flex; gap: 4px; margin-left: auto;">
+<button class="qr-size-btn" id="qrSize_sm" onclick="setQRSize(150)">ছোট</button>
+<button class="qr-size-btn active" id="qrSize_md" onclick="setQRSize(200)">মাঝারি</button>
+<button class="qr-size-btn" id="qrSize_lg" onclick="setQRSize(260)">বড়</button>
+</div>
+</div>
+</div>
+<!-- QR Preview Area -->
+<div style="background: #f5f3ff; border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 10px; border: 1px solid #ddd6fe; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+<div id="qrPlaceholder" style="color: #a78bfa; font-size: 11px;">
+<div style="font-size: 32px; margin-bottom: 6px; opacity: 0.5;">⬛</div>
+<div style="font-weight: bold;">উপরে তথ্য দিন</div>
+<div style="font-size: 10px; margin-top: 2px; opacity: 0.7;">QR কোড লাইভ তৈরি হবে</div>
+</div>
+<div id="qrcode" style="display: none;">
+<div id="qrPreviewFrame">
+<div id="qrCodeCanvas"></div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<button onclick="downloadQR()" style="background: #4f46e5; color: white; padding: 9px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;">
+<i class="fas fa-download" style="margin-right: 4px;"></i> PNG ডাউনলোড
                         </button>
-                        <button onclick="resetQR()" style="background: #f3f4f6; color: #374151; padding: 9px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;">
-                            <i class="fas fa-redo" style="margin-right: 4px;"></i> রিসেট
+<button onclick="resetQR()" style="background: #f3f4f6; color: #374151; padding: 9px 8px; border-radius: 8px; font-weight: bold; font-size: 12px; border: none; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;">
+<i class="fas fa-redo" style="margin-right: 4px;"></i> রিসেট
                         </button>
-                    </div>
-                </div>
-                <div id="tvBox" class="hidden">
-                    <h4 class="font-bold text-red-600 mb-4 uppercase text-sm">লাইভ টিভি প্লেয়ার</h4>
-                    <div class="tv-screen mb-4 flex items-center justify-center text-xs">
-                        <video id="tvVideo" class="w-full h-full hidden" controls></video>
-                        <div id="videoPlaceholder" class="text-white text-center"><div class="text-4xl mb-2">▶️</div><div>চ্যানেল সিলেক্ট করুন</div></div>
-                        <div id="tvLoading" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center text-white">লোডিং হচ্ছে...</div>
-                    </div>
-                    <div class="channel-grid">
-                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=2202800.m3u8')">📺 Bangla Vison</div>
-                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=2202800.m3u8')">📺 Somoy Tv</div>
-                        <div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=2202800.m3u8')">📺 71 Television</div>
-                    </div>
-                </div>
-
-                <div id="videoBox" class="hidden">
-                    <h4 class="font-bold text-blue-700 mb-6 uppercase border-b pb-2 text-sm">ভিডিও ডাউনলোডার</h4>
-                    <div class="space-y-4">
-                        <div class="p-4 bg-red-50 rounded-xl border border-red-100">
-                            <label class="block text-[10px] font-bold text-red-700 mb-1 uppercase"><i class="fab fa-youtube"></i> YouTube Link</label>
-                            <input type="text" id="ytUrl" placeholder="লিংক পেস্ট করুন..." class="w-full border p-2 rounded-lg mb-2 outline-none text-xs">
-                            <button onclick="showAlert('Downloading...', 'অপেক্ষা করুন')" class="w-full bg-red-600 text-white py-2 rounded-lg font-bold text-xs">Download YouTube</button>
-                        </div>
-                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <label class="block text-[10px] font-bold text-blue-700 mb-1 uppercase"><i class="fab fa-facebook"></i> Facebook Link</label>
-                            <input type="text" id="fbUrl" placeholder="লিংক পেস্ট করুন..." class="w-full border p-2 rounded-lg mb-2 outline-none text-xs">
-                            <button onclick="showAlert('Downloading...', 'অপেক্ষা করুন')" class="w-full bg-blue-700 text-white py-2 rounded-lg font-bold text-xs">Download Facebook</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="cashBox" class="hidden">
-                    <h4 class="font-bold text-green-700 mb-4 uppercase text-sm">ব্যাংক ক্যাশ হিসাব</h4>
-                    <div class="max-h-[300px] overflow-y-auto pr-2"><table class="w-full text-xs cash-table"><tbody id="bankCashBody"></tbody></table></div>
-                    <div class="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
-                        <div class="flex justify-between items-center font-bold text-green-800 text-lg"><span>মোট:</span><span>৳ <span id="bankTotal">0</span></span></div>
-                        <div class="text-[10px] text-green-700 mt-2 italic font-semibold border-t border-green-200 pt-2" id="bankWords">0.00 টাকা মাত্র।</div>
-                    </div>
-                    <button onclick="clearBankCash()" class="w-full mt-3 bg-gray-100 py-2 rounded font-bold text-gray-500 text-[10px] hover:bg-gray-200">সব ক্লিয়ার করুন</button>
-                </div>
-
-                <div id="loanBox" class="hidden">
-                    <h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">লোন যোগ্যতা যাচাই</h4>
-                    <div class="space-y-3">
-                        <input type="number" id="loanIncome" placeholder="মাসিক আয় (৳)" class="w-full border p-2 rounded-lg text-sm outline-none">
-                        <input type="number" id="loanExpense" placeholder="মাসিক খরচ (৳)" class="w-full border p-2 rounded-lg text-sm outline-none">
-                        <select id="loanTenure" class="w-full border p-2 rounded-lg text-sm bg-white text-gray-500"><option value="12">১ বছর</option><option value="24">২ বছর</option><option value="36">৩ বছর</option><option value="60">৫ বছর</option></select>
-                        <button onclick="runLoan()" class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow-md">যাচাই করুন</button>
-                        <div id="loanOut" class="mt-4 hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-center">
-                            <div class="text-xs text-teal-600 uppercase font-bold">সর্বোচ্চ লোন:</div><div id="loanResult" class="text-2xl font-bold text-teal-800 mt-1">৳০.০০</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="birthBox" class="hidden">
-                    <h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">জন্ম নিবন্ধন যাচাইকারক</h4>
-                    <div class="space-y-4">
-                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                            <label class="block text-[10px] font-bold text-indigo-700 mb-1">Birth Registration Number</label>
-                            <input type="text" id="brnIn" placeholder="17 Digit Number" maxlength="17" class="w-full border p-2 rounded text-sm mb-2">
-                            <label class="block text-[10px] font-bold text-indigo-700 mb-1">Date of Birth</label>
-                            <input type="date" id="brnDate" class="w-full border p-2 rounded text-sm mb-2">
-                            <button onclick="openGovBirth()" class="w-full bg-indigo-600 text-white py-3 rounded font-bold text-sm">পোর্টালে যান</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="discountBox" class="hidden">
-                    <h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">ডিসকাউন্ট ক্যালকুলেটর</h4>
-                    <div class="space-y-3">
-                        <input type="number" id="origPrice" placeholder="আসল দাম (৳)" class="w-full border p-2 rounded text-sm">
-                        <input type="number" id="discPercent" placeholder="ডিসকাউন্ট (%)" class="w-full border p-2 rounded text-sm">
-                        <button onclick="runDiscount()" class="w-full bg-pink-600 text-white py-3 rounded font-bold shadow-md">হিসাব করুন</button>
-                        <div id="discountOut" class="mt-4 hidden p-4 bg-pink-50 border border-pink-100 rounded-xl">
-                            <div class="flex justify-between text-sm text-pink-700"><span>সাশ্রয়:</span> <span id="saveAmt" class="font-bold">৳০.০০</span></div>
-                            <div class="flex justify-between text-lg text-pink-900 font-bold border-t mt-2 pt-2"><span>ফাইনাল দাম:</span> <span id="finalPrice">৳০.০০</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="dsrBox" class="hidden">
-                    <h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">সেলস রিপোর্ট</h4>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-2"><input type="number" id="cashSale" placeholder="নগদ" class="border p-2 rounded text-sm"><input type="number" id="onlineSale" placeholder="অনলাইন" class="border p-2 rounded text-sm"></div>
-                        <button onclick="saveDSR()" class="w-full bg-purple-600 text-white py-2 rounded font-bold">সেভ করুন</button>
-                        <div id="dsrHistory" class="mt-4 max-h-40 overflow-y-auto space-y-2"></div>
-                        <div id="dsrMonthlyTotal" class="p-3 bg-purple-100 rounded-lg text-center mt-3 hidden border border-purple-200"><div class="text-[10px] text-purple-600 font-bold">মোট বিক্রি:</div><div id="m_total_val" class="text-xl font-bold text-purple-800">৳০.০০</div></div>
-                    </div>
-                </div>
-
-                <div id="studyBox" class="hidden">
-                    <h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">স্টাডি প্ল্যানার</h4>
-                    <div class="space-y-3 mb-4">
-                        <input type="text" id="subjectTask" placeholder="টাস্ক" class="w-full border p-2 rounded text-sm"><div class="flex gap-2"><input type="time" id="subjectTime" class="flex-1 border p-2 rounded text-sm"><select id="studyDayNight" class="flex-1 border p-2 rounded text-sm bg-white"><option value="দিন">দিন</option><option value="রাত">রাত</option></select></div>
-                        <button onclick="addStudyTask()" class="w-full bg-orange-600 text-white py-2 rounded font-bold shadow text-sm">যোগ করুন</button>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto"><ul id="studyList" class="space-y-2"></ul></div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <script>
+</div>
+</div>
+<div class="hidden" id="tvBox">
+<h4 class="font-bold text-red-600 mb-4 uppercase text-sm">লাইভ টিভি প্লেয়ার</h4>
+<div class="tv-screen mb-4 flex items-center justify-center text-xs">
+<video class="w-full h-full hidden" controls="" id="tvVideo"></video>
+<div class="text-white text-center" id="videoPlaceholder"><div class="text-4xl mb-2">▶️</div><div>চ্যানেল সিলেক্ট করুন</div></div>
+<div class="hidden absolute inset-0 bg-black/70 flex items-center justify-center text-white" id="tvLoading">লোডিং হচ্ছে...</div>
+</div>
+<div class="channel-grid">
+<div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/1715-audio_113452_eng=113200-video=2202800.m3u8')">Bangla Vison</div>
+<div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/1702-audio_113322_eng=113200-video=2202800.m3u8')">Somoy Tv</div>
+<div class="channel-item text-xs" onclick="playChannel('https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/1705-audio_113352_eng=113200-video=2202800.m3u8')">71 Television</div>
+<div class="channel-item text-xs">Channel 4</div><div class="channel-item text-xs">Channel 5</div><div class="channel-item text-xs">Channel 6</div><div class="channel-item text-xs">Channel 7</div><div class="channel-item text-xs">Channel 8</div><div class="channel-item text-xs">Channel 9</div></div>
+</div>
+<div class="hidden" id="videoBox">
+<h4 class="font-bold text-blue-700 mb-6 uppercase border-b pb-2 text-sm">ভিডিও ডাউনলোডার</h4>
+<div class="space-y-4">
+<div class="p-4 bg-red-50 rounded-xl border border-red-100">
+<label class="block text-[10px] font-bold text-red-700 mb-1 uppercase"><i class="fab fa-youtube"></i> YouTube Link</label>
+<input class="w-full border p-2 rounded-lg mb-2 outline-none text-xs" id="ytUrl" placeholder="লিংক পেস্ট করুন..." type="text"/>
+<button class="w-full bg-red-600 text-white py-2 rounded-lg font-bold text-xs" onclick="showAlert('Downloading...', 'অপেক্ষা করুন')">Download YouTube</button>
+</div>
+<div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+<label class="block text-[10px] font-bold text-blue-700 mb-1 uppercase"><i class="fab fa-facebook"></i> Facebook Link</label>
+<input class="w-full border p-2 rounded-lg mb-2 outline-none text-xs" id="fbUrl" placeholder="লিংক পেস্ট করুন..." type="text"/>
+<button class="w-full bg-blue-700 text-white py-2 rounded-lg font-bold text-xs" onclick="showAlert('Downloading...', 'অপেক্ষা করুন')">Download Facebook</button>
+</div>
+</div>
+</div>
+<div class="hidden" id="cashBox">
+<h4 class="font-bold text-green-700 mb-4 uppercase text-sm">ব্যাংক ক্যাশ হিসাব</h4>
+<div class="max-h-[300px] overflow-y-auto pr-2"><table class="w-full text-xs cash-table"><tbody id="bankCashBody"></tbody></table></div>
+<div class="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
+<div class="flex justify-between items-center font-bold text-green-800 text-lg"><span>মোট:</span><span>৳ <span id="bankTotal">0</span></span></div>
+<div class="text-[10px] text-green-700 mt-2 italic font-semibold border-t border-green-200 pt-2" id="bankWords">0.00 টাকা মাত্র।</div>
+</div>
+<button class="w-full mt-3 bg-gray-100 py-2 rounded font-bold text-gray-500 text-[10px] hover:bg-gray-200" onclick="clearBankCash()">সব ক্লিয়ার করুন</button>
+</div>
+<div class="hidden" id="loanBox">
+<h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">লোন যোগ্যতা যাচাই</h4>
+<div class="space-y-3">
+<input class="w-full border p-2 rounded-lg text-sm outline-none" id="loanIncome" placeholder="মাসিক আয় (৳)" type="number"/>
+<input class="w-full border p-2 rounded-lg text-sm outline-none" id="loanExpense" placeholder="মাসিক খরচ (৳)" type="number"/>
+<select class="w-full border p-2 rounded-lg text-sm bg-white text-gray-500" id="loanTenure"><option value="12">১ বছর</option><option value="24">২ বছর</option><option value="36">৩ বছর</option><option value="60">৫ বছর</option></select>
+<button class="w-full bg-teal-600 text-white py-3 rounded-lg font-bold shadow-md" onclick="runLoan()">যাচাই করুন</button>
+<div class="mt-4 hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-center" id="loanOut">
+<div class="text-xs text-teal-600 uppercase font-bold">সর্বোচ্চ লোন:</div><div class="text-2xl font-bold text-teal-800 mt-1" id="loanResult">৳০.০০</div>
+</div>
+</div>
+</div>
+<div class="hidden" id="birthBox">
+<h4 class="font-bold text-indigo-700 mb-4 uppercase text-sm border-b pb-2">জন্ম নিবন্ধন যাচাইকারক</h4>
+<div class="space-y-4">
+<div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+<label class="block text-[10px] font-bold text-indigo-700 mb-1">Birth Registration Number</label>
+<input class="w-full border p-2 rounded text-sm mb-2" id="brnIn" maxlength="17" placeholder="17 Digit Number" type="text"/>
+<label class="block text-[10px] font-bold text-indigo-700 mb-1">Date of Birth</label>
+<input class="w-full border p-2 rounded text-sm mb-2" id="brnDate" type="date"/>
+<button class="w-full bg-indigo-600 text-white py-3 rounded font-bold text-sm" onclick="openGovBirth()">পোর্টালে যান</button>
+</div>
+</div>
+</div>
+<div class="hidden" id="discountBox">
+<h4 class="font-bold text-pink-700 mb-4 uppercase text-sm border-b pb-2">ডিসকাউন্ট ক্যালকুলেটর</h4>
+<div class="space-y-3">
+<input class="w-full border p-2 rounded text-sm" id="origPrice" placeholder="আসল দাম (৳)" type="number"/>
+<input class="w-full border p-2 rounded text-sm" id="discPercent" placeholder="ডিসকাউন্ট (%)" type="number"/>
+<button class="w-full bg-pink-600 text-white py-3 rounded font-bold shadow-md" onclick="runDiscount()">হিসাব করুন</button>
+<div class="mt-4 hidden p-4 bg-pink-50 border border-pink-100 rounded-xl" id="discountOut">
+<div class="flex justify-between text-sm text-pink-700"><span>সাশ্রয়:</span> <span class="font-bold" id="saveAmt">৳০.০০</span></div>
+<div class="flex justify-between text-lg text-pink-900 font-bold border-t mt-2 pt-2"><span>ফাইনাল দাম:</span> <span id="finalPrice">৳০.০০</span></div>
+</div>
+</div>
+</div>
+<div class="hidden" id="dsrBox">
+<h4 class="font-bold text-purple-700 mb-4 uppercase text-sm border-b pb-2">সেলস রিপোর্ট</h4>
+<div class="space-y-3">
+<div class="grid grid-cols-2 gap-2"><input class="border p-2 rounded text-sm" id="cashSale" placeholder="নগদ" type="number"/><input class="border p-2 rounded text-sm" id="onlineSale" placeholder="অনলাইন" type="number"/></div>
+<button class="w-full bg-purple-600 text-white py-2 rounded font-bold" onclick="saveDSR()">সেভ করুন</button>
+<div class="mt-4 max-h-40 overflow-y-auto space-y-2" id="dsrHistory"></div>
+<div class="p-3 bg-purple-100 rounded-lg text-center mt-3 hidden border border-purple-200" id="dsrMonthlyTotal"><div class="text-[10px] text-purple-600 font-bold">মোট বিক্রি:</div><div class="text-xl font-bold text-purple-800" id="m_total_val">৳০.০০</div></div>
+</div>
+</div>
+<div class="hidden" id="studyBox">
+<h4 class="font-bold text-orange-700 mb-4 uppercase text-sm border-b pb-2">স্টাডি প্ল্যানার</h4>
+<div class="space-y-3 mb-4">
+<input class="w-full border p-2 rounded text-sm" id="subjectTask" placeholder="টাস্ক" type="text"/><div class="flex gap-2"><input class="flex-1 border p-2 rounded text-sm" id="subjectTime" type="time"/><select class="flex-1 border p-2 rounded text-sm bg-white" id="studyDayNight"><option value="দিন">দিন</option><option value="রাত">রাত</option></select></div>
+<button class="w-full bg-orange-600 text-white py-2 rounded font-bold shadow text-sm" onclick="addStudyTask()">যোগ করুন</button>
+</div>
+<div class="max-h-60 overflow-y-auto"><ul class="space-y-2" id="studyList"></ul></div>
+</div>
+</div>
+</div>
+</div>
+<script>
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
@@ -1651,5 +1627,41 @@
             if(inputVal === 'Yes') { localStorage.removeItem('expense_tracker'); showExpense(); closeExpConfirm(); showAlert("খরচ ইতিহাস সফলভাবে মুছে ফেলা হয়েছে।", "সফল"); } else { showAlert("ভুল কোড দয়া করে Yes লিখে সাবমিট দিন।", "ত্রুটি"); }
         }
     </script>
-</body>
+<script>
+let channels = [];
+let currentIndex = 0;
+
+window.addEventListener('load', ()=>{
+    channels = Array.from(document.querySelectorAll('.channel-item'));
+    channels.forEach((el,i)=>{
+        el.setAttribute('data-index', i);
+        el.addEventListener('click', ()=>{
+            currentIndex = i;
+        });
+    });
+});
+
+document.addEventListener('keydown', function(e){
+    if(e.key === "ArrowRight" || e.key === "ArrowDown"){
+        nextChannel();
+    }
+    if(e.key === "ArrowLeft" || e.key === "ArrowUp"){
+        prevChannel();
+    }
+});
+
+function nextChannel(){
+    if(channels.length===0) return;
+    currentIndex = (currentIndex + 1) % channels.length;
+    channels[currentIndex].click();
+    channels[currentIndex].scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function prevChannel(){
+    if(channels.length===0) return;
+    currentIndex = (currentIndex - 1 + channels.length) % channels.length;
+    channels[currentIndex].click();
+    channels[currentIndex].scrollIntoView({behavior:'smooth',block:'center'});
+}
+</script></body>
 </html>
