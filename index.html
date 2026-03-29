@@ -267,6 +267,36 @@ box-shadow:0 6px 14px rgba(13,148,136,0.25);
 .channel-item:active{
 transform:scale(0.97);
 }
+
+
+/* expense buttons premium */
+#expenseBox button{
+border-radius:12px !important;
+font-weight:700;
+letter-spacing:0.3px;
+transition:all 0.25s ease;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+#expenseBox button:first-of-type{
+background:linear-gradient(135deg,#10b981,#059669) !important;
+color:#fff !important;
+box-shadow:0 6px 18px rgba(16,185,129,0.4);
+}
+
+#expenseBox button:last-of-type{
+background:linear-gradient(135deg,#ef4444,#dc2626) !important;
+color:#fff !important;
+box-shadow:0 6px 18px rgba(239,68,68,0.4);
+}
+
+#expenseBox button:hover{
+transform:translateY(-2px) scale(1.02);
+}
+
+#expenseBox button:active{
+transform:scale(0.96);
+}
 </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
@@ -1662,6 +1692,55 @@ function prevChannel(){
     currentIndex = (currentIndex - 1 + channels.length) % channels.length;
     channels[currentIndex].click();
     channels[currentIndex].scrollIntoView({behavior:'smooth',block:'center'});
+}
+</script><script>
+if(!window.tvFixed){
+
+window.tvFixed=true;
+
+let channels=[];
+let currentIndex=0;
+let lastSwitch=0;
+
+window.addEventListener('load',()=>{
+    channels=Array.from(document.querySelectorAll('#tvBox .channel-item'));
+
+    channels.forEach((el,i)=>{
+        el.addEventListener('click',()=>{
+            currentIndex=i;
+            setActive(i);
+        });
+    });
+
+    setActive(0);
+});
+
+function setActive(i){
+    channels.forEach(btn=>btn.classList.remove('active'));
+    if(channels[i]){
+        channels[i].classList.add('active');
+        channels[i].scrollIntoView({behavior:'smooth',block:'center'});
+    }
+}
+
+document.addEventListener('keydown',(e)=>{
+    let now=Date.now();
+    if(now-lastSwitch<400) return; // prevent spam
+    lastSwitch=now;
+
+    if(document.getElementById('tvBox').classList.contains('hidden')) return;
+
+    if(e.key==="ArrowRight" || e.key==="ArrowDown"){
+        currentIndex=(currentIndex+1)%channels.length;
+        channels[currentIndex].click();
+    }
+
+    if(e.key==="ArrowLeft" || e.key==="ArrowUp"){
+        currentIndex=(currentIndex-1+channels.length)%channels.length;
+        channels[currentIndex].click();
+    }
+});
+
 }
 </script></body>
 </html>
