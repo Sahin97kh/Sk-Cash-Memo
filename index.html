@@ -224,7 +224,19 @@
         @keyframes qrFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         #qrCodeCanvas { animation: qrFadeIn 0.25s ease; }
         #qrCodeCanvas img, #qrCodeCanvas canvas { display: block !important; max-width: 180px !important; max-height: 180px !important; }
-    </style>
+    
+.premium-card {
+    transition: all 0.3s ease !important;
+}
+
+.premium-card:hover {
+    border-color: #0d9488 !important;
+    box-shadow: 0 0 12px rgba(13,148,136,0.8),
+                0 0 25px rgba(13,148,136,0.6) !important;
+    transform: translateY(-3px);
+}
+
+</style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
     <div id="editor-container" class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden">
