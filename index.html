@@ -12,8 +12,140 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
+
+        /* ====== প্রিমিয়াম লোডিং স্ক্রিন ====== */
+        #pageLoader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #pageLoader.loader-hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loader-logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(130,100,255,0.8);
+            animation: pulse-glow 2s infinite;
+        }
+        .loader-subtitle {
+            font-size: 0.85rem;
+            color: rgba(200,190,255,0.7);
+            font-weight: 300;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+        .loader-ring-wrap {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 30px;
+        }
+        .loader-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            animation: spin 1.2s linear infinite;
+        }
+        .loader-ring:nth-child(1) {
+            border-top-color: #a78bfa;
+            animation-duration: 1.0s;
+        }
+        .loader-ring:nth-child(2) {
+            inset: 10px;
+            border-right-color: #818cf8;
+            animation-duration: 1.4s;
+            animation-direction: reverse;
+        }
+        .loader-ring:nth-child(3) {
+            inset: 20px;
+            border-bottom-color: #c084fc;
+            animation-duration: 1.8s;
+        }
+        .loader-center-dot {
+            position: absolute;
+            inset: 33px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #a78bfa, #818cf8);
+            box-shadow: 0 0 12px rgba(167,139,250,0.9);
+            animation: pulse-glow 1.5s ease-in-out infinite;
+        }
+        .loader-text {
+            color: rgba(220,215,255,0.9);
+            font-size: 1rem;
+            font-weight: 400;
+            text-align: center;
+            padding: 0 20px;
+            line-height: 1.8;
+        }
+        .loader-text strong {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .loader-dots {
+            display: inline-flex;
+            gap: 6px;
+            margin-top: 16px;
+        }
+        .loader-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a78bfa;
+            animation: dot-bounce 1.4s ease-in-out infinite;
+        }
+        .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+        .loader-progress {
+            width: 180px;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #a78bfa, #818cf8, #c084fc);
+            animation: progress-fill 2.5s ease forwards;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+        @keyframes dot-bounce {
+            0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+        @keyframes progress-fill {
+            0% { width: 0%; }
+            60% { width: 75%; }
+            90% { width: 90%; }
+            100% { width: 100%; }
+        }
+        /* ====================================== */
         
         @media print {
             .no-print { display: none !important; }
@@ -299,7 +431,39 @@ transform:scale(0.96);
 }
 </style>
 </head>
-<body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData()">
+<body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData(); _hideLoader();">
+
+<!-- প্রিমিয়াম লোডিং স্ক্রিন -->
+<div id="pageLoader">
+    <div class="loader-logo">বাংলা টুলস</div>
+    <div class="loader-subtitle">Smart Bengali App</div>
+    <div class="loader-ring-wrap">
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-center-dot"></div>
+    </div>
+    <div class="loader-text">
+        <strong>পেইজ লোডিং হচ্ছে</strong>
+        অনুগ্রহ করে অপেক্ষা করুন
+    </div>
+    <div class="loader-dots">
+        <span></span><span></span><span></span>
+    </div>
+    <div class="loader-progress">
+        <div class="loader-progress-bar"></div>
+    </div>
+</div>
+<script>
+    function _hideLoader() {
+        var loader = document.getElementById('pageLoader');
+        if (!loader) return;
+        loader.classList.add('loader-hide');
+        setTimeout(function() { loader.style.display = 'none'; }, 700);
+    }
+    /* সর্বোচ্চ ৪ সেকেন্ড পর নিজেই বন্ধ হবে */
+    setTimeout(_hideLoader, 4000);
+</script>
 <div class="max-w-4xl mx-auto bg-white shadow-2xl border border-teal-600 overflow-hidden" id="editor-container">
 <div class="p-4 md:p-8" id="main-receipt-design">
 <div class="flex justify-between items-start mb-4">
