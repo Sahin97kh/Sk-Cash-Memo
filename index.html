@@ -1539,6 +1539,7 @@ transform:scale(0.96);
             const originalInputs = receiptDesign.querySelectorAll('input');
             const clonedInputs = clonedDesign.querySelectorAll('input');
             originalInputs.forEach((input, index) => {
+                if (input.type === 'file') return;
                 const val = input.value || "0";
                 const span = document.createElement('span');
                 span.innerText = val;
