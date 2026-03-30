@@ -429,6 +429,30 @@ transform:translateY(-2px) scale(1.02);
 #expenseBox button:active{
 transform:scale(0.96);
 }
+
+/* ===== ক্যাশ মেনেজমেন্ট পপআপ স্টাইল ===== */
+.cm-top-header{background:#0d9488;color:#fff;padding:12px;text-align:center;font-size:16px;font-weight:bold;border-radius:12px;margin-bottom:10px;}
+.cm-card{background:#f9fafb;border-radius:14px;padding:12px;margin-bottom:10px;border:1px solid #e5e7eb;}
+.cm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.cm-input{width:100%;padding:9px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-family:'Hind Siliguri',sans-serif;font-size:13px;box-sizing:border-box;}
+.cm-input:focus{outline:none;border-color:#0d9488;background:#f0fdfa;}
+.cm-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cm-btn{width:100%;padding:10px;border:none;border-radius:12px;background:#0d9488;color:#fff;font-weight:bold;margin-top:8px;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;}
+.cm-btn-red{background:#ef4444;}
+.cm-section{display:none;margin-top:8px;}
+.cm-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;font-size:13px;}
+.cm-result{margin-top:10px;padding:11px;border-radius:10px;text-align:center;font-weight:bold;font-size:14px;}
+.cm-ok{background:#22c55e;color:#fff;}
+.cm-bad{background:#ef4444;color:#fff;}
+.cm-ok-soft{background:#dcfce7;color:#15803d;}
+.cm-inner-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cm-box{background:#f1f5f9;padding:9px;border-radius:10px;text-align:center;font-size:12px;}
+.cm-section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:bold;font-size:14px;}
+.cm-tag{background:#e0f2f1;color:#0d9488;padding:3px 9px;border-radius:10px;font-size:11px;}
+.cm-table{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed;}
+.cm-table th,.cm-table td{border:1px solid #ddd;padding:5px;font-size:11px;}
+.cm-table th{background:#f1f5f9;}
+.cm-table td:last-child,.cm-table th:last-child{text-align:right;}
 </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData(); _hideLoader();">
@@ -553,6 +577,9 @@ transform:scale(0.96);
 </div>
 <div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('expense')">
 <div class="text-2xl mb-2">☕</div><div class="text-[10px] font-bold text-gray-700">ব্যক্তিগত খরচ</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('cashmanage')">
+<div class="text-2xl mb-2">💰</div><div class="text-[10px] font-bold text-gray-700">ব্যাংক মেনেজমেন্ট</div>
 </div>
 </div>
 </div>
@@ -769,6 +796,68 @@ transform:scale(0.96);
 <div class="flex gap-2">
 <button class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-[10px] shadow" onclick="saveExpenseChart()"><i class="fas fa-image"></i> চার্ট সেভ (গ্যালারি)</button>
 <button class="flex-1 bg-gray-200 text-gray-500 py-2 rounded-lg font-bold text-[10px]" onclick="clearExpenseDataPrompt()">ইতিহাস মুছুন</button>
+</div>
+</div>
+<div class="hidden" id="cashmanageBox">
+<div class="cm-top-header">💰 ক্যাশ মেনেজমেন্ট</div>
+<div class="cm-card">
+<div class="cm-grid2">
+<input class="cm-input" id="cm_capital" placeholder="মুল ব্যালেন্স" type="number" oninput="cm_saveData()"/>
+<input class="cm-input" id="cm_cash" placeholder="ক্যাশ" type="number" oninput="cm_saveData()"/>
+</div>
+<div class="cm-grid2">
+<input class="cm-input" id="cm_online" placeholder="অনলাইন" type="number" oninput="cm_saveData()"/>
+<input class="cm-input" id="cm_income" placeholder="ইনকাম" type="number" oninput="cm_saveData()"/>
+</div>
+</div>
+<div class="cm-card">
+<div class="cm-btn-grid">
+<button class="cm-btn" onclick="cm_toggleExpense()">➕ খরচ</button>
+<button class="cm-btn" onclick="cm_toggleSalary()">➕ কর্মীর বেতন</button>
+</div>
+<div id="cm_expenseSection" class="cm-section">
+<div class="cm-grid2" style="margin-top:8px;">
+<input class="cm-input" placeholder="খাত"/>
+<input class="cm-input" placeholder="টাকা" type="number"/>
+</div>
+<button class="cm-btn" style="font-size:12px;padding:7px;" onclick="cm_addExpense()">আরও খরচ যোগ</button>
+</div>
+<div id="cm_salarySection" class="cm-section">
+<div class="cm-grid2" style="margin-top:8px;">
+<input class="cm-input" placeholder="নাম"/>
+<input class="cm-input" placeholder="টাকা" type="number"/>
+</div>
+<button class="cm-btn" style="font-size:12px;padding:7px;" onclick="cm_addSalary()">আরও বেতন যোগ</button>
+</div>
+</div>
+<div class="cm-btn-grid">
+<button class="cm-btn" onclick="cm_calculate()">হিসাব করুন</button>
+<button class="cm-btn cm-btn-red" onclick="cm_showConfirm()">🗑 সব ক্লিয়ার</button>
+</div>
+<div id="cm_statementBox" style="margin-top:12px;">
+<div class="cm-result cm-ok-soft">হিসাব লোডিং.... </div>
+</div>
+<div id="cm_historyBox" style="display:none;margin-top:14px;background:#fff;border-radius:14px;padding:12px;border:1px solid #e5e7eb;"></div>
+<!-- কনফার্ম বক্স -->
+<div id="cm_confirmBox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:9999;">
+<div style="background:#fff;padding:20px;border-radius:15px;width:85%;max-width:300px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+<h3>⚠️ নিশ্চিত করুন</h3>
+<p>সব ডাটা মুছে ফেলতে চান?</p>
+<div style="display:flex;gap:10px;">
+<button onclick="cm_closeConfirm()" style="flex:1;padding:10px;border:none;border-radius:10px;background:#ddd;cursor:pointer;">বাতিল</button>
+<button onclick="cm_confirmClear()" style="flex:1;padding:10px;border:none;border-radius:10px;background:#e53935;color:#fff;cursor:pointer;">মুছুন</button>
+</div>
+</div>
+</div>
+<!-- রিপোর্ট মডাল -->
+<div id="cm_reportModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:10000;overflow:auto;">
+<div style="background:#fff;margin:40px 10px;padding:16px;border-radius:16px;max-height:90vh;overflow:auto;">
+<div id="cm_modalContent"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+<button onclick="cm_printContent(document.getElementById('cm_modalContent').innerHTML)" style="padding:10px;border:none;border-radius:10px;background:#0d9488;color:#fff;font-weight:bold;font-family:'Hind Siliguri',sans-serif;cursor:pointer;">🖨 Print / PDF</button>
+<button onclick="cm_closeReport()" style="padding:10px;border:none;border-radius:10px;background:#ef4444;color:#fff;font-weight:bold;font-family:'Hind Siliguri',sans-serif;cursor:pointer;">বন্ধ করুন</button>
+</div>
+</div>
 </div>
 </div>
 <div class="hidden" id="cardBox">
@@ -1674,7 +1763,7 @@ transform:scale(0.96);
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox', 'ledgerBox'].forEach(b => {
+            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox', 'ledgerBox', 'cashmanageBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
             modal.classList.replace('hidden', 'flex'); const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
@@ -1987,6 +2076,210 @@ transform:scale(0.96);
             tvChannels[i].scrollIntoView({behavior:'smooth', block:'center'});
         }
     }
+
+    // ===== ক্যাশ মেনেজমেন্ট ফাংশন =====
+    function cm_toggleExpense(){
+        var e=document.getElementById('cm_expenseSection');
+        var s=document.getElementById('cm_salarySection');
+        e.style.display=(e.style.display==='none'||e.style.display==='')?'block':'none';
+        s.style.display='none';
+    }
+    function cm_toggleSalary(){
+        var e=document.getElementById('cm_expenseSection');
+        var s=document.getElementById('cm_salarySection');
+        s.style.display=(s.style.display==='none'||s.style.display==='')?'block':'none';
+        e.style.display='none';
+    }
+    function cm_addExpense(){
+        var d=document.createElement('div');
+        d.className='cm-grid2';
+        d.style.marginTop='6px';
+        d.innerHTML='<input class="cm-input" placeholder="খাত"/><input class="cm-input" placeholder="টাকা" type="number"/>';
+        var sec=document.getElementById('cm_expenseSection');
+        sec.insertBefore(d,sec.lastElementChild);
+    }
+    function cm_addSalary(){
+        var d=document.createElement('div');
+        d.className='cm-grid2';
+        d.style.marginTop='6px';
+        d.innerHTML='<input class="cm-input" placeholder="নাম"/><input class="cm-input" placeholder="টাকা" type="number"/>';
+        var sec=document.getElementById('cm_salarySection');
+        sec.insertBefore(d,sec.lastElementChild);
+    }
+    function cm_calculate(){
+        var c=+(document.getElementById('cm_capital').value)||0;
+        var cashV=+(document.getElementById('cm_cash').value)||0;
+        var on=+(document.getElementById('cm_online').value)||0;
+        var inc=+(document.getElementById('cm_income').value)||0;
+        var exp=0,expRows='';
+        document.querySelectorAll('#cm_expenseSection .cm-grid2').forEach(function(row){
+            var name=row.children[0].value||'';
+            var val=+(row.children[1].value)||0;
+            if(val>0){exp+=val;expRows+='<tr><td>'+(name||'-')+'</td><td>৳ '+val+'</td></tr>';}
+        });
+        var sal=0,salRows='';
+        document.querySelectorAll('#cm_salarySection .cm-grid2').forEach(function(row){
+            var name=row.children[0].value||'';
+            var val=+(row.children[1].value)||0;
+            if(val>0){sal+=val;salRows+='<tr><td>'+(name||'-')+'</td><td>৳ '+val+'</td></tr>';}
+        });
+        var actual=cashV+on;
+        var expected=c-exp;
+        var commissionBalance=inc-sal;
+        var shortage=expected-actual;
+        var status='';
+        if(c===0&&cashV===0&&on===0&&inc===0&&exp===0&&sal===0){
+            status='<div class="cm-result cm-ok-soft">ব্যালেন্স নাই 🥹</div>';
+        } else if(c>0&&cashV===0&&on===0){
+            status='<div class="cm-result cm-ok-soft">ক্যাশ বক্সের টাকা এন্ট্রি করুন</div>';
+        } else if(shortage===0){
+            status='<div class="cm-result cm-ok">✔ হিসাব মিলছে</div>';
+        } else if(shortage>0){
+            status='<div class="cm-result cm-bad">৳ '+shortage+' টাকা শর্ট</div>';
+        } else {
+            status='<div class="cm-result cm-ok">৳ '+Math.abs(shortage)+' টাকা বেশি</div>';
+        }
+        var dateTime=new Date().toLocaleString('bn-BD');
+        var contentHtml=
+            '<div class="cm-section-header"><span>📊 হিসাব বিবরণী</span><span class="cm-tag">আজকের হিসাব</span></div>'+
+            '<div class="cm-row"><span>শুরুর ব্যালেন্স</span><span>৳ '+c+'</span></div>'+
+            '<div class="cm-row"><span>খরচ</span><span>৳ '+exp+'</span></div>'+
+            '<div class="cm-row"><span>বেতন</span><span>৳ '+sal+'</span></div>'+
+            '<div class="cm-row"><span>কমিশন ব্যালেন্স</span><span>৳ '+commissionBalance+'</span></div>'+
+            '<div class="cm-row"><span>চূড়ান্ত</span><span>৳ '+actual+'</span></div>'+
+            '<div class="cm-row"><span>থাকার কথা</span><span>৳ '+expected+'</span></div>'+
+            status+
+            '<div class="cm-inner-grid">'+
+            '<div class="cm-box">ক্যাশ ৳ '+cashV+'</div>'+
+            '<div class="cm-box">অনলাইন ৳ '+on+'</div>'+
+            '<div class="cm-box">আয় ৳ '+inc+'</div>'+
+            '<div class="cm-box">খরচ ৳ '+exp+'</div>'+
+            '</div>'+
+            (expRows?'<table class="cm-table"><tr><th>খরচের খাত</th><th>টাকা</th></tr>'+expRows+'</table>':'')+
+            (salRows?'<table class="cm-table"><tr><th>কর্মীর নাম</th><th>বেতন</th></tr>'+salRows+'</table>':'');
+        window._cmLastHtml=contentHtml;
+        document.getElementById('cm_statementBox').innerHTML=contentHtml+
+            '<button onclick="cm_printContent(window._cmLastHtml)" style="width:100%;margin-top:10px;padding:10px;border:none;border-radius:10px;background:#0d9488;color:#fff;font-weight:bold;font-family:\'Hind Siliguri\',sans-serif;cursor:pointer;">🖨 Print / Save PDF</button>';
+        if(c>0||cashV>0||on>0||inc>0||exp>0||sal>0){
+            cm_saveHistory({html:contentHtml,time:dateTime});
+        }
+    }
+    function cm_clearAll(){
+        ['cm_capital','cm_cash','cm_online','cm_income'].forEach(function(id){
+            var el=document.getElementById(id); if(el) el.value='';
+        });
+        document.getElementById('cm_expenseSection').innerHTML=
+            '<div class="cm-grid2" style="margin-top:8px;"><input class="cm-input" placeholder="খাত"/><input class="cm-input" placeholder="টাকা" type="number"/></div>'+
+            '<button class="cm-btn" style="font-size:12px;padding:7px;" onclick="cm_addExpense()">আরও খরচ যোগ</button>';
+        document.getElementById('cm_salarySection').innerHTML=
+            '<div class="cm-grid2" style="margin-top:8px;"><input class="cm-input" placeholder="নাম"/><input class="cm-input" placeholder="টাকা" type="number"/></div>'+
+            '<button class="cm-btn" style="font-size:12px;padding:7px;" onclick="cm_addSalary()">আরও বেতন যোগ</button>';
+        document.getElementById('cm_statementBox').innerHTML='<div class="cm-result cm-ok-soft">📊 হিসাব শুরু করুন</div>';
+        localStorage.removeItem('cm_app_data');
+    }
+    function cm_saveData(){
+        var data={
+            capital:document.getElementById('cm_capital').value,
+            cash:document.getElementById('cm_cash').value,
+            online:document.getElementById('cm_online').value,
+            income:document.getElementById('cm_income').value,
+            expenseHTML:document.getElementById('cm_expenseSection').innerHTML,
+            salaryHTML:document.getElementById('cm_salarySection').innerHTML
+        };
+        localStorage.setItem('cm_app_data',JSON.stringify(data));
+    }
+    function cm_loadData(){
+        var d=localStorage.getItem('cm_app_data');
+        if(!d) return;
+        var data=JSON.parse(d);
+        if(document.getElementById('cm_capital')) document.getElementById('cm_capital').value=data.capital||'';
+        if(document.getElementById('cm_cash')) document.getElementById('cm_cash').value=data.cash||'';
+        if(document.getElementById('cm_online')) document.getElementById('cm_online').value=data.online||'';
+        if(document.getElementById('cm_income')) document.getElementById('cm_income').value=data.income||'';
+        if(data.expenseHTML && document.getElementById('cm_expenseSection')) document.getElementById('cm_expenseSection').innerHTML=data.expenseHTML;
+        if(data.salaryHTML && document.getElementById('cm_salarySection')) document.getElementById('cm_salarySection').innerHTML=data.salaryHTML;
+        cm_renderHistory();
+    }
+    function cm_saveHistory(item){
+        var h=JSON.parse(localStorage.getItem('cm_history')||'[]');
+        h.unshift(item);
+        if(h.length>5) h=h.slice(0,5);
+        localStorage.setItem('cm_history',JSON.stringify(h));
+        cm_renderHistory();
+    }
+    function cm_renderHistory(){
+        var box=document.getElementById('cm_historyBox');
+        if(!box) return;
+        var h=JSON.parse(localStorage.getItem('cm_history')||'[]');
+        if(h.length===0){box.style.display='none';return;}
+        box.style.display='block';
+        box.innerHTML='<b style="font-size:13px;">📅 হিসাব হিস্টরি</b><br>'+
+            h.map(function(x,i){
+                return '<div onclick="cm_openReport('+i+')" style="padding:8px 0;border-bottom:1px solid #eee;cursor:pointer;font-size:13px;">📊 রিপোর্ট '+(i+1)+' — '+x.time+'</div>';
+            }).join('');
+    }
+    function cm_openReport(i){
+        var h=JSON.parse(localStorage.getItem('cm_history')||'[]');
+        var item=h[i];
+        var modal=document.getElementById('cm_reportModal');
+        var content=document.getElementById('cm_modalContent');
+        if(modal&&content){
+            var tmp=document.createElement('div');
+            tmp.innerHTML=item.html;
+            tmp.querySelectorAll('button').forEach(function(b){b.parentNode.removeChild(b);});
+            content.innerHTML=tmp.innerHTML;
+            modal.style.display='block';
+        }
+    }
+    function cm_closeReport(){
+        var modal=document.getElementById('cm_reportModal');
+        if(modal) modal.style.display='none';
+    }
+    function cm_printContent(html){
+        var area=document.getElementById('cm_printArea');
+        if(!area){area=document.createElement('div');area.id='cm_printArea';document.body.appendChild(area);}
+        area.innerHTML='<style>.cm-section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:bold;font-size:15px;border-bottom:2px solid #0d9488;padding-bottom:8px;}.cm-tag{background:#e0f2f1;color:#0d9488;padding:3px 9px;border-radius:10px;font-size:12px;}.cm-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;}.cm-result{margin-top:12px;padding:11px;border-radius:10px;text-align:center;font-weight:bold;font-size:14px;}.cm-ok{background:#22c55e;color:#fff;}.cm-bad{background:#ef4444;color:#fff;}.cm-ok-soft{background:#dcfce7;color:#15803d;}.cm-inner-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}.cm-box{background:#f1f5f9;padding:9px;border-radius:10px;text-align:center;font-size:12px;}.cm-table{width:100%;border-collapse:collapse;margin-top:8px;}.cm-table th,.cm-table td{border:1px solid #ddd;padding:5px;font-size:12px;}.cm-table th{background:#f1f5f9;}</style>'+html;
+        var sty=document.createElement('style');
+        sty.id='cm_printStyleTag';
+        sty.innerHTML='@media print{body>*{display:none!important;}#cm_printArea{display:block!important;position:static!important;padding:16px;font-family:sans-serif;}}';
+        document.head.appendChild(sty);
+        window.print();
+        setTimeout(function(){
+            var s=document.getElementById('cm_printStyleTag');
+            if(s) s.parentNode.removeChild(s);
+            area.innerHTML='';
+        },1000);
+    }
+    function cm_showConfirm(){
+        var el=document.getElementById('cm_confirmBox');
+        if(el){el.style.display='flex';}
+    }
+    function cm_closeConfirm(){
+        var el=document.getElementById('cm_confirmBox');
+        if(el){el.style.display='none';}
+    }
+    function cm_confirmClear(){
+        cm_closeConfirm();
+        cm_clearAll();
+    }
+    window.addEventListener('load', function(){ cm_loadData(); });
+    window.cm_toggleExpense=cm_toggleExpense;
+    window.cm_toggleSalary=cm_toggleSalary;
+    window.cm_addExpense=cm_addExpense;
+    window.cm_addSalary=cm_addSalary;
+    window.cm_calculate=cm_calculate;
+    window.cm_clearAll=cm_clearAll;
+    window.cm_saveData=cm_saveData;
+    window.cm_loadData=cm_loadData;
+    window.cm_showConfirm=cm_showConfirm;
+    window.cm_closeConfirm=cm_closeConfirm;
+    window.cm_confirmClear=cm_confirmClear;
+    window.cm_printContent=cm_printContent;
+    window.cm_saveHistory=cm_saveHistory;
+    window.cm_renderHistory=cm_renderHistory;
+    window.cm_openReport=cm_openReport;
+    window.cm_closeReport=cm_closeReport;
+    // ===== ক্যাশ মেনেজমেন্ট শেষ =====
 
     document.addEventListener('keydown', function(e) {
         var tvBox = document.getElementById('tvBox');
