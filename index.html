@@ -11,6 +11,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
@@ -453,6 +454,31 @@ transform:scale(0.96);
 .cm-table th,.cm-table td{border:1px solid #ddd;padding:5px;font-size:11px;}
 .cm-table th{background:#f1f5f9;}
 .cm-table td:last-child,.cm-table th:last-child{text-align:right;}
+
+/* ===== স্টুডেন্ট কার্ড মেকার স্টাইল ===== */
+.sc-card{width:300px;height:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.25);margin:auto;display:flex;flex-direction:column;font-family:sans-serif;border:2.5px solid #0d9488;}
+.sc-header{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;text-align:center;padding:10px 0;}
+.sc-logo{width:45px;height:45px;margin:auto;margin-bottom:5px;border-radius:50%;background:#fff;overflow:hidden;}
+.sc-logo img{width:100%;height:100%;object-fit:cover;}
+.sc-subtitle{font-size:10px;opacity:0.8;}
+.sc-photo{width:60px !important;height:70px !important;margin:5px auto;flex-shrink:0;border:3px solid #fff;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.3);overflow:hidden;}
+.sc-photo img{width:100%;height:100%;object-fit:cover;}
+.sc-name-box{text-align:center;font-size:18px;font-weight:600;margin-top:8px;color:#0f172a;position:relative;display:inline-block;width:100%;}
+.sc-name-box::after{content:"";display:block;width:60%;height:3px;margin:6px auto 0;background:#0d9488;border-radius:3px;}
+.sc-info{padding:5px 6px;font-size:11.5px;flex:1;}
+.sc-row{display:flex !important;justify-content:flex-start !important;align-items:center;gap:4px !important;border-bottom:1px dashed #ddd;padding:4px 0;}
+.sc-label{min-width:65px;color:#666;font-weight:500;font-size:11.5px;text-align:left;padding-left:2px;}
+.sc-value{font-weight:600;color:#111;font-size:11.5px;}
+.sc-id-val{color:#0d9488;font-weight:bold;}
+.sc-sign{display:flex;justify-content:space-between;padding:10px 15px;font-size:11px;margin-top:auto;}
+.sc-sign div{width:100px;text-align:center;border-top:1px solid #000;padding-top:3px;}
+.sc-footer{background:#0d9488;color:white;text-align:center;padding:6px;font-size:12px;}
+#studentcardBox .sc-upload-box{margin-bottom:10px;display:block;width:100%;padding:10px 0;text-align:center;background:#f1f5f9;border:1px dashed #0d9488;border-radius:8px;color:#0d9488;font-size:14px;cursor:pointer;transition:0.2s;box-sizing:border-box;}
+#studentcardBox .sc-upload-box:hover{background:#e0f2f1;}
+#studentcardBox .sc-upload-box input{display:none;}
+.sc-back-card{width:300px;height:520px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.25);margin:auto;display:flex;flex-direction:column;font-family:sans-serif;border:2.5px solid #0d9488;}
+.sc-back-card .sc-header{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;text-align:center;padding:10px 0;}
+.sc-back-card .sc-info{padding:5px 6px;font-size:11.5px;}
 </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-10" onload="loadSavedData(); _hideLoader();">
@@ -553,6 +579,9 @@ transform:scale(0.96);
 <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
 <div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('card')">
 <div class="text-2xl mb-2">🪪</div><div class="text-[10px] font-bold text-gray-700">কার্ড মেকার</div>
+</div>
+<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('studentcard')">
+<div class="text-2xl mb-2">🎓</div><div class="text-[10px] font-bold text-gray-700">স্টুডেন্ট কার্ড মেকার</div>
 </div>
 <div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('qr')">
 <div class="text-2xl mb-2">🏁</div><div class="text-[10px] font-bold text-gray-700">QR কোড জেনারেট</div>
@@ -895,6 +924,114 @@ transform:scale(0.96);
 <button class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold text-xs shadow-md" onclick="saveCardImg()"><i class="fas fa-image"></i> গ্যালারি সেভ</button>
 <button class="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold text-xs shadow-md" onclick="saveCardPDF()"><i class="fas fa-file-pdf"></i> PDF সেভ</button>
 <button class="bg-gray-500 text-white px-4 py-3 rounded-lg font-bold text-xs shadow-md" onclick="resetCard()">মুছুন</button>
+</div>
+</div>
+<div class="hidden" id="studentcardBox">
+<h4 class="font-bold text-teal-700 mb-4 uppercase text-sm border-b pb-2">শিক্ষার্থী ID কার্ড মেকার</h4>
+<div class="grid grid-cols-2 gap-2">
+<input id="sc_student_name" class="border p-2 rounded text-sm" placeholder="নাম">
+<input id="sc_father" class="border p-2 rounded text-sm" placeholder="বাবার নাম">
+<input id="sc_mother" class="border p-2 rounded text-sm" placeholder="মায়ের নাম">
+<input type="text" id="sc_student_id" class="border p-2 rounded text-sm" placeholder="ID" onclick="sc_autoID()">
+<input id="sc_student_class" class="border p-2 rounded text-sm" placeholder="শ্রেণি">
+<input id="sc_dept" class="border p-2 rounded text-sm" placeholder="বিভাগ">
+<input id="sc_blood" class="border p-2 rounded text-sm" placeholder="রক্তের গ্রুপ">
+<input id="sc_valid" class="border p-2 rounded text-sm" placeholder="মেয়াদ">
+</div>
+<input id="sc_school" class="border p-2 w-full mt-2 rounded text-sm" placeholder="School">
+<label class="sc-upload-box" style="margin-top:10px;" id="sc_logo_label">
+<span id="sc_logo_label_text">লোগো আপলোড করুন</span>
+<input type="file" id="sc_logo" accept="image/*" onchange="sc_previewLogo(this)">
+</label>
+<label class="sc-upload-box" id="sc_photo_label">
+<span id="sc_photo_label_text">ছবি আপলোড করুন</span>
+<input type="file" id="sc_photo" accept="image/*" onchange="sc_previewPhoto(this)">
+</label>
+<button onclick="sc_gen()" class="bg-teal-600 text-white w-full py-2 rounded font-bold mb-2">
+ফন্ট পেইজ জেনারেট করুন
+</button>
+<button onclick="sc_openBack()" class="bg-gray-800 text-white w-full py-2 rounded font-bold">
+ব্যাক পেইজ জেনারেট করুন
+</button>
+<div id="sc_cardBox" class="hidden text-center mt-4">
+<div id="sc_card" class="sc-card">
+<div class="sc-header">
+<div class="sc-logo"><img id="sc_p_logo" alt=""></div>
+<div id="sc_p_school">স্কুলের নাম</div>
+<div class="sc-subtitle">স্টুডেন্ট আইডি কার্ড</div>
+</div>
+<div class="sc-photo">
+<img id="sc_p_img" alt="">
+</div>
+<div class="sc-name-box" id="sc_p_name"></div>
+<div class="sc-info">
+<div class="sc-row"><div class="sc-label">বাবার নামঃ</div><div class="sc-value" id="sc_p_father"></div></div>
+<div class="sc-row"><div class="sc-label">মায়ের নামঃ</div><div class="sc-value" id="sc_p_mother"></div></div>
+<div class="sc-row"><div class="sc-label">আইডিঃ</div><div class="sc-value sc-id-val" id="sc_p_id"></div></div>
+<div class="sc-row"><div class="sc-label">শ্রেণিঃ</div><div class="sc-value" id="sc_p_class"></div></div>
+<div class="sc-row"><div class="sc-label">বিভাগঃ</div><div class="sc-value" id="sc_p_dept"></div></div>
+<div class="sc-row"><div class="sc-label">রক্তের গ্রুপঃ</div><div class="sc-value" id="sc_p_blood"></div></div>
+<div class="sc-row"><div class="sc-label">মেয়াদঃ</div><div class="sc-value" id="sc_p_valid"></div></div>
+</div>
+<div class="sc-sign">
+<div>প্রধান শিক্ষক</div>
+<div>শিক্ষার্থী</div>
+</div>
+<div class="sc-footer">স্টুডেন্ট কার্ড</div>
+</div>
+<div class="flex gap-2 mt-4 flex-wrap">
+<button onclick="sc_printCard()" class="flex-1 bg-gray-800 text-white py-2 rounded font-bold text-sm"><i class="fas fa-print"></i> ফ্রন্ট প্রিন্ট</button>
+<button onclick="sc_savePDF()" class="flex-1 bg-red-600 text-white py-2 rounded font-bold text-sm"><i class="fas fa-file-pdf"></i> ফ্রন্ট PDF</button>
+</div>
+<div class="flex gap-2 mt-2 flex-wrap">
+<button onclick="sc_printBoth()" class="flex-1 bg-teal-600 text-white py-2 rounded font-bold text-sm"><i class="fas fa-print"></i> উভয় প্রিন্ট</button>
+<button onclick="sc_saveBothPDF()" class="flex-1 bg-purple-600 text-white py-2 rounded font-bold text-sm"><i class="fas fa-file-pdf"></i> উভয় PDF</button>
+</div>
+</div>
+<div id="sc_backPage" class="hidden mt-4">
+<div class="bg-gray-50 p-3 rounded-lg mb-3">
+<input id="sc_b_dob_input" class="border p-2 w-full mb-2 rounded text-sm" placeholder="জন্ম তারিখ">
+<input id="sc_b_roll_input" class="border p-2 w-full mb-2 rounded text-sm" placeholder="রোল নাম্বার">
+<input id="sc_b_issue_input" class="border p-2 w-full mb-2 rounded text-sm" placeholder="ইস্যু তারিখ">
+<input id="sc_b_address_input" class="border p-2 w-full mb-2 rounded text-sm" placeholder="ঠিকানা">
+<input id="sc_b_phone_input" class="border p-2 w-full mb-2 rounded text-sm" placeholder="ফোন">
+<button onclick="sc_genBack()" class="bg-teal-600 text-white w-full py-2 rounded font-bold mb-2">
+ব্যাক জেনারেট
+</button>
+<button onclick="sc_printBack()" class="bg-gray-800 text-white w-full py-2 rounded font-bold mb-2">
+<i class="fas fa-print"></i> ব্যাক প্রিন্ট
+</button>
+<button onclick="sc_closeBack()" class="bg-gray-500 text-white w-full py-2 rounded font-bold">
+ফিরে যান
+</button>
+</div>
+<div class="sc-back-card" id="sc_back_card">
+<div class="sc-header">
+<div id="sc_b_school_header" style="font-size:13px;font-weight:600;">স্টুডেন্ট আইডি কার্ড</div>
+<div class="sc-subtitle">BACK SIDE</div>
+</div>
+<div class="sc-info">
+<div class="sc-row"><div class="sc-label">জন্ম তারিখ</div><div class="sc-value" id="sc_b_dob"></div></div>
+<div class="sc-row"><div class="sc-label">রোল</div><div class="sc-value" id="sc_b_roll"></div></div>
+<div class="sc-row"><div class="sc-label">ইস্যু</div><div class="sc-value" id="sc_b_issue"></div></div>
+</div>
+<p style="font-size:11px;text-align:center;padding:6px 12px 4px;">
+এই কার্ডটি হারিয়ে গেলে দয়া করে নিচের ঠিকানায় জমা দিন
+</p>
+<div class="sc-info">
+<div class="sc-row"><div class="sc-label">ঠিকানা</div><div class="sc-value" id="sc_b_address"></div></div>
+<div class="sc-row"><div class="sc-label">ফোন</div><div class="sc-value" id="sc_b_phone"></div></div>
+</div>
+<div style="padding:6px 12px;font-size:11px;">
+১. সর্বদা কার্ড বহন করতে হবে<br>
+২. হারালে কর্তৃপক্ষকে জানাতে হবে
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:auto;padding:6px 12px 8px;width:100%;box-sizing:border-box;">
+<svg id="sc_barcode" style="width:100%;max-width:220px;height:50px;display:block;margin:0 auto;"></svg>
+<div style="font-size:10px;margin-top:4px;text-align:center;width:100%;" id="sc_barcode_text"></div>
+</div>
+<div class="sc-footer">BACK SIDE</div>
+</div>
 </div>
 </div>
 <div class="hidden" id="vatBox">
@@ -1763,7 +1900,7 @@ transform:scale(0.96);
 
         function openTool(t) {
             const modal = document.getElementById('toolModal');
-            ['ageBox','emiBox','unitBox','cardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox', 'ledgerBox', 'cashmanageBox'].forEach(b => {
+            ['ageBox','emiBox','unitBox','cardBox','studentcardBox','fdrBox','qrBox','tvBox','videoBox','cashBox','memoBox', 'loanBox', 'birthBox', 'discountBox', 'dsrBox', 'studyBox', 'vatBox', 'taxBox', 'currBox', 'dpsBox', 'zakatBox', 'goldBox', 'cashoutBox', 'expenseBox', 'ledgerBox', 'cashmanageBox'].forEach(b => {
                 const el = document.getElementById(b); if(el) el.classList.add('hidden');
             });
             modal.classList.replace('hidden', 'flex'); const target = document.getElementById(t + 'Box'); if(target) target.classList.remove('hidden');
@@ -2280,6 +2417,218 @@ transform:scale(0.96);
     window.cm_openReport=cm_openReport;
     window.cm_closeReport=cm_closeReport;
     // ===== ক্যাশ মেনেজমেন্ট শেষ =====
+
+    // ===== স্টুডেন্ট কার্ড মেকার ফাংশন =====
+    var _sc_logo_data = null;
+    var _sc_photo_data = null;
+
+    function sc_previewLogo(input){
+        if(!input.files || !input.files[0]) return;
+        var r = new FileReader();
+        r.onload = function(e){
+            _sc_logo_data = e.target.result;
+            document.getElementById('sc_logo_label_text').innerText = '✓ লোগো নির্বাচিত হয়েছে';
+        };
+        r.readAsDataURL(input.files[0]);
+    }
+
+    function sc_previewPhoto(input){
+        if(!input.files || !input.files[0]) return;
+        var r = new FileReader();
+        r.onload = function(e){
+            _sc_photo_data = e.target.result;
+            document.getElementById('sc_photo_label_text').innerText = '✓ ছবি নির্বাচিত হয়েছে';
+        };
+        r.readAsDataURL(input.files[0]);
+    }
+
+    function sc_gen(){
+        document.getElementById('sc_cardBox').classList.remove('hidden');
+        document.getElementById('sc_p_name').innerText = document.getElementById('sc_student_name').value;
+        document.getElementById('sc_p_father').innerText = document.getElementById('sc_father').value;
+        document.getElementById('sc_p_mother').innerText = document.getElementById('sc_mother').value;
+        document.getElementById('sc_p_id').innerText = document.getElementById('sc_student_id').value;
+        document.getElementById('sc_p_class').innerText = document.getElementById('sc_student_class').value;
+        document.getElementById('sc_p_dept').innerText = document.getElementById('sc_dept').value;
+        document.getElementById('sc_p_blood').innerText = document.getElementById('sc_blood').value;
+        document.getElementById('sc_p_valid').innerText = document.getElementById('sc_valid').value;
+        var schoolName = document.getElementById('sc_school').value;
+        document.getElementById('sc_p_school').innerText = schoolName;
+        var backHeader = document.getElementById('sc_b_school_header');
+        if(backHeader) backHeader.innerText = schoolName || 'স্টুডেন্ট আইডি কার্ড';
+        if(_sc_logo_data){
+            document.getElementById('sc_p_logo').src = _sc_logo_data;
+        }
+        if(_sc_photo_data){
+            document.getElementById('sc_p_img').src = _sc_photo_data;
+        }
+    }
+    function sc_openBack(){
+        document.getElementById('sc_backPage').classList.remove('hidden');
+    }
+    function sc_closeBack(){
+        document.getElementById('sc_backPage').classList.add('hidden');
+    }
+    function sc_bnToEn(str){
+        return str.replace(/০/g,'0').replace(/১/g,'1').replace(/২/g,'2').replace(/৩/g,'3')
+                  .replace(/৪/g,'4').replace(/৫/g,'5').replace(/৬/g,'6').replace(/৭/g,'7')
+                  .replace(/৮/g,'8').replace(/৯/g,'9');
+    }
+    function sc_genBarcode(){
+        var rawData = document.getElementById('sc_student_id').value || "ID123";
+        var data = sc_bnToEn(rawData);
+        if(!data || data.trim() === '') data = "ID123";
+        document.getElementById('sc_barcode_text').innerText = rawData;
+        if(typeof JsBarcode !== 'undefined'){
+            try {
+                JsBarcode("#sc_barcode", data, {
+                    format: "CODE128",
+                    width: 1.5,
+                    height: 45,
+                    displayValue: false,
+                    margin: 0
+                });
+            } catch(e){
+                console.warn("Barcode error:", e.message);
+            }
+        }
+    }
+    function sc_genBack(){
+        document.getElementById('sc_b_dob').innerText = document.getElementById('sc_b_dob_input').value;
+        document.getElementById('sc_b_roll').innerText = document.getElementById('sc_b_roll_input').value;
+        document.getElementById('sc_b_issue').innerText = document.getElementById('sc_b_issue_input').value;
+        document.getElementById('sc_b_address').innerText = document.getElementById('sc_b_address_input').value;
+        document.getElementById('sc_b_phone').innerText = document.getElementById('sc_b_phone_input').value;
+        setTimeout(sc_genBarcode, 100);
+    }
+    function sc_autoID(){
+        var input = document.getElementById("sc_student_id");
+        if(!input) return;
+        if(input.value !== "") return;
+        var random = Math.floor(10000000 + Math.random() * 90000000);
+        var bn = random.toString()
+            .replace(/0/g,'০').replace(/1/g,'১').replace(/2/g,'২').replace(/3/g,'৩')
+            .replace(/4/g,'৪').replace(/5/g,'৫').replace(/6/g,'৬').replace(/7/g,'৭')
+            .replace(/8/g,'৮').replace(/9/g,'৯');
+        input.value = bn;
+    }
+    function sc_fixImagesBeforeCapture(el){
+        var imgs = el.querySelectorAll('img');
+        imgs.forEach(function(img){
+            if(!img.src || img.src === '' || img.src === window.location.href){
+                img.style.display = 'none';
+            }
+        });
+    }
+    function sc_captureCard(cardEl, callback){
+        sc_fixImagesBeforeCapture(cardEl);
+        html2canvas(cardEl, {
+            scale: 3,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            foreignObjectRendering: false,
+            imageTimeout: 0,
+            onclone: function(doc, el){
+                el.querySelectorAll('img').forEach(function(img){
+                    if(!img.getAttribute('src') || img.getAttribute('src') === ''){
+                        img.style.display = 'none';
+                    }
+                });
+            }
+        }).then(callback);
+    }
+    function sc_printCard(){
+        var cardEl = document.getElementById('sc_card');
+        if(!cardEl) return;
+        var printWrapper = document.getElementById('print-wrapper');
+        sc_captureCard(cardEl, function(canvas){
+            var img = canvas.toDataURL('image/png');
+            printWrapper.innerHTML = '<style>@media print{body>*:not(#print-wrapper){display:none!important;}#print-wrapper{display:block!important;}@page{size:A4;margin:10mm;}}</style>'
+                + '<div style="display:flex;justify-content:center;align-items:flex-start;padding:20px;background:#fff;">'
+                + '<img src="'+img+'" style="width:240px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">'
+                + '</div>';
+            window.print();
+            setTimeout(function(){ printWrapper.innerHTML = ''; }, 1500);
+        });
+    }
+    function sc_printBack(){
+        var cardEl = document.getElementById('sc_back_card');
+        if(!cardEl) return;
+        var printWrapper = document.getElementById('print-wrapper');
+        sc_captureCard(cardEl, function(canvas){
+            var img = canvas.toDataURL('image/png');
+            printWrapper.innerHTML = '<style>@media print{body>*:not(#print-wrapper){display:none!important;}#print-wrapper{display:block!important;}@page{size:A4;margin:10mm;}}</style>'
+                + '<div style="display:flex;justify-content:center;align-items:flex-start;padding:20px;background:#fff;">'
+                + '<img src="'+img+'" style="width:240px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">'
+                + '</div>';
+            window.print();
+            setTimeout(function(){ printWrapper.innerHTML = ''; }, 1500);
+        });
+    }
+    function sc_printBoth(){
+        var frontEl = document.getElementById('sc_card');
+        var backEl = document.getElementById('sc_back_card');
+        if(!frontEl || !backEl) return;
+        var printWrapper = document.getElementById('print-wrapper');
+        sc_captureCard(frontEl, function(frontCanvas){
+            sc_captureCard(backEl, function(backCanvas){
+                var frontImg = frontCanvas.toDataURL('image/png');
+                var backImg = backCanvas.toDataURL('image/png');
+                printWrapper.innerHTML = '<style>@media print{body>*:not(#print-wrapper){display:none!important;}#print-wrapper{display:block!important;}@page{size:A4;margin:10mm;}}</style>'
+                    + '<div style="display:flex;justify-content:center;align-items:flex-start;gap:20px;padding:20px;background:#fff;flex-wrap:wrap;">'
+                    + '<img src="'+frontImg+'" style="width:240px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">'
+                    + '<img src="'+backImg+'" style="width:240px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">'
+                    + '</div>';
+                window.print();
+                setTimeout(function(){ printWrapper.innerHTML = ''; }, 1500);
+            });
+        });
+    }
+    function sc_savePDF(){
+        var cardEl = document.getElementById('sc_card');
+        if(!cardEl) return;
+        sc_captureCard(cardEl, function(canvas){
+            var { jsPDF } = window.jspdf;
+            var pdf = new jsPDF('p','mm','a4');
+            var imgData = canvas.toDataURL('image/jpeg', 1.0);
+            var w = 80; var h = (canvas.height / canvas.width) * w;
+            var x = (210 - w) / 2;
+            pdf.addImage(imgData, 'JPEG', x, 20, w, h);
+            pdf.save('student_card_front.pdf');
+        });
+    }
+    function sc_saveBothPDF(){
+        var frontEl = document.getElementById('sc_card');
+        var backEl = document.getElementById('sc_back_card');
+        if(!frontEl || !backEl) { showAlert('আগে ফ্রন্ট ও ব্যাক উভয় কার্ড জেনারেট করুন।'); return; }
+        sc_captureCard(frontEl, function(frontCanvas){
+            sc_captureCard(backEl, function(backCanvas){
+                var { jsPDF } = window.jspdf;
+                var pdf = new jsPDF('p','mm','a4');
+                var fw = 80; var fh = (frontCanvas.height / frontCanvas.width) * fw;
+                var bw = 80; var bh = (backCanvas.height / backCanvas.width) * bw;
+                var x = (210 - fw) / 2;
+                pdf.addImage(frontCanvas.toDataURL('image/jpeg',1.0), 'JPEG', x, 15, fw, fh);
+                pdf.addImage(backCanvas.toDataURL('image/jpeg',1.0), 'JPEG', x + 90, 15, bw, bh);
+                pdf.save('student_card_both.pdf');
+            });
+        });
+    }
+    window.sc_previewLogo = sc_previewLogo;
+    window.sc_previewPhoto = sc_previewPhoto;
+    window.sc_gen = sc_gen;
+    window.sc_openBack = sc_openBack;
+    window.sc_closeBack = sc_closeBack;
+    window.sc_genBack = sc_genBack;
+    window.sc_genBarcode = sc_genBarcode;
+    window.sc_autoID = sc_autoID;
+    window.sc_printCard = sc_printCard;
+    window.sc_printBack = sc_printBack;
+    window.sc_printBoth = sc_printBoth;
+    window.sc_savePDF = sc_savePDF;
+    window.sc_saveBothPDF = sc_saveBothPDF;
+    // ===== স্টুডেন্ট কার্ড মেকার শেষ =====
 
     document.addEventListener('keydown', function(e) {
         var tvBox = document.getElementById('tvBox');
