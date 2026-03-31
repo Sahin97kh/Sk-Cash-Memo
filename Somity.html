@@ -47,7 +47,7 @@
                 <i class="fas fa-fingerprint text-4xl text-white"></i>
             </div>
             <h2 class="text-2xl font-bold mb-2 tracking-tight">সঞ্চয় প্রো</h2>
-            <p class="text-indigo-100 text-xs mb-8 opacity-80">পিন কোড দিয়ে প্রবেশ করুন</p>
+            <p class="text-indigo-100 text-xs mb-8 opacity-80">পিন কোড (৮৩৫৩) দিয়ে প্রবেশ করুন</p>
             <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="w-full bg-white/20 border-2 border-white/10 rounded-2xl p-4 text-center text-2xl tracking-[10px] outline-none focus:border-white transition-all placeholder:text-indigo-200 text-white">
             <button onclick="checkPin()" class="w-full mt-6 bg-white text-indigo-600 font-bold p-4 rounded-2xl shadow-xl active:scale-95 transition-all">আনলক করুন</button>
         </div>
@@ -364,11 +364,12 @@
             if(!id || isNaN(amt)) return alert('সঠিক পরিমাণ লিখুন');
             const m = members.find(m => m.id === id);
             const dateStr = new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
-            tx.unshift({ tid: Date.now(), name: m.name, id: id, amount: amt, date: dateStr, type: type });
+            tx.unshift({ tid: Date.now(), name: m.name, id: id, amount: amt, date: dateStr, type: type || 'deposit' });
             localStorage.setItem('t_list', JSON.stringify(tx));
             hideModal('depositModal');
+            document.getElementById('dAmount').value = '';
             init();
-            showReceipt(m.name, type, amt, id);
+            showReceipt(m.name, type || 'deposit', amt, id);
         }
 
         function saveLoan() {
@@ -381,6 +382,8 @@
             tx.unshift({ tid: Date.now(), name: m.name, id: id, amount: total, principal: amt, interestVal: interestAmt, date: dateStr, type: 'loan_out' });
             localStorage.setItem('t_list', JSON.stringify(tx));
             hideModal('loanModal');
+            document.getElementById('lAmount').value = '';
+            document.getElementById('lInterest').value = '';
             init();
             showReceipt(m.name, 'loan_out', total, id);
         }
@@ -393,16 +396,25 @@
             tx.unshift({ tid: Date.now(), name: m.name, id: id, amount: amt, date: dateStr, type: 'withdraw' });
             localStorage.setItem('t_list', JSON.stringify(tx));
             hideModal('withdrawModal');
+            document.getElementById('wAmount').value = '';
             init();
             showReceipt(m.name, 'withdraw', amt, id);
         }
 
+        function calculateMemberBalance(id) {
+            return tx.filter(t => t.id === id).reduce((s, t) => {
+                if (t.type === 'deposit' || t.type === 'loan_return') return s + (t.amount || 0);
+                if (t.type === 'withdraw' || t.type === 'loan_out') return s - (t.amount || 0);
+                return s;
+            }, 0);
+        }
+
         function init() {
             document.getElementById('total-members').innerText = members.length + ' জন';
-            const depT = tx.filter(t => t.type && (t.type === 'deposit' || t.type === 'loan_return')).reduce((s, t) => s + t.amount, 0);
-            const withT = tx.filter(t => t.type && t.type === 'withdraw').reduce((s, t) => s + t.amount, 0);
-            const loanOutT = tx.filter(t => t.type && t.type === 'loan_out').reduce((s, t) => s + t.amount, 0);
-            const profitT = tx.filter(t => t.type && t.type === 'loan_out').reduce((s, t) => s + (t.interestVal || 0), 0);
+            const depT = tx.filter(t => t.type === 'deposit' || t.type === 'loan_return').reduce((s, t) => s + (t.amount || 0), 0);
+            const withT = tx.filter(t => t.type === 'withdraw').reduce((s, t) => s + (t.amount || 0), 0);
+            const loanOutT = tx.filter(t => t.type === 'loan_out').reduce((s, t) => s + (t.amount || 0), 0);
+            const profitT = tx.filter(t => t.type === 'loan_out').reduce((s, t) => s + (t.interestVal || 0), 0);
             
             document.getElementById('total-deposit-sum').innerText = '৳ ' + depT.toLocaleString('bn-BD');
             document.getElementById('total-loan-out').innerText = '৳ ' + loanOutT.toLocaleString('bn-BD');
@@ -421,21 +433,20 @@
                         <p class="text-[9px] text-slate-400 font-bold">${t.date} • <span class="uppercase">${t.type || 'UNKNOWN'}</span></p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="text-sm font-black ${t.type==='deposit'||t.type==='loan_return'?'text-blue-500':'text-rose-500'}">৳ ${t.amount.toLocaleString('bn-BD')}</span>
+                        <span class="text-sm font-black ${t.type==='deposit'||t.type==='loan_return'?'text-blue-500':'text-rose-500'}">৳ ${(t.amount || 0).toLocaleString('bn-BD')}</span>
                         <button onclick="deleteTx(${t.tid})" class="text-slate-200 hover:text-rose-500 transition-colors"><i class="fas fa-trash-alt text-[10px]"></i></button>
                     </div>
                 </div>
             `).join('') || '<p class="text-center py-10 text-slate-300 text-xs font-bold">কোন লেনদেন নেই</p>';
             
             document.getElementById('member-table-body').innerHTML = members.map(m => {
-                const h = tx.filter(t => t.id === m.id);
-                const b = h.reduce((s, t) => (t.type === 'deposit'||t.type === 'loan_return') ? s + t.amount : (t.type === 'withdraw'||t.type === 'loan_out' ? s - t.amount : s), 0);
-                const l = h.reduce((s, t) => t.type === 'loan_out' ? s + t.amount : (t.type === 'loan_return' ? s - t.amount : s), 0);
+                const balance = calculateMemberBalance(m.id);
+                const loan = tx.filter(t => t.id === m.id).reduce((s, t) => t.type === 'loan_out' ? s + t.amount : (t.type === 'loan_return' ? s - t.amount : s), 0);
                 return `
                     <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
                         <td class="p-5"><p class="text-xs font-bold text-slate-700">${m.name}</p><p class="text-[9px] text-slate-400 font-bold">#${m.id}</p></td>
-                        <td class="p-5 text-center text-indigo-600 font-black text-xs">৳ ${b.toLocaleString('bn-BD')}</td>
-                        <td class="p-5 text-center text-amber-600 font-black text-xs">৳ ${(l > 0 ? l : 0).toLocaleString('bn-BD')}</td>
+                        <td class="p-5 text-center text-indigo-600 font-black text-xs">৳ ${balance.toLocaleString('bn-BD')}</td>
+                        <td class="p-5 text-center text-amber-600 font-black text-xs">৳ ${(loan > 0 ? loan : 0).toLocaleString('bn-BD')}</td>
                         <td class="p-5 text-right"><button onclick="showStatement('${m.id}')" class="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl text-[10px] font-bold hover:bg-indigo-600 hover:text-white transition-all">ভিউ</button></td>
                     </tr>
                 `;
@@ -447,21 +458,25 @@
         function showStatement(id) {
             activeMemberId = id;
             const m = members.find(m => m.id === id);
+            if(!m) return;
             const history = tx.filter(t => t.id === id);
-            const balance = history.reduce((s, t) => (t.type === 'deposit'||t.type === 'loan_return') ? s + t.amount : (t.type === 'withdraw'||t.type === 'loan_out' ? s - t.amount : s), 0);
+            const balance = calculateMemberBalance(id);
             document.getElementById('sName').innerText = m.name;
             document.getElementById('sID').innerText = 'মোবাইল: ' + id;
             document.getElementById('sTotal').innerText = '৳ ' + balance.toLocaleString('bn-BD');
             document.getElementById('sHistory').innerHTML = history.map(h => {
                 let badgeClass = "bg-slate-100 text-slate-500";
-                let labelText = (h.type || "Unknown").toUpperCase();
+                let typeStr = h.type ? String(h.type) : "unknown"; // এরর এড়াতে স্ট্রিং এ কনভার্ট
+                let labelText = typeStr.toUpperCase(); 
+
                 if(h.type === 'deposit') { badgeClass = "bg-blue-50 text-blue-600 border border-blue-100"; labelText = "DEPOSIT"; } 
                 else if (h.type === 'withdraw') { badgeClass = "bg-rose-50 text-rose-600 border border-rose-100"; labelText = "WITHDRAW"; } 
                 else if (h.type === 'loan_out') { badgeClass = "bg-amber-50 text-amber-600 border border-amber-100"; labelText = "LOAN OUT"; } 
                 else if (h.type === 'loan_return') { badgeClass = "bg-emerald-50 text-emerald-600 border border-emerald-100"; labelText = "REPAYMENT"; }
+                
                 return `
                 <div class="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-                    <div><p class="text-xs font-black text-slate-700">৳ ${h.amount.toLocaleString('bn-BD')}</p><p class="text-[9px] text-slate-400 font-bold mt-1">${h.date}</p></div>
+                    <div><p class="text-xs font-black text-slate-700">৳ ${(h.amount || 0).toLocaleString('bn-BD')}</p><p class="text-[9px] text-slate-400 font-bold mt-1">${h.date}</p></div>
                     <span class="text-[8px] font-black px-3 py-1.5 rounded-full ${badgeClass}">${labelText}</span>
                 </div>`;
             }).join('') || '<p class="text-center text-slate-300 py-6 text-xs font-bold">ইতিহাস নেই</p>';
@@ -470,7 +485,7 @@
 
         function showReceipt(name, type, amount, id) {
             const date = new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-            const balance = tx.filter(t => t.id === id).reduce((s, t) => (t.type === 'deposit'||t.type === 'loan_return') ? s + t.amount : (t.type === 'withdraw'||t.type === 'loan_out' ? s - t.amount : s), 0);
+            const balance = calculateMemberBalance(id);
             const labelMap = { 'deposit': 'সঞ্চয় জমা', 'withdraw': 'টাকা উত্তোলন', 'loan_out': 'ঋণ বিতরণ', 'loan_return': 'ঋণের কিস্তি' };
             document.getElementById('rName').innerText = name;
             document.getElementById('rType').innerText = labelMap[type] || 'অন্যান্য';
@@ -511,13 +526,15 @@
         }
 
         function updateChart() {
-            const ctx = document.getElementById('growthChart').getContext('2d');
+            const chartCanvas = document.getElementById('growthChart');
+            if(!chartCanvas) return;
+            const ctx = chartCanvas.getContext('2d');
             const last7Days = [...Array(7)].map((_, i) => {
                 const d = new Date(); d.setDate(d.getDate() - i);
                 return d.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
             }).reverse();
-            const dData = last7Days.map(day => tx.filter(t => t.date === day && (t.type==='deposit'||t.type==='loan_return')).reduce((s,t)=>s+t.amount, 0));
-            const lData = last7Days.map(day => tx.filter(t => t.date === day && t.type==='loan_out').reduce((s,t)=>s+t.amount, 0));
+            const dData = last7Days.map(day => tx.filter(t => t.date === day && (t.type==='deposit'||t.type==='loan_return')).reduce((s,t)=>s+(t.amount||0), 0));
+            const lData = last7Days.map(day => tx.filter(t => t.date === day && t.type==='loan_out').reduce((s,t)=>s+(t.amount||0), 0));
             if(myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'line',
@@ -552,6 +569,7 @@
             alert('ব্যাকআপ সফল হয়েছে!');
         }
 
+        // ইনিশিয়াল কল
         init();
     </script>
 </body>
