@@ -440,6 +440,8 @@ transform:scale(0.96);
 .cm-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cm-btn{width:100%;padding:10px;border:none;border-radius:12px;background:#0d9488;color:#fff;font-weight:bold;margin-top:8px;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;}
 .cm-btn-red{background:#ef4444;}
+.cm-btn-outline{width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;color:#0d9488;font-weight:bold;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;box-sizing:border-box;transition:all 0.2s ease;text-align:center;}
+.cm-btn-outline:hover{border-color:#0d9488;background:#f0fdfa;box-shadow:0 2px 8px rgba(13,148,136,0.12);}
 .cm-section{display:none;margin-top:8px;}
 .cm-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;font-size:13px;}
 .cm-result{margin-top:10px;padding:11px;border-radius:10px;text-align:center;font-weight:bold;font-size:14px;}
@@ -841,8 +843,8 @@ transform:scale(0.96);
 </div>
 <div class="cm-card">
 <div class="cm-btn-grid">
-<button class="cm-btn" onclick="cm_toggleExpense()">➕ খরচ</button>
-<button class="cm-btn" onclick="cm_toggleSalary()">➕ কর্মীর বেতন</button>
+<button class="cm-btn-outline" onclick="cm_toggleExpense()">➕ খরচ</button>
+<button class="cm-btn-outline" onclick="cm_toggleSalary()">➕ কর্মীর বেতন</button>
 </div>
 <div id="cm_expenseSection" class="cm-section">
 <div class="cm-grid2" style="margin-top:8px;">
@@ -1346,31 +1348,44 @@ transform:scale(0.96);
         const noteSequence = [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
         let pendingDeleteName = "";
 
-        // --- Triple Tap Backup Feature ---
+        // --- Triple Tap/Click Backup Feature ---
         let lastTapTime = 0;
         let tapCount = 0;
+        let lastWasTouch = false;
 
-        document.addEventListener('touchstart', function(e) {
+        function _handleBackupTrigger(x, y) {
             const screenHeight = window.innerHeight;
-            const touchY = e.touches[0].clientY;
-
-            // Detect touch in bottom 20% of the screen
-            if (touchY > screenHeight * 0.8) {
+            const inBottomZone = y > screenHeight * 0.8;
+            if (inBottomZone) {
                 const currentTime = new Date().getTime();
                 const tapLength = currentTime - lastTapTime;
-                
                 if (tapLength < 400 && tapLength > 0) {
                     tapCount++;
                 } else {
                     tapCount = 1;
                 }
-                
                 if (tapCount === 3) {
                     openBackupModal();
                     tapCount = 0;
                 }
                 lastTapTime = currentTime;
             }
+        }
+
+        document.addEventListener('touchstart', function(e) {
+            lastWasTouch = true;
+            const touchY = e.touches[0].clientY;
+            const touchX = e.touches[0].clientX;
+            _handleBackupTrigger(touchX, touchY);
+        });
+
+        document.addEventListener('click', function(e) {
+            // মোবাইলে touchstart এর পরে click ও ফায়ার হয়, তাই skip করতে হবে
+            if (lastWasTouch) {
+                lastWasTouch = false;
+                return;
+            }
+            _handleBackupTrigger(e.clientX, e.clientY);
         });
 
         function openBackupModal() { document.getElementById('backupModal').style.display = 'flex'; }
@@ -2575,10 +2590,14 @@ transform:scale(0.96);
             sc_captureCard(backEl, function(backCanvas){
                 var frontImg = frontCanvas.toDataURL('image/png');
                 var backImg = backCanvas.toDataURL('image/png');
-                printWrapper.innerHTML = '<style>@media print{body>*:not(#print-wrapper){display:none!important;}#print-wrapper{display:block!important;}@page{size:A4;margin:10mm;}}</style>'
-                    + '<div style="display:flex;justify-content:center;align-items:flex-start;gap:20px;padding:20px;background:#fff;flex-wrap:wrap;">'
-                    + '<img src="'+frontImg+'" style="width:240px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">'
-                    + '<img src="'+backImg+'" style="width:240px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);">'
+                printWrapper.innerHTML = '<style>'
+                    + '@media print{body>*:not(#print-wrapper){display:none!important;}#print-wrapper{display:block!important;}@page{size:A4 landscape;margin:5mm;}}'
+                    + '.sc-both-print-wrap{display:flex!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;gap:15px!important;padding:10mm 5mm!important;background:#fff!important;width:100%!important;box-sizing:border-box!important;page-break-inside:avoid!important;}'
+                    + '.sc-both-print-wrap img{width:42mm!important;height:auto!important;border-radius:10px!important;box-shadow:0 4px 20px rgba(0,0,0,0.2)!important;display:block!important;}'
+                    + '</style>'
+                    + '<div class="sc-both-print-wrap">'
+                    + '<img src="'+frontImg+'">'
+                    + '<img src="'+backImg+'">'
                     + '</div>';
                 window.print();
                 setTimeout(function(){ printWrapper.innerHTML = ''; }, 1500);
