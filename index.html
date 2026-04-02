@@ -2301,11 +2301,23 @@ transform:scale(0.96);
             '<div class="cm-row"><span>চূড়ান্ত</span><span>৳ '+actual+'</span></div>'+
             '<div class="cm-row"><span>থাকার কথা</span><span>৳ '+expected+'</span></div>'+
             status+
-            '<div class="cm-inner-grid">'+
-            '<div class="cm-box">ক্যাশ ৳ '+cashV+'</div>'+
-            '<div class="cm-box">অনলাইন ৳ '+on+'</div>'+
-            '<div class="cm-box">আয় ৳ '+inc+'</div>'+
-            '<div class="cm-box">খরচ ৳ '+exp+'</div>'+
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">'+
+            '<div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:12px;padding:10px 12px;border-left:4px solid #0d9488;">'+
+            '<div style="font-size:10px;color:#0d9488;font-weight:700;margin-bottom:5px;">💵 ক্যাশ</div>'+
+            '<div style="font-size:17px;font-weight:800;color:#0f172a;letter-spacing:0.3px;">৳ '+cashV+'</div>'+
+            '</div>'+
+            '<div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:10px 12px;border-left:4px solid #3b82f6;">'+
+            '<div style="font-size:10px;color:#3b82f6;font-weight:700;margin-bottom:5px;">📱 অনলাইন</div>'+
+            '<div style="font-size:17px;font-weight:800;color:#0f172a;letter-spacing:0.3px;">৳ '+on+'</div>'+
+            '</div>'+
+            '<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:10px 12px;border-left:4px solid #22c55e;">'+
+            '<div style="font-size:10px;color:#16a34a;font-weight:700;margin-bottom:5px;">📈 আয়</div>'+
+            '<div style="font-size:17px;font-weight:800;color:#0f172a;letter-spacing:0.3px;">৳ '+inc+'</div>'+
+            '</div>'+
+            '<div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:10px 12px;border-left:4px solid #ef4444;">'+
+            '<div style="font-size:10px;color:#ef4444;font-weight:700;margin-bottom:5px;">📉 খরচ</div>'+
+            '<div style="font-size:17px;font-weight:800;color:#0f172a;letter-spacing:0.3px;">৳ '+exp+'</div>'+
+            '</div>'+
             '</div>'+
             (expRows?'<table class="cm-table"><tr><th>খরচের খাত</th><th>টাকা</th></tr>'+expRows+'</table>':'')+
             (salRows?'<table class="cm-table"><tr><th>কর্মীর নাম</th><th>বেতন</th></tr>'+salRows+'</table>':'');
@@ -2590,17 +2602,26 @@ transform:scale(0.96);
             sc_captureCard(backEl, function(backCanvas){
                 var frontImg = frontCanvas.toDataURL('image/png');
                 var backImg = backCanvas.toDataURL('image/png');
-                printWrapper.innerHTML = '<style>'
-                    + '@media print{body>*:not(#print-wrapper){display:none!important;}#print-wrapper{display:block!important;}@page{size:A4 landscape;margin:5mm;}}'
-                    + '.sc-both-print-wrap{display:flex!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;gap:15px!important;padding:10mm 5mm!important;background:#fff!important;width:100%!important;box-sizing:border-box!important;page-break-inside:avoid!important;}'
-                    + '.sc-both-print-wrap img{width:42mm!important;height:auto!important;border-radius:10px!important;box-shadow:0 4px 20px rgba(0,0,0,0.2)!important;display:block!important;}'
+                var pw = printWrapper;
+                pw.style.display = 'block';
+                pw.innerHTML = '<style>'
+                    + '@media print{'
+                    + 'body>*{display:none!important;}'
+                    + '#print-wrapper{display:block!important;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:99999;}'
+                    + '@page{size:A4;margin:10mm;}'
+                    + '}'
                     + '</style>'
-                    + '<div class="sc-both-print-wrap">'
-                    + '<img src="'+frontImg+'">'
-                    + '<img src="'+backImg+'">'
+                    + '<div style="width:100%;height:100%;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:16px;padding:10px;box-sizing:border-box;background:#fff;">'
+                    + '<img src="'+frontImg+'" style="width:45%;max-width:250px;height:auto;display:block;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.18);">'
+                    + '<img src="'+backImg+'" style="width:45%;max-width:250px;height:auto;display:block;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.18);">'
                     + '</div>';
-                window.print();
-                setTimeout(function(){ printWrapper.innerHTML = ''; }, 1500);
+                setTimeout(function(){
+                    window.print();
+                    setTimeout(function(){
+                        pw.style.display = '';
+                        pw.innerHTML = '';
+                    }, 1500);
+                }, 200);
             });
         });
     }
