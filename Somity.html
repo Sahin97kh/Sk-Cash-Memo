@@ -764,7 +764,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
   <button class="header-btn" id="back-btn" onclick="goBack()" style="display:none">
     <i class="fas fa-arrow-left"></i>
   </button>
-  <span class="header-title" id="header-title" ondblclick="onTitleDblClick()">সমিতি ম্যানেজমেন্ট</span>
+  <span class="header-title" id="header-title" ondblclick="onTitleDblClick()" onclick="onTitleClick()">সমিতি ম্যানেজমেন্ট</span>
   <span class="admin-badge"><i class="fas fa-shield-alt"></i> ADMIN</span>
   <button class="header-btn" id="home-btn" onclick="navigateTo('dashboard')" style="display:none">
     <i class="fas fa-home"></i>
@@ -1240,12 +1240,37 @@ function updateNavLockState(admin) {
   }
 }
 
-function onTitleDblClick() {
-  if(isAdmin()) {
-    showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন');
-    return;
+// Triple-click counter for desktop (PC) login
+let _titleClickCount = 0;
+let _titleClickTimer = null;
+
+function onTitleClick() {
+  // Only handle triple-click on non-touch (desktop/PC) devices
+  if(window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    _titleClickCount++;
+    if(_titleClickTimer) clearTimeout(_titleClickTimer);
+    _titleClickTimer = setTimeout(() => { _titleClickCount = 0; }, 600);
+    if(_titleClickCount >= 3) {
+      _titleClickCount = 0;
+      if(_titleClickTimer) clearTimeout(_titleClickTimer);
+      if(isAdmin()) {
+        showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন');
+        return;
+      }
+      openPinModal();
+    }
   }
-  openPinModal();
+}
+
+function onTitleDblClick() {
+  // Only handle double-click on touch/mobile devices
+  if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    if(isAdmin()) {
+      showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন');
+      return;
+    }
+    openPinModal();
+  }
 }
 
 function openPinModal() {
