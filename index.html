@@ -610,11 +610,6 @@ transform:scale(0.96);
 <div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openTool('cashmanage')">
 <div class="text-2xl mb-2">💰</div><div class="text-[10px] font-bold text-gray-700">ব্যাংক মেনেজমেন্ট</div>
 </div>
-
-<div class="premium-card bg-white p-4 rounded-xl border border-gray-200 shadow-sm cursor-pointer transition text-center hover:shadow-lg" onclick="openSomityModal()">
-<div class="text-2xl mb-2">🏦</div><div class="text-[10px] font-bold text-gray-700">সমিতি ম্যানেজমেন্ট</div>
-</div>
-
 </div>
 </div>
 <div class="max-w-4xl mx-auto no-print mb-20 px-2">
@@ -2657,22 +2652,5 @@ transform:scale(0.96);
     });
 })();
 </script>
-
-<div id="somityModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:99999;display:none;">
-  <div style="width:100%;height:100%;position:relative;background:#fff;">
-    <button onclick="closeSomityModal()" style="position:absolute;top:10px;right:15px;z-index:100000;background:red;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:bold;">✕</button>
-    <iframe src="Somity.html" style="width:100%;height:100%;border:none;"></iframe>
-  </div>
-</div>
-
-<script>
-function openSomityModal(){
-  document.getElementById('somityModal').style.display='block';
-}
-function closeSomityModal(){
-  document.getElementById('somityModal').style.display='none';
-}
-</script>
-
 </body>
 </html>
