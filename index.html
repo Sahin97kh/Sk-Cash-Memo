@@ -2913,6 +2913,9 @@ transform:scale(0.96);
       </div>
     </div>
   </div>
+
+  <!-- Feature 2: Pending Collections Dashboard List -->
+  <div id="dash-pending-wrap" style="margin-top:14px"></div>
 </div>
 
 <!-- MEMBERS -->
@@ -3061,6 +3064,20 @@ transform:scale(0.96);
       <label>প্রদানের তারিখ</label>
       <input type="date" id="ln-issue">
     </div>
+    <!-- Feature 3: Installment Split -->
+    <div class="form-group">
+      <label><i class="fas fa-layer-group" style="color:var(--primary)"></i> কিস্তির সংখ্যা (ঐচ্ছিক — খালি রাখলে মেয়াদ = কিস্তি)</label>
+      <input type="number" id="ln-installments" placeholder="যেমন: 6 (মেয়াদের চেয়ে কম হতে পারে)" min="1" oninput="lnLiveCalc()">
+    </div>
+    <!-- Feature 4: Guarantor fields -->
+    <div class="form-group">
+      <label><i class="fas fa-user-shield" style="color:var(--primary)"></i> জামিনদারের নাম (ঐচ্ছিক)</label>
+      <input type="text" id="ln-guarantor-name" placeholder="জামিনদারের পুরো নাম">
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-phone" style="color:var(--primary)"></i> জামিনদারের মোবাইল (ঐচ্ছিক)</label>
+      <input type="tel" id="ln-guarantor-mobile" placeholder="01XXXXXXXXX" maxlength="11">
+    </div>
     <!-- Live EMI Calculation Box -->
     <div id="ln-calc-box" style="display:none;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:12px;padding:14px;margin-bottom:14px">
       <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px"><i class="fas fa-calculator"></i> লাইভ হিসাব</div>
@@ -3206,6 +3223,36 @@ transform:scale(0.96);
       </div>
     </div>
     <div id="prof-loans-section"></div>
+    <div style="margin-top:14px">
+      <button onclick="openStatementModal(currentProfileMid)" style="width:100%;padding:11px;background:linear-gradient(135deg,#0f766e,#059669);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        <i class="fas fa-file-invoice-dollar"></i> লেনদেন স্টেটমেন্ট দেখুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MEMBER STATEMENT MODAL (Feature 1) -->
+<div class="profile-modal-overlay" id="statement-modal" onclick="if(event.target===this)closeStatementModal()" style="z-index:600">
+  <div class="profile-modal-box" style="position:relative;max-height:90vh">
+    <button class="profile-close" onclick="closeStatementModal()"><i class="fas fa-times"></i></button>
+    <div style="font-size:17px;font-weight:700;margin-bottom:16px;padding-right:36px">
+      <i class="fas fa-file-invoice-dollar" style="color:var(--primary)"></i>
+      <span id="stmt-member-name">স্টেটমেন্ট</span>
+    </div>
+    <div id="stmt-summary" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
+    <div style="overflow-x:auto">
+      <table id="stmt-table" style="width:100%;border-collapse:collapse;font-size:13px;min-width:320px">
+        <thead>
+          <tr style="background:var(--primary);color:#fff">
+            <th style="padding:8px 10px;text-align:left;border-radius:8px 0 0 0">তারিখ</th>
+            <th style="padding:8px 10px;text-align:left">বিবরণ</th>
+            <th style="padding:8px 10px;text-align:right">পরিমাণ</th>
+            <th style="padding:8px 10px;text-align:right;border-radius:0 8px 0 0">রানিং ব্যালেন্স</th>
+          </tr>
+        </thead>
+        <tbody id="stmt-body"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -4832,6 +4879,12 @@ function renderPage(page) {
   if(page==='withdraw') document.getElementById('wd-date').value=today();
   if(page==='loan') {
     document.getElementById('ln-issue').value=today();
+    const instEl=document.getElementById('ln-installments');
+    if(instEl) instEl.value='';
+    const gnEl=document.getElementById('ln-guarantor-name');
+    if(gnEl) gnEl.value='';
+    const gmEl=document.getElementById('ln-guarantor-mobile');
+    if(gmEl) gmEl.value='';
     lnCheckActiveLoan();
   }
 
@@ -5090,32 +5143,36 @@ function lnCheckActiveLoan() {
   if(warn) warn.style.display = hasActive ? 'block' : 'none';
 }
 
-// Live EMI calculation
+// Live EMI calculation (Feature 3: installment split awareness)
 function lnLiveCalc() {
   const p = +document.getElementById('ln-amount').value || 0;
   const r = +document.getElementById('ln-interest').value || 0;
   const n = +document.getElementById('ln-duration').value || 0;
+  const instEl = document.getElementById('ln-installments');
+  const instCount = instEl ? (+instEl.value || 0) : 0;
+  const effectiveN = (instCount > 0 && instCount <= n) ? instCount : n;
   const box = document.getElementById('ln-calc-box');
   if(!p || !n) { if(box) box.style.display='none'; return; }
   if(box) box.style.display='block';
   let emi, totalInterest, totalPayable;
   if(r === 0) {
-    emi = p / n;
     totalInterest = 0;
+    totalPayable = p;
+    emi = totalPayable / (effectiveN || 1);
   } else {
     const monthlyInterest = (p * r) / 100;
     totalInterest = monthlyInterest * n;
-    emi = (p + totalInterest) / n;
+    totalPayable = p + totalInterest;
+    emi = totalPayable / (effectiveN || 1);
   }
-  totalPayable = p + totalInterest;
   const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
   setEl('ln-show-principal', taka(p));
   setEl('ln-show-interest', taka(Math.round(totalInterest)));
   setEl('ln-show-total', taka(Math.round(totalPayable)));
-  setEl('ln-show-emi', taka(Math.round(emi)));
+  setEl('ln-show-emi', taka(Math.round(emi)) + (instCount > 0 && instCount <= n ? ' × ' + instCount + ' কিস্তি' : ''));
 }
 
-// LOAN — Double-layer security check (আপডেটেড)
+// LOAN — Double-layer security check (আপডেটেড — Feature 3 & 4)
 function doLoan() {
   if(sessionStorage.getItem('isAdmin') !== 'true') {
     alert('Access Denied');
@@ -5133,26 +5190,53 @@ function doLoan() {
   const hasActive = getL().some(l=>l.mid===mid && l.status==='active');
   if(hasActive){showToast('এই সদস্যের চলমান ঋণ আছে!');return;}
 
+  // Feature 3: Installment splitting
+  const instEl = document.getElementById('ln-installments');
+  const instCount = instEl ? (+instEl.value || 0) : 0;
+  const effectiveInstallments = (instCount > 0 && instCount <= duration) ? instCount : duration;
+
+  // Feature 4: Guarantor
+  const guarantorName = (document.getElementById('ln-guarantor-name')||{}).value||'';
+  const guarantorMobile = (document.getElementById('ln-guarantor-mobile')||{}).value||'';
+
   // Calculate EMI (Simple / Somity-style interest)
-  let emi, totalPayable;
+  let emi, totalPayable, totalInterest;
   if(interest === 0) {
-    emi = amt / duration;
+    totalInterest = 0;
     totalPayable = amt;
+    emi = totalPayable / effectiveInstallments;
   } else {
     const monthlyInterest = (amt * interest) / 100;
-    const totalInterest = monthlyInterest * duration;
+    totalInterest = monthlyInterest * duration;
     totalPayable = amt + totalInterest;
-    emi = totalPayable / duration;
+    emi = totalPayable / effectiveInstallments;
   }
   emi = Math.round(emi);
 
+  // Feature 3: Auto-generate installment schedule
   const issueDate = document.getElementById('ln-issue').value || today();
+  const issueParts = issueDate.split('-');
+  const issueYear = +issueParts[0];
+  const issueMonth = +issueParts[1]; // 1-indexed
+  const schedule = [];
+  for(let i = 1; i <= effectiveInstallments; i++) {
+    const dueTotalMonths = issueYear * 12 + (issueMonth - 1) + i;
+    const dueYear = Math.floor(dueTotalMonths / 12);
+    const dueMonth = (dueTotalMonths % 12) + 1;
+    const dueMonthStr = dueYear + '-' + String(dueMonth).padStart(2, '0');
+    schedule.push({ installment: i, month: dueMonthStr, amt: emi, paid: false });
+  }
+
   const lid = uid();
   const loans = getL();
   loans.push({
     id: lid, mid, amt, interest, duration,
     emi: emi, totalPayable: Math.round(totalPayable),
-    issue: issueDate, status: 'active'
+    issue: issueDate, status: 'active',
+    installments: effectiveInstallments,
+    schedule: schedule,
+    guarantorName: guarantorName.trim(),
+    guarantorMobile: guarantorMobile.trim()
   });
   save(DB_L, loans);
 
@@ -5160,11 +5244,16 @@ function doLoan() {
   // autoEMIGeneration() runs on every module open and pushes only
   // the installment(s) that belong to the current or past months.
 
-  showToast(`ঋণ রেকর্ড হয়েছে! মাসিক EMI: ${taka(emi)}`);
+  showToast(`ঋণ রেকর্ড হয়েছে! প্রতি কিস্তি: ${taka(emi)} (${effectiveInstallments} কিস্তি)`);
   document.getElementById('ln-amount').value='';
   document.getElementById('ln-interest').value='';
   document.getElementById('ln-duration').value='';
   document.getElementById('ln-member').value='';
+  if(instEl) instEl.value='';
+  const gnEl = document.getElementById('ln-guarantor-name');
+  if(gnEl) gnEl.value='';
+  const gmEl = document.getElementById('ln-guarantor-mobile');
+  if(gmEl) gmEl.value='';
   const box = document.getElementById('ln-calc-box');
   if(box) box.style.display='none';
   const warn = document.getElementById('ln-active-loan-warn');
@@ -5406,6 +5495,9 @@ function loadDashboard() {
   }).length;
   document.getElementById('dash-achieved-count').textContent = achievedCount + ' জন';
 
+  // Feature 2: Load pending collections list
+  loadDashboardPending();
+
   const recent=[...txs].sort((a,b)=>b.ts-a.ts).slice(0,5);
   document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(t=>{
     const m=members.find(x=>x.id===t.mid)||{name:'?'};
@@ -5441,6 +5533,8 @@ function loadDashboard() {
 function loadMembers() {
   const members=getM();
   const adminMode = isAdmin();
+  const dayOfMonth = new Date().getDate();
+  const after10th = dayOfMonth > 10;
   document.getElementById('members-list').innerHTML = members.length ? members.map(m=>{
     const bal=balance(m.id);
     const loanDue=getMemberLoanDue(m.id);
@@ -5448,10 +5542,17 @@ function loadMembers() {
     const loanDueDisplay = adminMode ? taka(loanDue) : '**';
     const hasTarget = (+(m.target)||0) > 0;
     const paid = hasTarget && isPaidThisMonth(m);
+    // Feature 2: red highlight after 10th for unpaid members
+    const isUnpaidAfter10 = hasTarget && !paid && after10th;
     const paidBadge = paid
       ? `<span style="display:inline-flex;align-items:center;gap:3px;background:#d1fae5;color:#065f46;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle"><i class="fas fa-check-circle" style="font-size:10px"></i> পরিশোধিত</span>`
-      : (hasTarget ? `<span style="display:inline-flex;align-items:center;gap:3px;color:#94a3b8;font-size:11px;font-weight:500;margin-left:6px;vertical-align:middle">বকেয়া</span>` : '');
-    return `<div class="member-card" onclick="showMemberProfile('${m.id}')" style="cursor:pointer">
+      : (isUnpaidAfter10
+          ? `<span style="display:inline-flex;align-items:center;gap:3px;background:#fee2e2;color:#dc2626;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle"><i class="fas fa-exclamation-circle" style="font-size:10px"></i> বকেয়া</span>`
+          : (hasTarget ? `<span style="display:inline-flex;align-items:center;gap:3px;color:#94a3b8;font-size:11px;font-weight:500;margin-left:6px;vertical-align:middle">বকেয়া</span>` : ''));
+    const cardStyle = isUnpaidAfter10
+      ? 'cursor:pointer;border:1.5px solid #fca5a5;background:#fff5f5'
+      : 'cursor:pointer';
+    return `<div class="member-card" onclick="showMemberProfile('${m.id}')" style="${cardStyle}">
       ${avatar(m)}
       <div class="member-info">
         <div class="member-name">${m.name}${paidBadge}</div>
@@ -5469,7 +5570,9 @@ function loadMembers() {
   }).join('') : '<div class="empty"><i class="fas fa-users"></i>কোনো সদস্য নেই</div>';
 }
 
+let currentProfileMid = null;
 function showMemberProfile(mid) {
+  currentProfileMid = mid;
   const m = getM().find(x=>x.id===mid);
   if(!m) return;
   const adminMode = isAdmin();
@@ -5518,6 +5621,120 @@ function showMemberProfile(mid) {
 
 function closeMemberProfile() {
   document.getElementById('member-profile-modal').classList.remove('show');
+}
+
+// =============================================
+// FEATURE 1: MEMBER TRANSACTION STATEMENT MODAL
+// =============================================
+function openStatementModal(mid) {
+  if(!mid) return;
+  const m = getM().find(x=>x.id===mid);
+  if(!m) return;
+  const adminMode = isAdmin();
+  const txs = getT().filter(t=>t.mid===mid).sort((a,b)=>a.ts-b.ts);
+
+  document.getElementById('stmt-member-name').textContent = ' ' + m.name + ' — লেনদেন স্টেটমেন্ট';
+
+  const totalDep = txs.filter(t=>t.type==='dep').reduce((s,t)=>s+t.amt,0);
+  const totalWd = txs.filter(t=>t.type==='wd').reduce((s,t)=>s+t.amt,0);
+  const totalLR = txs.filter(t=>t.type==='loan-repay').reduce((s,t)=>s+t.amt,0);
+  document.getElementById('stmt-summary').innerHTML = `
+    <span style="background:#dcfce7;color:#065f46;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700"><i class="fas fa-arrow-down"></i> জমা: ${adminMode ? taka(totalDep) : '***'}</span>
+    <span style="background:#fee2e2;color:#991b1b;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700"><i class="fas fa-arrow-up"></i> উত্তোলন: ${adminMode ? taka(totalWd) : '***'}</span>
+    ${totalLR > 0 ? `<span style="background:#fef3c7;color:#92400e;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700"><i class="fas fa-coins"></i> ঋণ পরিশোধ: ${adminMode ? taka(totalLR) : '***'}</span>` : ''}
+    <span style="background:#e0f2fe;color:#0369a1;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700"><i class="fas fa-wallet"></i> নেট: ${adminMode ? taka(totalDep - totalWd) : '***'}</span>
+  `;
+
+  let runningBal = 0;
+  const tbody = document.getElementById('stmt-body');
+  if(txs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)"><i class="fas fa-inbox"></i> কোনো লেনদেন নেই</td></tr>`;
+  } else {
+    tbody.innerHTML = txs.map((t, idx) => {
+      const isDep = t.type === 'dep';
+      const isWd = t.type === 'wd';
+      const isLR = t.type === 'loan-repay';
+      if(isDep) runningBal += t.amt;
+      else if(isWd) runningBal -= t.amt;
+      const amtColor = (isDep || isLR) ? '#065f46' : '#991b1b';
+      const amtSign = (isDep || isLR) ? '+' : '-';
+      const typeLabel = isDep ? 'জমা' : isWd ? 'উত্তোলন' : 'ঋণ পরিশোধ';
+      const rowBg = idx % 2 === 0 ? '#fff' : '#f8fafc';
+      return `<tr style="background:${rowBg}">
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-size:12px;color:var(--muted);white-space:nowrap">${t.date}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-size:12px">
+          <div style="font-weight:600">${typeLabel}</div>
+          <div style="color:var(--muted);font-size:11px">${t.note||''}</div>
+        </td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:700;color:${amtColor};white-space:nowrap">
+          ${adminMode ? amtSign + taka(t.amt) : '***'}
+        </td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:700;color:var(--primary);white-space:nowrap">
+          ${adminMode ? taka(runningBal) : '***'}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('statement-modal').classList.add('show');
+}
+
+function closeStatementModal() {
+  document.getElementById('statement-modal').classList.remove('show');
+}
+
+// =============================================
+// FEATURE 2: PENDING COLLECTIONS IN DASHBOARD
+// =============================================
+function loadDashboardPending() {
+  const wrap = document.getElementById('dash-pending-wrap');
+  if(!wrap) return;
+  const dayOfMonth = new Date().getDate();
+  if(dayOfMonth <= 10) {
+    wrap.innerHTML = '';
+    return;
+  }
+  const members = getM();
+  const adminMode = isAdmin();
+  const unpaid = members.filter(m => {
+    const target = +(m.target)||0;
+    if(target === 0) return false;
+    return !isPaidThisMonth(m);
+  });
+  if(unpaid.length === 0) {
+    wrap.innerHTML = `<div style="background:#dcfce7;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+      <i class="fas fa-check-circle" style="color:var(--success);font-size:20px"></i>
+      <div style="font-size:13px;font-weight:700;color:#065f46">সকল সদস্য এই মাসে জমা দিয়েছেন ✓</div>
+    </div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <div style="font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:#dc2626">
+      <i class="fas fa-triangle-exclamation"></i>
+      মাসিক বকেয়া — ${getBanglaMonthLabel()}
+      <span style="background:#dc2626;color:#fff;border-radius:20px;padding:1px 9px;font-size:11px;font-weight:700">${unpaid.length} জন</span>
+    </div>
+    ${unpaid.map(m => {
+      const target = +(m.target)||0;
+      const collected = memberMonthlyCollection(m.id);
+      const remaining = target - collected;
+      const pct = Math.round(collected/target*100);
+      return `<div style="background:#fff;border:1.5px solid #fca5a5;border-radius:12px;padding:11px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showMemberProfile('${m.id}')">
+        ${avatar(m, 36)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:13px">${m.name}</div>
+          <div style="font-size:11px;color:var(--muted)">জমা: ${adminMode ? taka(collected) : '***'} / টার্গেট: ${adminMode ? taka(target) : '***'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="color:#dc2626;font-weight:700;font-size:13px">${adminMode ? '-'+taka(remaining) : '***'}</div>
+          <div style="font-size:10px;color:var(--muted)">${pct}% সম্পন্ন</div>
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;cursor:pointer" onclick="navigateTo('dues')">
+      <i class="fas fa-external-link-alt"></i> বকেয়া পেজে যান
+    </div>
+  `;
 }
 
 function loadTx() {
@@ -5649,6 +5866,41 @@ function loadLoans() {
     const paid = getT().filter(t=>t.lid===l.id&&t.type==='loan-repay').reduce((s,t)=>s+t.amt,0);
     const remaining = l.amt - paid;
     const hasEMI = l.emi && l.duration;
+    // Feature 3: Installment schedule
+    const hasSchedule = l.schedule && l.schedule.length > 0;
+    const instCount = l.installments || l.duration || 0;
+    // Feature 4: Guarantor
+    const hasGuarantor = l.guarantorName && l.guarantorName.trim();
+    // Installment schedule rows (show up to 3, with toggle for more)
+    let scheduleHtml = '';
+    if(hasSchedule && adminMode) {
+      const schedRows = l.schedule.slice(0, 4).map((s, idx) => {
+        const isPaidInst = s.paid;
+        return `<tr style="font-size:11px;background:${isPaidInst?'#f0fdf4':'#fff'}">
+          <td style="padding:4px 6px;color:var(--muted)">${s.installment}</td>
+          <td style="padding:4px 6px">${s.month}</td>
+          <td style="padding:4px 6px;font-weight:600">${taka(s.amt)}</td>
+          <td style="padding:4px 6px">${isPaidInst?'<span style="color:#065f46;font-size:10px">✓ পরিশোধ</span>':'<span style="color:#94a3b8;font-size:10px">বাকি</span>'}</td>
+        </tr>`;
+      }).join('');
+      const moreCount = l.schedule.length - 4;
+      scheduleHtml = `
+        <div style="margin-bottom:8px">
+          <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:4px"><i class="fas fa-list-ol"></i> কিস্তির সময়সূচী (${l.schedule.length} কিস্তি)</div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:11px">
+              <thead><tr style="background:#fef3c7">
+                <th style="padding:4px 6px;text-align:left;color:#92400e">#</th>
+                <th style="padding:4px 6px;text-align:left;color:#92400e">মাস</th>
+                <th style="padding:4px 6px;text-align:left;color:#92400e">কিস্তি</th>
+                <th style="padding:4px 6px;text-align:left;color:#92400e">অবস্থা</th>
+              </tr></thead>
+              <tbody>${schedRows}</tbody>
+            </table>
+          </div>
+          ${moreCount > 0 ? `<div style="font-size:10px;color:var(--muted);text-align:right;margin-top:2px">+${moreCount}টি আরও কিস্তি আছে</div>` : ''}
+        </div>`;
+    }
     return `<div class="loan-card">
       <div class="loan-header">
         <span class="loan-name">${m.name}</span>
@@ -5657,12 +5909,18 @@ function loadLoans() {
       <div class="loan-meta">
         প্রদান: ${l.issue}
         ${hasEMI ? ` • মেয়াদ: ${l.duration} মাস • সুদ: ${l.interest||0}%` : ''}
+        ${instCount && instCount !== l.duration ? ` • কিস্তি: ${instCount}টি` : ''}
         ${paid>0&&adminMode?` • পরিশোধিত: ${taka(paid)}`:''}
       </div>
+      ${hasGuarantor && adminMode ? `<div style="background:#e0f2fe;border-radius:8px;padding:6px 10px;margin-bottom:8px;font-size:12px;display:flex;gap:8px;align-items:center">
+        <i class="fas fa-user-shield" style="color:#0369a1"></i>
+        <span>জামিনদার: <strong>${l.guarantorName}</strong>${l.guarantorMobile?' • '+l.guarantorMobile:''}</span>
+      </div>` : ''}
       ${hasEMI && adminMode ? `<div style="background:#fef3c7;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:12px;display:flex;gap:12px;flex-wrap:wrap">
-        <span><i class="fas fa-calendar-alt" style="color:#92400e"></i> মাসিক EMI: <strong>${taka(l.emi)}</strong></span>
+        <span><i class="fas fa-calendar-alt" style="color:#92400e"></i> প্রতি কিস্তি: <strong>${taka(l.emi)}</strong></span>
         <span><i class="fas fa-coins" style="color:#92400e"></i> বাকি: <strong style="color:var(--danger)">${taka(remaining)}</strong></span>
       </div>` : ''}
+      ${scheduleHtml}
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span class="badge ${l.status==='active'?'badge-active':'badge-paid'}">${l.status==='active'?'চলমান':'পরিশোধিত'}</span>
         ${l.status==='active' && adminMode ? `<div style="display:flex;gap:6px">
