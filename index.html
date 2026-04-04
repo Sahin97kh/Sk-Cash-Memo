@@ -2758,17 +2758,36 @@ transform:scale(0.96);
     <div class="sidebar-item" onclick="closeSidebar();navigateTo('withdraw')">
       <i class="fas fa-arrow-up" style="color:var(--danger)"></i> টাকা উত্তোলন
     </div>
-    <div class="sidebar-item" onclick="closeSidebar();navigateTo('loan')">
+    <div class="sidebar-item" id="sidebar-loan-item" onclick="closeSidebar();navigateTo('loan')">
       <i class="fas fa-money-bill-wave" style="color:var(--warning)"></i> ঋণ ব্যবস্থাপনা
     </div>
     <!-- Admin-only quick actions -->
     <div class="sidebar-divider"></div>
-    <div class="sidebar-item admin-only" onclick="closeSidebar();navigateTo('add-member')" style="color:#34d399">
+    <div class="sidebar-item admin-only" id="sidebar-add-member-item" onclick="closeSidebar();navigateTo('add-member')" style="color:#34d399">
       <i class="fas fa-user-plus" style="color:#34d399"></i> নতুন সদস্য যোগ
+    </div>
+    <!-- Staff Management - admin only -->
+    <div class="sidebar-item admin-only" onclick="closeSidebar();navigateTo('staff-management')" style="color:#6366f1">
+      <i class="fas fa-user-tie" style="color:#6366f1"></i> স্টাফ ম্যানেজমেন্ট
+    </div>
+    <!-- Admin: Import backup from staff -->
+    <div class="sidebar-item admin-only" id="sidebar-staff-import-item" style="display:none;color:#f59e0b">
+      <i class="fas fa-file-import" style="color:#f59e0b"></i>
+      <label style="cursor:pointer;margin:0;font-weight:600">স্টাফ ব্যাকআপ আপলোড
+        <input type="file" accept=".json" onchange="closeSidebar();somityImport(this)" style="display:none">
+      </label>
+    </div>
+    <!-- Staff: Download own backup -->
+    <div class="sidebar-item staff-only" onclick="closeSidebar();staffSomityExport()" style="color:#0d9488">
+      <i class="fas fa-download" style="color:#0d9488"></i> ব্যাকআপ ডাউনলোড
     </div>
     <!-- Lock Admin Mode - only shown in admin mode -->
     <div class="sidebar-lock-item admin-only" id="sidebar-lock-btn" onclick="lockAdminMode()">
       <i class="fas fa-lock"></i> অ্যাডমিন মোড লক করুন
+    </div>
+    <!-- Staff Logout - only shown in staff mode -->
+    <div class="sidebar-lock-item" id="staff-logout-btn" style="display:none;background:#eef2ff;color:#4f46e5" onclick="lockAdminMode()">
+      <i class="fas fa-sign-out-alt"></i> লগ আউট করুন
     </div>
   </div>
   <div class="sidebar-footer">
@@ -2798,11 +2817,35 @@ transform:scale(0.96);
 <!-- PIN MODAL -->
 <div class="pin-modal-overlay" id="pin-modal">
   <div class="pin-modal-box">
-    <div class="pin-modal-icon"><i class="fas fa-shield-alt"></i></div>
-    <div class="pin-modal-title">অ্যাডমিন অ্যাক্সেস</div>
-    <div class="pin-modal-sub">অ্যাডমিন মোডে প্রবেশ করতে সিক্রেট পিন দিন</div>
-    <input type="password" class="pin-input" id="admin-pin-input" placeholder="••••••••••••••" onkeydown="if(event.key==='Enter')verifyPin()">
-    <div class="pin-error" id="pin-error">ভুল পিন! আবার চেষ্টা করুন।</div>
+    <!-- Login Tab Switcher -->
+    <div style="display:flex;gap:4px;margin-bottom:18px;background:#f1f5f9;border-radius:12px;padding:4px">
+      <button id="login-tab-admin-btn" onclick="switchLoginTab('admin')"
+        style="flex:1;padding:8px 4px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:#0f766e;color:#fff;font-family:'Hind Siliguri',sans-serif;transition:all 0.2s">
+        <i class="fas fa-shield-alt" style="margin-right:4px"></i>অ্যাডমিন
+      </button>
+      <button id="login-tab-staff-btn" onclick="switchLoginTab('staff')"
+        style="flex:1;padding:8px 4px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:#64748b;font-family:'Hind Siliguri',sans-serif;transition:all 0.2s">
+        <i class="fas fa-user-tie" style="margin-right:4px"></i>স্টাফ
+      </button>
+    </div>
+    <!-- Admin Login Panel -->
+    <div id="login-panel-admin">
+      <div class="pin-modal-icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="pin-modal-title">অ্যাডমিন অ্যাক্সেস</div>
+      <div class="pin-modal-sub">অ্যাডমিন মোডে প্রবেশ করতে সিক্রেট পিন দিন</div>
+      <input type="password" class="pin-input" id="admin-pin-input" placeholder="••••••••••••••" onkeydown="if(event.key==='Enter')verifyPin()">
+    </div>
+    <!-- Staff Login Panel -->
+    <div id="login-panel-staff" style="display:none">
+      <div class="pin-modal-icon" style="color:#6366f1"><i class="fas fa-user-tie"></i></div>
+      <div class="pin-modal-title">স্টাফ লগইন</div>
+      <div class="pin-modal-sub">আপনার ইউজারনেম ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</div>
+      <input type="text" class="pin-input" id="staff-login-username" placeholder="ইউজারনেম"
+        style="margin-bottom:8px" onkeydown="if(event.key==='Enter')document.getElementById('staff-login-password').focus()">
+      <input type="password" class="pin-input" id="staff-login-password" placeholder="পাসওয়ার্ড"
+        onkeydown="if(event.key==='Enter')verifyPin()">
+    </div>
+    <div class="pin-error" id="pin-error">ভুল তথ্য! আবার চেষ্টা করুন।</div>
     <div class="pin-btn-row">
       <button class="pin-cancel-btn" onclick="closePinModal()">বাতিল</button>
       <button class="pin-confirm-btn" onclick="verifyPin()"><i class="fas fa-unlock"></i> প্রবেশ করুন</button>
@@ -2820,6 +2863,7 @@ transform:scale(0.96);
   </button>
   <span class="header-title" id="header-title" ondblclick="onTitleDblClick()" onclick="onTitleClick()">সমিতি ম্যানেজমেন্ট</span>
   <span class="admin-badge"><i class="fas fa-shield-alt"></i> ADMIN</span>
+  <span class="staff-badge" id="staff-badge" style="display:none;background:#6366f1;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.5px"><i class="fas fa-user-tie"></i> <span id="staff-badge-name">STAFF</span></span>
   <button class="header-btn" id="home-btn" onclick="navigateTo('dashboard')" style="display:none">
     <i class="fas fa-home"></i>
   </button>
@@ -2850,21 +2894,21 @@ transform:scale(0.96);
     </div>
   </div>
 
-  <div class="section-title admin-only">কুইক মেনু</div>
-  <div class="quick-grid admin-only-grid" style="display:none">
-    <div class="quick-card admin-only" onclick="navigateTo('add-member')">
+  <div class="section-title admin-only quick-menu-title">কুইক মেনু</div>
+  <div class="quick-grid admin-only-grid quick-menu-grid" style="display:none">
+    <div class="quick-card admin-only staff-tx-card" onclick="navigateTo('add-member')">
       <div class="quick-icon" style="background:#e0f2fe;color:#0284c7"><i class="fas fa-user-plus"></i></div>
       নতুন সদস্য
     </div>
-    <div class="quick-card admin-only" onclick="navigateTo('deposit')">
+    <div class="quick-card admin-only staff-tx-card" onclick="navigateTo('deposit')">
       <div class="quick-icon" style="background:#dcfce7;color:#059669"><i class="fas fa-arrow-down"></i></div>
       জমা
     </div>
-    <div class="quick-card admin-only" onclick="navigateTo('withdraw')">
+    <div class="quick-card admin-only staff-tx-card" onclick="navigateTo('withdraw')">
       <div class="quick-icon" style="background:#fee2e2;color:#e11d48"><i class="fas fa-arrow-up"></i></div>
       উত্তোলন
     </div>
-    <div class="quick-card admin-only" onclick="navigateTo('loan')">
+    <div class="quick-card admin-only staff-tx-card" onclick="navigateTo('loan')">
       <div class="quick-icon" style="background:#fef3c7;color:#d97706"><i class="fas fa-money-bill-wave"></i></div>
       ঋণ
     </div>
@@ -2968,7 +3012,7 @@ transform:scale(0.96);
 <div id="members" class="page">
   <div class="page-title">
     সদস্য তালিকা
-    <button class="add-btn admin-only" onclick="navigateTo('add-member')"><i class="fas fa-plus"></i> নতুন</button>
+    <button class="add-btn admin-only staff-allowed" onclick="navigateTo('add-member')"><i class="fas fa-plus"></i> নতুন</button>
   </div>
   <div id="members-list"></div>
   <!-- UPDATE 2: Archive/Inactive Members Section -->
@@ -3224,6 +3268,127 @@ transform:scale(0.96);
   <div id="reports-list"></div>
 </div>
 
+<!-- STAFF MANAGEMENT PAGE -->
+<div id="staff-management" class="page">
+  <div class="page-title" style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+    <i class="fas fa-user-tie"></i> স্টাফ ম্যানেজমেন্ট
+  </div>
+
+  <!-- Add Staff Form -->
+  <div style="background:var(--card,#fff);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border,#e2e8f0);box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+    <div style="font-size:14px;font-weight:700;color:var(--text,#1e293b);margin-bottom:14px;display:flex;align-items:center;gap:6px">
+      <i class="fas fa-plus-circle" style="color:#6366f1"></i> নতুন স্টাফ অ্যাকাউন্ট যোগ করুন
+    </div>
+
+    <!-- Photo upload -->
+    <div style="text-align:center;margin-bottom:14px">
+      <div onclick="document.getElementById('staff-photo-input').click()" style="width:80px;height:80px;border-radius:50%;border:2.5px dashed #6366f1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:#f5f3ff;position:relative">
+        <img id="staff-photo-preview" style="display:none;width:100%;height:100%;object-fit:cover">
+        <i class="fas fa-camera" id="staff-photo-icon" style="font-size:24px;color:#6366f1"></i>
+      </div>
+      <input type="file" id="staff-photo-input" accept="image/*" style="display:none" onchange="staffHandlePhoto(event)">
+      <div style="font-size:11px;color:var(--muted,#64748b);margin-top:4px">ছবি যোগ করুন</div>
+    </div>
+
+    <!-- Name -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">পূর্ণ নাম <span style="color:#ef4444">*</span></label>
+      <input type="text" id="staff-name-input" placeholder="স্টাফের পূর্ণ নাম লিখুন"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <!-- Mobile -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">মোবাইল নম্বর <span style="color:#ef4444">*</span></label>
+      <input type="tel" id="staff-mobile-input" placeholder="01XXXXXXXXX"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <!-- NID -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">জাতীয় পরিচয়পত্র নম্বর (NID)</label>
+      <input type="text" id="staff-nid-input" placeholder="NID নম্বর লিখুন"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <!-- Divider for login credentials -->
+    <div style="border-top:1px dashed var(--border,#e2e8f0);margin:12px 0;padding-top:12px;font-size:12px;font-weight:700;color:#6366f1"><i class="fas fa-lock" style="margin-right:4px"></i> লগইন তথ্য</div>
+
+    <!-- Username -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">ইউজারনেম <span style="color:#ef4444">*</span></label>
+      <input type="text" id="staff-username-input" placeholder="ইউজারনেম লিখুন"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <!-- Password -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">পাসওয়ার্ড <span style="color:#ef4444">*</span></label>
+      <div style="position:relative">
+        <input type="password" id="staff-password-input" placeholder="পাসওয়ার্ড লিখুন"
+          style="width:100%;padding:10px 40px 10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+          onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+        <button type="button" onclick="staffTogglePassword('staff-password-input',this)"
+          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted,#64748b);font-size:14px;padding:0">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Divider for nominee -->
+    <div style="border-top:1px dashed var(--border,#e2e8f0);margin:12px 0;padding-top:12px;font-size:12px;font-weight:700;color:#0d9488"><i class="fas fa-user-friends" style="margin-right:4px"></i> নমিনির তথ্য</div>
+
+    <!-- Nominee Name -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">নমিনির নাম</label>
+      <input type="text" id="staff-nominee-name-input" placeholder="নমিনির পূর্ণ নাম"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <!-- Nominee Mobile -->
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">নমিনির মোবাইল</label>
+      <input type="tel" id="staff-nominee-mobile-input" placeholder="নমিনির মোবাইল নম্বর"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <!-- Nominee Relation -->
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted,#64748b);margin-bottom:4px;display:block">নমিনির সম্পর্ক</label>
+      <input type="text" id="staff-nominee-relation-input" placeholder="যেমন: স্ত্রী, পিতা, মাতা"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border,#e2e8f0);border-radius:10px;font-size:14px;outline:none;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;transition:border-color 0.2s"
+        onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='var(--border,#e2e8f0)'">
+    </div>
+
+    <div id="staff-form-error" style="display:none;color:#ef4444;font-size:12px;margin-bottom:8px;padding:8px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca"></div>
+    <button onclick="staffAddAccount()"
+      style="width:100%;padding:12px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Hind Siliguri',sans-serif;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:6px"
+      onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+      <i class="fas fa-plus"></i> স্টাফ যোগ করুন
+    </button>
+  </div>
+
+  <!-- Staff List -->
+  <div style="background:var(--card,#fff);border-radius:16px;padding:16px;border:1px solid var(--border,#e2e8f0);box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+    <div style="font-size:14px;font-weight:700;color:var(--text,#1e293b);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:6px"><i class="fas fa-list-ul" style="color:#6366f1"></i> স্টাফ তালিকা</span>
+      <span id="staff-count-badge" style="background:#eef2ff;color:#4f46e5;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">0 জন</span>
+    </div>
+    <div id="staff-list-container">
+      <div style="text-align:center;padding:24px;color:var(--muted,#64748b);font-size:13px">
+        <i class="fas fa-users-slash" style="font-size:28px;margin-bottom:8px;opacity:0.4;display:block"></i>
+        এখনো কোনো স্টাফ যোগ করা হয়নি
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Hidden Sync Panel (3 clicks on footer empty area) — fixed just above bottom nav -->
 <div id="somity-sync-panel" style="display:none;position:fixed;bottom:60px;left:0;right:0;z-index:200;background:linear-gradient(135deg,#0f766e,#0d5c57);padding:12px 16px;box-shadow:0 -2px 12px rgba(0,0,0,0.25)">
   <div style="color:#fff;font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
@@ -3442,7 +3607,29 @@ transform:scale(0.96);
 #somity-module-container.admin-mode .add-btn.admin-only{ display: inline-flex !important; }
 #somity-module-container.admin-mode .quick-card.admin-only{ display: block !important; }
 #somity-module-container /* For flex-based admin-only elements */
-#somity-module-container.admin-mode .admin-only-flex{ display: flex !important; }#somity-module-container.admin-mode .admin-only-inline-flex{ display: inline-flex !important; }#somity-module-container.admin-mode .admin-only-grid{ display: grid !important; }#somity-module-container /* HEADER */
+#somity-module-container.admin-mode .admin-only-flex{ display: flex !important; }#somity-module-container.admin-mode .admin-only-inline-flex{ display: inline-flex !important; }#somity-module-container.admin-mode .admin-only-grid{ display: grid !important; }
+/* ===== STAFF MODE RESTRICTIONS ===== */
+#somity-module-container.staff-mode .del-btn { display: none !important; }
+#somity-module-container.staff-mode .edit-btn { display: none !important; }
+#somity-module-container.staff-mode .admin-only { display: none !important; }
+#somity-module-container.staff-mode .admin-only-flex { display: none !important; }
+#somity-module-container.staff-mode .admin-only-grid { display: none !important; }
+#somity-module-container.staff-mode #sidebar-loan-item { display: none !important; }
+#somity-module-container.staff-mode #prof-close-account-btn { display: none !important; }
+#somity-module-container.staff-mode .section-title.admin-only { display: none !important; }
+/* Staff can see the quick menu (deposit/withdraw only) */
+#somity-module-container.staff-mode .section-title.quick-menu-title { display: block !important; }
+#somity-module-container.staff-mode .quick-menu-grid { display: grid !important; }
+#somity-module-container.staff-mode .staff-tx-card { display: block !important; }
+/* STAFF-ONLY items (hidden in admin/guest, visible only in staff mode) */
+.staff-only { display: none !important; }
+#somity-module-container.staff-mode .sidebar-item.staff-only { display: flex !important; }
+/* Add-member button also visible to staff */
+#somity-module-container.staff-mode #sidebar-add-member-item { display: flex !important; }
+#somity-module-container.staff-mode .add-btn.staff-allowed { display: inline-flex !important; }
+/* Admin import-from-staff item */
+#somity-module-container.admin-mode #sidebar-staff-import-item { display: flex !important; }
+#somity-module-container /* HEADER */
 .header{
   position: sticky; top: 0; z-index: 100;
   background: var(--primary); color: white;
@@ -4662,7 +4849,8 @@ const PAGE_TITLES = {
   loan: 'ঋণ ব্যবস্থাপনা',
   transactions: 'লেনদেন সমূহ',
   dues: 'বকেয়া পাওনা',
-  reports: 'রিপোর্ট'
+  reports: 'রিপোর্ট',
+  'staff-management': 'স্টাফ ম্যানেজমেন্ট'
 };
 
 const NAV_PAGES = ['dashboard','members','deposit','dues','transactions'];
@@ -4675,16 +4863,42 @@ function isAdmin() {
   return sessionStorage.getItem('isAdmin') === 'true';
 }
 
+function isStaff() {
+  return !isAdmin() && localStorage.getItem('userRole') === 'staff';
+}
+
+function getStaffUsername() {
+  return localStorage.getItem('staffUsername') || 'স্টাফ';
+}
+
 function applyAdminState() {
   const admin = isAdmin();
+  const staff = isStaff();
+  const container = document.getElementById('somity-module-container');
+  const modeLabel = document.getElementById('sidebar-mode-label');
+  const staffBadge = document.getElementById('staff-badge');
+  const staffBadgeName = document.getElementById('staff-badge-name');
+
+  const staffLogoutBtn = document.getElementById('staff-logout-btn');
+  container.classList.remove('admin-mode', 'staff-mode');
+  if(staffBadge) staffBadge.style.display = 'none';
+  if(staffLogoutBtn) staffLogoutBtn.style.display = 'none';
+
   if(admin) {
-    document.getElementById('somity-module-container').classList.add('admin-mode');
-    document.getElementById('sidebar-mode-label').textContent = 'অ্যাডমিন মোড';
+    container.classList.add('admin-mode');
+    if(modeLabel) modeLabel.textContent = 'অ্যাডমিন মোড';
+  } else if(staff) {
+    container.classList.add('staff-mode');
+    if(modeLabel) modeLabel.textContent = 'স্টাফ মোড';
+    if(staffBadge) {
+      staffBadge.style.display = 'inline-block';
+      if(staffBadgeName) staffBadgeName.textContent = getStaffUsername().toUpperCase();
+    }
+    if(staffLogoutBtn) staffLogoutBtn.style.display = 'flex';
   } else {
-    document.getElementById('somity-module-container').classList.remove('admin-mode');
-    document.getElementById('sidebar-mode-label').textContent = 'গেস্ট মোড';
+    if(modeLabel) modeLabel.textContent = 'গেস্ট মোড';
   }
-  updateNavLockState(admin);
+  updateNavLockState(admin || staff);
 }
 
 function updateNavLockState(admin) {
@@ -4721,25 +4935,50 @@ function onTitleClick() {
   if(_titleClickCount >= 2) {
     _titleClickCount = 0;
     if(_titleClickTimer) clearTimeout(_titleClickTimer);
-    if(isAdmin()) {
-      showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন');
-      return;
-    }
+    if(isAdmin()) { showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন'); return; }
+    if(isStaff()) { showToast('আপনি স্টাফ মোডে আছেন: ' + getStaffUsername()); return; }
     openPinModal();
   }
 }
 
 function onTitleDblClick() {
-  if(isAdmin()) {
-    showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন');
-    return;
-  }
+  if(isAdmin()) { showToast('আপনি ইতিমধ্যে অ্যাডমিন মোডে আছেন'); return; }
+  if(isStaff()) { showToast('আপনি স্টাফ মোডে আছেন: ' + getStaffUsername()); return; }
   openPinModal();
+}
+
+let _loginTab = 'admin';
+
+function switchLoginTab(tab) {
+  _loginTab = tab;
+  const adminPanel = document.getElementById('login-panel-admin');
+  const staffPanel = document.getElementById('login-panel-staff');
+  const adminBtn = document.getElementById('login-tab-admin-btn');
+  const staffBtn = document.getElementById('login-tab-staff-btn');
+  document.getElementById('pin-error').style.display = 'none';
+  if(tab === 'admin') {
+    if(adminPanel) adminPanel.style.display = '';
+    if(staffPanel) staffPanel.style.display = 'none';
+    if(adminBtn) { adminBtn.style.background='#0f766e'; adminBtn.style.color='#fff'; }
+    if(staffBtn) { staffBtn.style.background='transparent'; staffBtn.style.color='#64748b'; }
+    setTimeout(() => { const el=document.getElementById('admin-pin-input'); if(el) el.focus(); }, 100);
+  } else {
+    if(adminPanel) adminPanel.style.display = 'none';
+    if(staffPanel) staffPanel.style.display = '';
+    if(staffBtn) { staffBtn.style.background='#6366f1'; staffBtn.style.color='#fff'; }
+    if(adminBtn) { adminBtn.style.background='transparent'; adminBtn.style.color='#64748b'; }
+    setTimeout(() => { const el=document.getElementById('staff-login-username'); if(el) el.focus(); }, 100);
+  }
 }
 
 function openPinModal() {
   document.getElementById('admin-pin-input').value = '';
   document.getElementById('pin-error').style.display = 'none';
+  const su = document.getElementById('staff-login-username');
+  const sp = document.getElementById('staff-login-password');
+  if(su) su.value = '';
+  if(sp) sp.value = '';
+  switchLoginTab('admin');
   document.getElementById('pin-modal').classList.add('show');
   setTimeout(() => document.getElementById('admin-pin-input').focus(), 300);
 }
@@ -4748,12 +4987,39 @@ function closePinModal() {
   document.getElementById('pin-modal').classList.remove('show');
   document.getElementById('admin-pin-input').value = '';
   document.getElementById('pin-error').style.display = 'none';
+  const su = document.getElementById('staff-login-username');
+  const sp = document.getElementById('staff-login-password');
+  if(su) su.value = '';
+  if(sp) sp.value = '';
 }
 
 function verifyPin() {
+  if(_loginTab === 'staff') {
+    const username = (document.getElementById('staff-login-username').value || '').trim();
+    const password = (document.getElementById('staff-login-password').value || '').trim();
+    const staffList = JSON.parse(localStorage.getItem('staffAccounts') || '[]');
+    const match = staffList.find(s => s.username.toLowerCase() === username.toLowerCase() && s.password === password);
+    if(match) {
+      localStorage.setItem('userRole', 'staff');
+      localStorage.setItem('staffUsername', match.username);
+      closePinModal();
+      applyAdminState();
+      showToast('স্টাফ মোডে প্রবেশ করা হয়েছে: ' + match.username);
+      if(document.getElementById('dashboard').classList.contains('active')) loadDashboard();
+      if(document.getElementById('members').classList.contains('active')) loadMembers();
+    } else {
+      document.getElementById('pin-error').style.display = 'block';
+      document.getElementById('pin-error').textContent = 'ভুল ইউজারনেম বা পাসওয়ার্ড!';
+      document.getElementById('staff-login-password').value = '';
+      document.getElementById('staff-login-password').focus();
+    }
+    return;
+  }
   const entered = document.getElementById('admin-pin-input').value;
   if(entered === ADMIN_PIN) {
     sessionStorage.setItem('isAdmin', 'true');
+    localStorage.setItem('userRole', 'admin');
+    localStorage.removeItem('staffUsername');
     closePinModal();
     applyAdminState();
     showToast('অ্যাডমিন মোডে প্রবেশ করা হয়েছে');
@@ -4762,6 +5028,7 @@ function verifyPin() {
     if(document.getElementById('reports').classList.contains('active')) loadReports();
   } else {
     document.getElementById('pin-error').style.display = 'block';
+    document.getElementById('pin-error').textContent = 'ভুল পিন! আবার চেষ্টা করুন।';
     document.getElementById('admin-pin-input').value = '';
     document.getElementById('admin-pin-input').focus();
   }
@@ -4769,9 +5036,11 @@ function verifyPin() {
 
 function lockAdminMode() {
   sessionStorage.removeItem('isAdmin');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('staffUsername');
   closeSidebar();
   applyAdminState();
-  showToast('অ্যাডমিন মোড লক হয়েছে। গেস্ট মোডে ফিরে এসেছেন।');
+  showToast('লগ আউট হয়েছে। গেস্ট মোডে ফিরে এসেছেন।');
   navigateTo('dashboard');
 }
 
@@ -4981,12 +5250,25 @@ function saveEditMember() {
 }
 
 // NAVIGATION
-const ADMIN_PAGES = ['deposit', 'withdraw', 'loan', 'add-member'];
+const ADMIN_PAGES = ['deposit', 'withdraw', 'loan', 'add-member', 'staff-management'];
+const STAFF_BLOCKED_PAGES = ['loan', 'staff-management'];
+const STAFF_ALLOWED_PAGES = ['deposit', 'withdraw', 'add-member'];
 
 function navigateTo(page) {
-  if(ADMIN_PAGES.includes(page) && !isAdmin()) {
-    showAdminRequiredModal(page);
-    return;
+  if(isAdmin()) {
+    // Admin has full access
+  } else if(isStaff()) {
+    // Staff can do deposit/withdraw but nothing admin-only beyond that
+    if(STAFF_BLOCKED_PAGES.includes(page)) {
+      showToast('এই পেজে স্টাফের অ্যাক্সেস নেই');
+      return;
+    }
+  } else {
+    // Guest — no admin pages
+    if(ADMIN_PAGES.includes(page)) {
+      showAdminRequiredModal(page);
+      return;
+    }
   }
   if(pageHistory[pageHistory.length-1]!==page) pageHistory.push(page);
   renderPage(page);
@@ -4997,7 +5279,8 @@ function showAdminRequiredModal(page) {
     'deposit': 'টাকা জমা',
     'withdraw': 'টাকা উত্তোলন',
     'loan': 'ঋণ ব্যবস্থাপনা',
-    'add-member': 'নতুন সদস্য যোগ'
+    'add-member': 'নতুন সদস্য যোগ',
+    'staff-management': 'স্টাফ ম্যানেজমেন্ট'
   };
   const pageName = pageNameMap[page] || page;
   const existing = document.getElementById('admin-required-modal');
@@ -5081,13 +5364,16 @@ function renderPage(page) {
     if(gmEl) gmEl.value='';
     lnCheckActiveLoan();
   }
+  if(page==='staff-management') {
+    staffRenderList();
+  }
 
   (function(){var ps=document.querySelector('.pages-desktop-scroll');if(ps){ps.scrollTop=0;}else{var sc=document.getElementById('somity-module-container');if(sc)sc.scrollTop=0;}})();
 }
 
 function avatar(m, size=44) {
   const border = `border:2px solid var(--primary);`;
-  if(m&&m.photo&&isAdmin()) return `<img src="${m.photo}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0;${border}">`;
+  if(m&&m.photo&&(isAdmin()||isStaff())) return `<img src="${m.photo}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0;${border}">`;
   return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--secondary);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:${size*0.45}px;flex-shrink:0;${border}"><i class="fas fa-user"></i></div>`;
 }
 
@@ -5119,9 +5405,9 @@ function handlePhoto(e) {
   reader.readAsDataURL(file);
 }
 
-// ADD MEMBER — Double-layer security check
+// ADD MEMBER — Admin OR Staff can add members
 function addMember() {
-  if(sessionStorage.getItem('isAdmin') !== 'true') {
+  if(!isAdmin() && !isStaff()) {
     alert('Access Denied');
     return;
   }
@@ -5198,7 +5484,7 @@ function toggleArchiveList() {
 
 function renderArchiveList() {
   const archive = getArchive();
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const el = document.getElementById('archive-list');
   if(!el) return;
   el.innerHTML = archive.length ? archive.map(m => {
@@ -5337,7 +5623,7 @@ function onDepLoanChange() {
 }
 
 function doDeposit() {
-  if(sessionStorage.getItem('isAdmin') !== 'true') {
+  if(!isAdmin() && !isStaff()) {
     alert('Access Denied');
     return;
   }
@@ -5347,7 +5633,8 @@ function doDeposit() {
   if(!amt||amt<=0){showToast('সঠিক পরিমাণ দিন');return;}
 
   const txs=getT();
-  const txObj={id:uid(),mid,amt,date:document.getElementById('dep-date').value,note:document.getElementById('dep-note').value||'জমা',ts:Date.now()};
+  const _collectedByName = isAdmin() ? 'অ্যাডমিন' : getStaffUsername();
+  const txObj={id:uid(),transactionId:Date.now(),mid,amt,date:document.getElementById('dep-date').value,note:document.getElementById('dep-note').value||'জমা',ts:Date.now(),staffName:_collectedByName};
 
   if(currentDepositType==='loan') {
     const lid=document.getElementById('dep-loan-select').value;
@@ -5389,7 +5676,7 @@ function doDeposit() {
 
 // WITHDRAW — Double-layer security check
 function doWithdraw() {
-  if(sessionStorage.getItem('isAdmin') !== 'true') {
+  if(!isAdmin() && !isStaff()) {
     alert('Access Denied');
     return;
   }
@@ -5399,7 +5686,8 @@ function doWithdraw() {
   if(!amt||amt<=0){showToast('সঠিক পরিমাণ দিন');return;}
   if(amt>balance(mid)){showToast('অপর্যাপ্ত ব্যালেন্স!');return;}
   const txs=getT();
-  const wdObj={id:uid(),mid,type:'wd',amt,date:document.getElementById('wd-date').value,note:document.getElementById('wd-note').value||'উত্তোলন',ts:Date.now()};
+  const _wdStaffName = isAdmin() ? 'অ্যাডমিন' : getStaffUsername();
+  const wdObj={id:uid(),transactionId:Date.now(),mid,type:'wd',amt,date:document.getElementById('wd-date').value,note:document.getElementById('wd-note').value||'উত্তোলন',ts:Date.now(),staffName:_wdStaffName};
   txs.push(wdObj);
   save(DB_T,txs);
   // UPDATE 4: Sync withdrawal to recentTransactions
@@ -5664,7 +5952,7 @@ function duesSetFilter(f) {
 function loadDues() {
   const wrap = document.getElementById('dues-list');
   if(!wrap) return;
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const members = getM();
   let allDues = getD();
   if(_duesFilter !== 'all') allDues = allDues.filter(d=>d.type===_duesFilter);
@@ -5719,7 +6007,8 @@ function payDue(did) {
       // Also record a deposit transaction
       const txs = getT();
       const typeNote = {monthly:'মাসিক চাঁদা', emi:'EMI পরিশোধ', fine:'জরিমানা'};
-      txs.push({id:uid(), mid:d.mid, type:'dep', amt:d.amt, date:today(), note:typeNote[d.type]||'বকেয়া', ts:Date.now()});
+      const _dueStaffName = isAdmin() ? 'অ্যাডমিন' : getStaffUsername();
+      txs.push({id:uid(), mid:d.mid, type:'dep', amt:d.amt, date:today(), note:typeNote[d.type]||'বকেয়া', ts:Date.now(), staffName:_dueStaffName});
       save(DB_T, txs);
       showToast('বকেয়া আদায় হয়েছে');
       loadDues();
@@ -5827,7 +6116,7 @@ function loadDashboard() {
   const withdrawals=txs.filter(t=>t.type==='wd').reduce((s,t)=>s+t.amt,0);
   const fund = deposits - withdrawals;
   const activeLoans = loans.filter(l=>l.status==='active').reduce((s,l)=>s+getLoanRemaining(l.id),0);
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   document.getElementById('dash-fund').textContent = adminMode ? taka(Math.max(0,fund)) : '****';
   document.getElementById('dash-members').textContent=members.length+' জন';
   document.getElementById('dash-loans').textContent = adminMode ? taka(activeLoans) : '**';
@@ -5961,7 +6250,7 @@ function loadLoanCollectionBox(adminMode) {
 
 // Open the "See More" full 12-month modal
 function openLoanCollectionModal() {
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const data = getLoanCollectionByMonth(12);
   const modal = document.getElementById('loan-collection-modal');
   const tbody = document.getElementById('lcm-body');
@@ -6015,7 +6304,7 @@ function closeLoanCollectionModal() {
 
 function loadMembers() {
   const members=getM();
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const dayOfMonth = new Date().getDate();
   const after10th = dayOfMonth > 10;
   // UPDATE 2: Show archive section if there are archived members
@@ -6066,7 +6355,7 @@ function showMemberProfile(mid) {
   currentProfileMid = mid;
   const m = getM().find(x=>x.id===mid);
   if(!m) return;
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const bal = balance(mid);
   const loanDue = getMemberLoanDue(mid);
   const loans = getL().filter(l=>l.mid===mid);
@@ -6141,7 +6430,7 @@ function openStatementModal(mid) {
   if(!mid) return;
   const m = getM().find(x=>x.id===mid);
   if(!m) return;
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const txs = getT().filter(t=>t.mid===mid).sort((a,b)=>a.ts-b.ts);
 
   document.getElementById('stmt-member-name').textContent = ' ' + m.name + ' — লেনদেন স্টেটমেন্ট';
@@ -6206,7 +6495,7 @@ function loadDashboardPending() {
     return;
   }
   const members = getM();
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   const unpaid = members.filter(m => {
     const target = +(m.target)||0;
     if(target === 0) return false;
@@ -6251,7 +6540,7 @@ function loadDashboardPending() {
 function loadTx() {
   let txs=[...getT()].sort((a,b)=>b.ts-a.ts);
   const members=getM();
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
 
   const searchNo = (document.getElementById('tx-search-no')||{}).value||'';
   const searchDate = (document.getElementById('tx-search-date')||{}).value||'';
@@ -6283,6 +6572,7 @@ function loadTx() {
           <div class="tx-name">${m.name}</div>
           <div class="tx-meta">${t.date} • ${t.note}</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:monospace">${receiptNo}</div>
+          ${isAdmin() && t.staffName ? `<div style="font-size:10px;color:#6366f1;margin-top:2px"><i class="fas fa-user-tie" style="font-size:9px"></i> সংগ্রহকারী: <strong>${t.staffName}</strong></div>` : ''}
         </div>
       </div>
       <div class="tx-actions">
@@ -6371,7 +6661,7 @@ function deleteTx(tid) {
 function loadLoans() {
   const loans=[...getL()].reverse();
   const members=getM();
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
   document.getElementById('loans-list').innerHTML = loans.length ? loans.map(l=>{
     const m=members.find(x=>x.id===l.mid)||{name:'?'};
     const paid = getT().filter(t=>t.lid===l.id&&t.type==='loan-repay').reduce((s,t)=>s+t.amt,0);
@@ -6466,7 +6756,7 @@ function deleteLoan(lid) {
 function loadDueList() {
   const wrap = document.getElementById('due-list-wrap');
   if(!wrap) return;
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
 
   const members = getM();
 
@@ -6517,7 +6807,7 @@ function loadDueList() {
 
 function loadReports() {
   const members=getM(), txs=getT();
-  const adminMode = isAdmin();
+  const adminMode = isAdmin() || isStaff();
 
   // FEATURE 4: Show due list (admin only, PIN protected)
   loadDueList();
@@ -6551,7 +6841,7 @@ function loadReports() {
 let currentReceiptTid = null;
 
 function generateReceipt(tid) {
-  if(!isAdmin()) { showToast('রশিদ দেখতে অ্যাডমিন মোড প্রয়োজন'); return; }
+  if(!isAdmin() && !isStaff()) { showToast('রশিদ দেখতে লগইন করুন'); return; }
   const txs = getT();
   const t = txs.find(x => x.id === tid);
   if (!t) { showToast('লেনদেন পাওয়া যায়নি'); return; }
@@ -6625,6 +6915,10 @@ function generateReceipt(tid) {
       <span class="receipt-row-label"><i class="fas fa-comment" style="color:#0f766e"></i> বিবরণ</span>
       <span class="receipt-row-value">${t.note}</span>
     </div>` : ''}
+    <div class="receipt-row">
+      <span class="receipt-row-label"><i class="fas fa-user-tie" style="color:#0f766e"></i> সংগ্রহকারী</span>
+      <span class="receipt-row-value" style="font-weight:600;color:#0f766e">${t.staffName || (isAdmin() ? 'অ্যাডমিন' : 'N/A')}</span>
+    </div>
 
     <div class="receipt-amount-box ${boxClass}">
       <div class="receipt-amount-label">লেনদেনের পরিমাণ</div>
@@ -6645,7 +6939,7 @@ function generateReceipt(tid) {
         <div style="width:20px"></div>
         <div class="receipt-sig">
           <span class="receipt-sig-line"></span>
-          <span class="receipt-sig-label">কর্তৃপক্ষের স্বাক্ষর</span>
+          <span class="receipt-sig-label" style="font-weight:700;color:#0f766e">সংগ্রহকারী: ${t.staffName || (isAdmin() ? 'অ্যাডমিন' : '—')}</span>
         </div>
       </div>
       <div class="receipt-footer-note" style="margin-top:10px">
@@ -6703,7 +6997,7 @@ function shareReceipt() {
   const m = getM().find(x => x.id === t.mid) || { name: '?', mobile: '—' };
   const typeLabel = t.type === 'dep' ? 'জমা' : t.type === 'loan-repay' ? 'ঋণ পরিশোধ' : 'উত্তোলন';
   const receiptNo = '#' + t.id.slice(-8).toUpperCase();
-  const text = `🧾 *লেনদেন রশিদ*\n━━━━━━━━━━━━━━\n📌 রশিদ নং: ${receiptNo}\n👤 সদস্য: ${m.name}\n📱 মোবাইল: ${m.mobile}\n💰 ${typeLabel}: *৳${t.amt.toLocaleString('bn-BD')}*\n📅 তারিখ: ${t.date}\n📝 বিবরণ: ${t.note || '—'}\n━━━━━━━━━━━━━━\n✅ সমিতি ম্যানেজমেন্ট সিস্টেম`;
+  const text = `🧾 *লেনদেন রশিদ*\n━━━━━━━━━━━━━━\n📌 রশিদ নং: ${receiptNo}\n👤 সদস্য: ${m.name}\n📱 মোবাইল: ${m.mobile}\n💰 ${typeLabel}: *৳${t.amt.toLocaleString('bn-BD')}*\n📅 তারিখ: ${t.date}\n📝 বিবরণ: ${t.note || '—'}\n👨‍💼 সংগ্রহকারী: ${t.staffName || '—'}\n━━━━━━━━━━━━━━\n✅ সমিতি ম্যানেজমেন্ট সিস্টেম`;
 
   if (navigator.share) {
     navigator.share({ title: 'লেনদেন রশিদ', text }).catch(() => {
@@ -6795,25 +7089,181 @@ function somityExport() {
   showToast('ব্যাকআপ ডাউনলোড হচ্ছে...');
 }
 
+/* Staff backup export — includes members + transactions stamped with staff username */
+function staffSomityExport() {
+  var keys = [DB_M, DB_T, DB_L, DB_D];
+  var data = {};
+  keys.forEach(function(k) { data[k] = localStorage.getItem(k) || '[]'; });
+  data._exportDate = new Date().toISOString();
+  data._exportedBy = getStaffUsername();
+  data._exportType = 'staff-backup';
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'staff_backup_' + getStaffUsername() + '_' + today() + '.json';
+  a.click();
+  showToast('আপনার ব্যাকআপ ফাইল ডাউনলোড হচ্ছে...');
+}
+
+/* ============================================================
+   SMART IMPORT — stores parsed data, then shows merge dialog
+   ============================================================ */
+let _somityImportPending = null;
+
 function somityImport(input) {
   if(!input.files || !input.files[0]) return;
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      const keys = [DB_M, DB_T, DB_L, DB_D];
-      keys.forEach(k => {
-        if(data[k] !== undefined) localStorage.setItem(k, data[k]);
-      });
-      closeSomitySync();
-      showToast('ডেটা পুনরুদ্ধার হয়েছে!');
-      setTimeout(() => renderPage('dashboard'), 500);
+      /* Basic validation: must have at least one known key */
+      if(data[DB_M] === undefined && data[DB_T] === undefined) {
+        showToast('ফাইলটি ভুল! সঠিক ব্যাকআপ ফাইল দিন।');
+        return;
+      }
+      _somityImportPending = data;
+      _showImportChoiceDialog();
     } catch(err) {
       showToast('ফাইলটি ভুল! সঠিক ব্যাকআপ ফাইল দিন।');
     }
   };
   reader.readAsText(input.files[0]);
   input.value = '';
+}
+
+/* ---------- Choice Dialog ---------- */
+function _showImportChoiceDialog() {
+  var existing = document.getElementById('_somity_import_dialog');
+  if(existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = '_somity_import_dialog';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px';
+
+  overlay.innerHTML = [
+    '<div style="background:#fff;border-radius:20px;padding:24px;max-width:340px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.3)">',
+      '<div style="text-align:center;margin-bottom:18px">',
+        '<div style="font-size:38px;margin-bottom:8px">📂</div>',
+        '<div style="font-size:16px;font-weight:700;color:#0f172a">ডেটা পুনরুদ্ধার</div>',
+        '<div style="font-size:12px;color:#64748b;margin-top:4px">কীভাবে ডেটা আমদানি করতে চান?</div>',
+      '</div>',
+
+      '<button onclick="_somityDoFullRestore()" style="width:100%;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:12px;padding:14px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px;font-family:inherit">',
+        '<i class="fas fa-trash-restore" style="margin-right:6px"></i>',
+        'পূর্ণ পুনরুদ্ধার (Full Restore)',
+        '<div style="font-size:10px;opacity:0.85;font-weight:400;margin-top:3px">বর্তমান সকল ডেটা মুছে ব্যাকআপ থেকে পুনরায় লোড করবে</div>',
+      '</button>',
+
+      '<button onclick="_somityDoMerge()" style="width:100%;background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;border:none;border-radius:12px;padding:14px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px;font-family:inherit">',
+        '<i class="fas fa-code-merge" style="margin-right:6px"></i>',
+        'স্মার্ট মার্জ (Merge Data)',
+        '<div style="font-size:10px;opacity:0.85;font-weight:400;margin-top:3px">শুধু নতুন সদস্য ও নতুন লেনদেন যুক্ত হবে, বিদ্যমান ডেটা অক্ষুণ্ণ থাকবে</div>',
+      '</button>',
+
+      '<button onclick="document.getElementById(\'_somity_import_dialog\').remove();_somityImportPending=null;" style="width:100%;background:#f1f5f9;color:#475569;border:none;border-radius:12px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">',
+        'বাতিল করুন',
+      '</button>',
+    '</div>'
+  ].join('');
+
+  document.body.appendChild(overlay);
+}
+
+/* ---------- Full Restore ---------- */
+function _somityDoFullRestore() {
+  var data = _somityImportPending;
+  if(!data) return;
+  document.getElementById('_somity_import_dialog').remove();
+  _somityImportPending = null;
+
+  try {
+    var keys = [DB_M, DB_T, DB_L, DB_D];
+    keys.forEach(function(k) {
+      if(data[k] !== undefined) localStorage.setItem(k, data[k]);
+    });
+    closeSomitySync();
+    showToast('পূর্ণ পুনরুদ্ধার সফল হয়েছে!');
+    setTimeout(function() { renderPage('dashboard'); }, 500);
+  } catch(err) {
+    showToast('পুনরুদ্ধারে ত্রুটি হয়েছে। আবার চেষ্টা করুন।');
+  }
+}
+
+/* ---------- Smart Merge ---------- */
+function _somityDoMerge() {
+  var data = _somityImportPending;
+  if(!data) return;
+  document.getElementById('_somity_import_dialog').remove();
+  _somityImportPending = null;
+
+  try {
+    var newMembers = 0, newTx = 0, newLoans = 0, newDues = 0;
+
+    /* ── MERGE MEMBERS ── */
+    var existingMembers = getM();
+    var existingMemberIds = existingMembers.map(function(m){ return m.id; });
+    var importedMembers = [];
+    try { importedMembers = JSON.parse(data[DB_M] || '[]'); } catch(e) {}
+    importedMembers.forEach(function(m) {
+      if(m.id && existingMemberIds.indexOf(m.id) === -1) {
+        existingMembers.push(m);
+        existingMemberIds.push(m.id);
+        newMembers++;
+      }
+    });
+    save(DB_M, existingMembers);
+
+    /* ── MERGE TRANSACTIONS ── */
+    var existingTx = getT();
+    var existingTxIds = existingTx.map(function(t){ return t.id; });
+    var importedTx = [];
+    try { importedTx = JSON.parse(data[DB_T] || '[]'); } catch(e) {}
+    importedTx.forEach(function(t) {
+      if(t.id && existingTxIds.indexOf(t.id) === -1) {
+        existingTx.push(t);
+        existingTxIds.push(t.id);
+        newTx++;
+      }
+    });
+    save(DB_T, existingTx);
+
+    /* ── MERGE LOANS ── */
+    var existingLoans = getL();
+    var existingLoanIds = existingLoans.map(function(l){ return l.id; });
+    var importedLoans = [];
+    try { importedLoans = JSON.parse(data[DB_L] || '[]'); } catch(e) {}
+    importedLoans.forEach(function(l) {
+      if(l.id && existingLoanIds.indexOf(l.id) === -1) {
+        existingLoans.push(l);
+        existingLoanIds.push(l.id);
+        newLoans++;
+      }
+    });
+    save(DB_L, existingLoans);
+
+    /* ── MERGE DUES ── */
+    var existingDues = getD();
+    var existingDueIds = existingDues.map(function(d){ return d.id || (d.mid+'_'+d.type+'_'+d.month); });
+    var importedDues = [];
+    try { importedDues = JSON.parse(data[DB_D] || '[]'); } catch(e) {}
+    importedDues.forEach(function(d) {
+      var dKey = d.id || (d.mid+'_'+d.type+'_'+d.month);
+      if(existingDueIds.indexOf(dKey) === -1) {
+        existingDues.push(d);
+        existingDueIds.push(dKey);
+        newDues++;
+      }
+    });
+    save(DB_D, existingDues);
+
+    closeSomitySync();
+    var summary = 'মার্জ সম্পন্ন! নতুন সদস্য: ' + newMembers + ', নতুন লেনদেন: ' + newTx;
+    showToast(summary);
+    setTimeout(function() { renderPage('dashboard'); }, 600);
+  } catch(err) {
+    showToast('মার্জে ত্রুটি হয়েছে! বিদ্যমান ডেটা অক্ষুণ্ণ আছে।');
+    console.error('Somity merge error:', err);
+  }
 }
 
 // =============================================
@@ -6839,6 +7289,13 @@ function migrateRemoveFutureEMIs() {
 }
 
 window._somityInit = function() {
+  // Restore persistent session from localStorage
+  const savedRole = localStorage.getItem('userRole');
+  if(savedRole === 'admin') {
+    sessionStorage.setItem('isAdmin', 'true');
+  } else if(savedRole === 'staff') {
+    sessionStorage.removeItem('isAdmin');
+  }
   applyAdminState();
   // One-time cleanup of any future EMIs created by old code
   try { migrateRemoveFutureEMIs(); } catch(e) {}
@@ -6928,6 +7385,194 @@ if (document.readyState === 'loading') {
     document.getElementById('edit-modal').addEventListener('click', function(e){ if(e.target===this) closeEditModal(); });
     document.getElementById('edit-tx-modal').addEventListener('click', function(e){ if(e.target===this) closeEditTxModal(); });
   } catch(ex) { console.warn('somity event listeners:', ex); }
+}
+
+// =============================================
+// STAFF MANAGEMENT — localStorage: staffAccounts
+// =============================================
+
+const STAFF_STORAGE_KEY = 'staffAccounts';
+
+function staffGetAll() {
+  try { return JSON.parse(localStorage.getItem(STAFF_STORAGE_KEY)) || []; }
+  catch(e) { return []; }
+}
+
+function staffSaveAll(list) {
+  localStorage.setItem(STAFF_STORAGE_KEY, JSON.stringify(list));
+}
+
+function staffTogglePassword(inputId, btn) {
+  var input = document.getElementById(inputId);
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+  } else {
+    input.type = 'password';
+    btn.innerHTML = '<i class="fas fa-eye"></i>';
+  }
+}
+
+function staffShowError(msg) {
+  var el = document.getElementById('staff-form-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(function() { el.style.display = 'none'; }, 3000);
+}
+
+var _staffPhoto = null;
+
+function staffHandlePhoto(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    _staffPhoto = ev.target.result;
+    var prev = document.getElementById('staff-photo-preview');
+    var icon = document.getElementById('staff-photo-icon');
+    if (prev) { prev.src = _staffPhoto; prev.style.display = 'block'; }
+    if (icon) icon.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function staffAddAccount() {
+  var nameEl     = document.getElementById('staff-name-input');
+  var mobileEl   = document.getElementById('staff-mobile-input');
+  var nidEl      = document.getElementById('staff-nid-input');
+  var usernameEl = document.getElementById('staff-username-input');
+  var passwordEl = document.getElementById('staff-password-input');
+  var nomNameEl  = document.getElementById('staff-nominee-name-input');
+  var nomMobEl   = document.getElementById('staff-nominee-mobile-input');
+  var nomRelEl   = document.getElementById('staff-nominee-relation-input');
+  if (!usernameEl || !passwordEl) return;
+
+  var name     = (nameEl     ? nameEl.value     : '').trim();
+  var mobile   = (mobileEl   ? mobileEl.value   : '').trim();
+  var nid      = (nidEl      ? nidEl.value      : '').trim();
+  var username = (usernameEl.value || '').trim();
+  var password = (passwordEl.value || '').trim();
+  var nomName  = (nomNameEl  ? nomNameEl.value  : '').trim();
+  var nomMob   = (nomMobEl   ? nomMobEl.value   : '').trim();
+  var nomRel   = (nomRelEl   ? nomRelEl.value   : '').trim();
+
+  if (!name)     { staffShowError('স্টাফের পূর্ণ নাম লিখুন।'); nameEl && nameEl.focus(); return; }
+  if (!mobile || mobile.length < 11) { staffShowError('সঠিক মোবাইল নম্বর দিন।'); mobileEl && mobileEl.focus(); return; }
+  if (!username) { staffShowError('ইউজারনেম লিখুন।'); usernameEl.focus(); return; }
+  if (!password) { staffShowError('পাসওয়ার্ড লিখুন।'); passwordEl.focus(); return; }
+  if (username.length < 3) { staffShowError('ইউজারনেম কমপক্ষে ৩ অক্ষরের হতে হবে।'); return; }
+  if (password.length < 4) { staffShowError('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।'); return; }
+
+  var list = staffGetAll();
+  var exists = list.some(function(s) { return s.username.toLowerCase() === username.toLowerCase(); });
+  if (exists) { staffShowError('এই ইউজারনেম ইতিমধ্যে ব্যবহৃত হয়েছে।'); return; }
+
+  list.push({
+    id: Date.now(),
+    name: name,
+    mobile: mobile,
+    nid: nid,
+    photo: _staffPhoto || null,
+    username: username,
+    password: password,
+    nominee: { name: nomName, mobile: nomMob, relation: nomRel },
+    createdAt: new Date().toISOString()
+  });
+  staffSaveAll(list);
+
+  /* Reset form */
+  [nameEl, mobileEl, nidEl, usernameEl, nomNameEl, nomMobEl, nomRelEl].forEach(function(el) { if(el) el.value = ''; });
+  passwordEl.value = '';
+  passwordEl.type = 'password';
+  var eyeBtn = passwordEl.parentNode && passwordEl.parentNode.querySelector('button');
+  if (eyeBtn) eyeBtn.innerHTML = '<i class="fas fa-eye"></i>';
+  _staffPhoto = null;
+  var prev = document.getElementById('staff-photo-preview');
+  var icon = document.getElementById('staff-photo-icon');
+  if (prev) { prev.src = ''; prev.style.display = 'none'; }
+  if (icon) icon.style.display = '';
+  var photoInput = document.getElementById('staff-photo-input');
+  if (photoInput) photoInput.value = '';
+
+  staffRenderList();
+  if (typeof showToast === 'function') showToast('স্টাফ অ্যাকাউন্ট সফলভাবে যোগ হয়েছে!');
+}
+
+function staffDeleteAccount(id) {
+  var staff = staffGetAll().find(function(s) { return s.id === id; });
+  var displayName = (staff && staff.name) ? staff.name : (staff ? staff.username : 'এই স্টাফ');
+  showConfirm(
+    'স্টাফ মুছে দিন',
+    '"' + displayName + '"-এর অ্যাকাউন্ট স্থায়ীভাবে মুছে দেওয়া হবে। নিশ্চিত?',
+    function() {
+      var list = staffGetAll().filter(function(s) { return s.id !== id; });
+      staffSaveAll(list);
+      staffRenderList();
+      if (typeof showToast === 'function') showToast('স্টাফ অ্যাকাউন্ট মুছে দেওয়া হয়েছে।');
+    },
+    'হ্যাঁ, মুছুন',
+    '#ef4444',
+    '<i class="fas fa-user-slash"></i>',
+    '#fee2e2'
+  );
+}
+
+function staffRenderList() {
+  var container = document.getElementById('staff-list-container');
+  var badge = document.getElementById('staff-count-badge');
+  if (!container) return;
+
+  var list = staffGetAll();
+  if (badge) badge.textContent = list.length + ' জন';
+
+  if (list.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted,#64748b);font-size:13px"><i class="fas fa-users-slash" style="font-size:28px;margin-bottom:8px;opacity:0.4;display:block"></i>এখনো কোনো স্টাফ যোগ করা হয়নি</div>';
+    return;
+  }
+
+  var html = '';
+  list.forEach(function(staff, idx) {
+    var initials = (staff.name || staff.username).charAt(0).toUpperCase();
+    var dateStr = '';
+    if (staff.createdAt) {
+      try {
+        var d = new Date(staff.createdAt);
+        dateStr = d.toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch(e) { dateStr = ''; }
+    }
+    var avatarHtml = staff.photo
+      ? '<img src="' + staff.photo + '" style="width:46px;height:46px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #6366f1">'
+      : '<div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0">' + initials + '</div>';
+
+    var nom = staff.nominee || {};
+    var nomInfo = [nom.name, nom.relation, nom.mobile].filter(Boolean).join(' · ');
+
+    html += '<div style="padding:12px 0;border-bottom:1px solid var(--border,#e2e8f0)' + (idx === list.length - 1 ? ';border-bottom:none' : '') + '">';
+    /* top row: avatar + name/username + delete btn */
+    html += '<div style="display:flex;align-items:center;gap:12px">';
+    html += avatarHtml;
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-weight:700;font-size:14px;color:var(--text,#1e293b)">' + (staff.name || staff.username) + '</div>';
+    html += '<div style="font-size:11px;color:var(--muted,#64748b);margin-top:2px"><i class="fas fa-at" style="font-size:10px;margin-right:2px"></i>' + staff.username + '</div>';
+    html += '</div>';
+    html += '<button onclick="staffDeleteAccount(' + staff.id + ')" title="মুছুন" style="background:#fef2f2;border:1px solid #fecaca;color:#ef4444;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s" onmouseover="this.style.background=\'#ef4444\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'#fef2f2\';this.style.color=\'#ef4444\'">';
+    html += '<i class="fas fa-trash-alt" style="font-size:13px"></i></button>';
+    html += '</div>';
+    /* detail chips */
+    html += '<div style="margin-top:8px;margin-left:58px;display:flex;flex-wrap:wrap;gap:6px">';
+    if (staff.mobile) html += '<span style="font-size:11px;color:#0f766e;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:6px;padding:2px 8px"><i class="fas fa-phone" style="font-size:9px;margin-right:3px"></i>' + staff.mobile + '</span>';
+    if (staff.nid)    html += '<span style="font-size:11px;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;padding:2px 8px"><i class="fas fa-id-card" style="font-size:9px;margin-right:3px"></i>' + staff.nid + '</span>';
+    if (dateStr)      html += '<span style="font-size:11px;color:var(--muted,#64748b);background:#f8fafc;border:1px solid var(--border,#e2e8f0);border-radius:6px;padding:2px 8px"><i class="fas fa-calendar-alt" style="font-size:9px;margin-right:3px"></i>' + dateStr + '</span>';
+    html += '</div>';
+    if (nomInfo) {
+      html += '<div style="margin-top:6px;margin-left:58px;font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:6px;padding:4px 8px"><i class="fas fa-user-friends" style="font-size:9px;margin-right:4px"></i>নমিনি: ' + nomInfo + '</div>';
+    }
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
 }
 
 </script>
