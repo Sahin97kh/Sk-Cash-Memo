@@ -282,6 +282,71 @@
         .count-input { width: 100%; background: transparent; text-align: center; border: none; outline: none; font-weight: normal; }
 
         .ledger-input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+
+        /* ===== Phone Lookup Profile Card Animation ===== */
+        @keyframes profileCardIn {
+            0%   { opacity: 0; transform: translateY(14px) scale(0.96); }
+            60%  { opacity: 1; transform: translateY(-3px) scale(1.01); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        /* Remove number input arrows */
+        #dep-phone-input::-webkit-outer-spin-button,
+        #dep-phone-input::-webkit-inner-spin-button,
+        #wd-phone-input::-webkit-outer-spin-button,
+        #wd-phone-input::-webkit-inner-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+        #dep-phone-input[type=number],
+        #wd-phone-input[type=number] { -moz-appearance: textfield; }
+        /* Profile photo fallback icon */
+        .member-photo-placeholder {
+            width: 58px; height: 58px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.25); font-size: 26px; color: #fff;
+            border: 2.5px solid rgba(255,255,255,0.7);
+        }
+        /* Enable/disable button helpers */
+        .btn-enabled  { opacity: 1 !important; cursor: pointer !important; }
+        .btn-disabled { opacity: 0.5 !important; cursor: not-allowed !important; }
+        /* Vivid action buttons */
+        #dep-submit-btn:not([disabled]) {
+          background: linear-gradient(135deg,#059669,#10b981) !important;
+          box-shadow: 0 4px 18px rgba(16,185,129,0.55) !important;
+          opacity: 1 !important;
+          transform: translateY(0);
+          transition: all 0.25s ease !important;
+        }
+        #dep-submit-btn:not([disabled]):hover {
+          background: linear-gradient(135deg,#047857,#059669) !important;
+          box-shadow: 0 6px 22px rgba(16,185,129,0.7) !important;
+          transform: translateY(-2px);
+        }
+        #dep-submit-btn:not([disabled]):active {
+          transform: translateY(0);
+          box-shadow: 0 2px 10px rgba(16,185,129,0.4) !important;
+        }
+        #wd-submit-btn:not([disabled]) {
+          background: linear-gradient(135deg,#dc2626,#ef4444) !important;
+          box-shadow: 0 4px 18px rgba(239,68,68,0.55) !important;
+          opacity: 1 !important;
+          transform: translateY(0);
+          transition: all 0.25s ease !important;
+        }
+        #wd-submit-btn:not([disabled]):hover {
+          background: linear-gradient(135deg,#b91c1c,#dc2626) !important;
+          box-shadow: 0 6px 22px rgba(239,68,68,0.7) !important;
+          transform: translateY(-2px);
+        }
+        #wd-submit-btn:not([disabled]):active {
+          transform: translateY(0);
+          box-shadow: 0 2px 10px rgba(239,68,68,0.4) !important;
+        }
+        #dep-submit-btn[disabled], #wd-submit-btn[disabled] {
+          opacity: 0.45 !important;
+          cursor: not-allowed !important;
+          box-shadow: none !important;
+          transform: none !important;
+        }
         .ledger-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; }
         .ledger-blue { color: #1d4ed8; font-weight: bold; }
         .ledger-red { color: #b91c1c; font-weight: bold; }
@@ -2762,7 +2827,7 @@ transform:scale(0.96);
       <i class="fas fa-money-bill-wave" style="color:var(--warning)"></i> ঋণ ব্যবস্থাপনা
     </div>
     <!-- Admin-only quick actions -->
-    <div class="sidebar-divider"></div>
+    <div class="sidebar-divider admin-only"></div>
     <div class="sidebar-item admin-only" id="sidebar-add-member-item" onclick="closeSidebar();navigateTo('add-member')" style="color:#34d399">
       <i class="fas fa-user-plus" style="color:#34d399"></i> নতুন সদস্য যোগ
     </div>
@@ -3087,12 +3152,33 @@ transform:scale(0.96);
       </div>
     </div>
     <div class="form-group">
-      <label>সদস্য নির্বাচন করুন <span style="color:red">*</span></label>
-      <select id="dep-member" onchange="onDepMemberChange()">
-        <option value="">-- নির্বাচন করুন --</option>
-      </select>
+      <label>মোবাইল নম্বর দিয়ে সদস্য খুঁজুন <span style="color:red">*</span></label>
+      <input type="number" id="dep-phone-input" placeholder="১১ সংখ্যার মোবাইল নম্বর লিখুন" oninput="onPhoneLookup('dep')" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#e5e7eb'"/>
+      <input type="hidden" id="dep-member" value=""/>
+      <div id="dep-phone-status" style="margin-top:6px;font-size:12px;font-weight:600;display:none;"></div>
     </div>
-    <div class="balance-info" id="dep-balance"></div>
+
+    <!-- Dep Member Profile Card -->
+    <div id="dep-profile-card" style="display:none;margin-bottom:14px;">
+      <div style="background:linear-gradient(135deg,#4f46e5 0%,#2563eb 60%,#1e40af 100%);border-radius:16px;padding:16px 18px;color:#fff;box-shadow:0 8px 24px rgba(79,70,229,0.35);animation:profileCardIn 0.35s cubic-bezier(.34,1.56,.64,1) both;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div id="dep-card-photo-wrap" style="flex-shrink:0;">
+            <img id="dep-card-photo" src="" alt="" style="width:58px;height:58px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(255,255,255,0.7);background:#c7d2fe;"/>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div id="dep-card-name" style="font-size:16px;font-weight:700;line-height:1.2;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="dep-card-mid" style="font-size:11px;opacity:0.8;margin-bottom:6px;"></div>
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);border-radius:20px;padding:4px 12px;">
+              <i class="fas fa-wallet" style="font-size:11px;"></i>
+              <span style="font-size:13px;font-weight:700;" id="dep-card-balance"></span>
+            </div>
+          </div>
+          <div style="color:rgba(255,255,255,0.5);font-size:20px;"><i class="fas fa-check-circle" style="color:#86efac;"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="balance-info" id="dep-balance" style="display:none;"></div>
 
     <div class="form-group" id="dep-loan-group" style="display:none">
       <label>ঋণ নির্বাচন করুন <span style="color:red">*</span></label>
@@ -3114,7 +3200,7 @@ transform:scale(0.96);
       <label>নোট</label>
       <input type="text" id="dep-note" placeholder="মাসিক জমা...">
     </div>
-    <button class="btn btn-success" id="dep-submit-btn" onclick="doDeposit()">
+    <button class="btn btn-success" id="dep-submit-btn" onclick="confirmDeposit()" disabled style="opacity:0.5;cursor:not-allowed;background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 4px 15px rgba(16,185,129,0.4);transition:all 0.3s ease;">
       <i class="fas fa-arrow-down"></i> জমা করুন
     </button>
   </div>
@@ -3124,12 +3210,33 @@ transform:scale(0.96);
 <div id="withdraw" class="page">
   <div class="form-card">
     <div class="form-group">
-      <label>সদস্য নির্বাচন করুন <span style="color:red">*</span></label>
-      <select id="wd-member" onchange="updateBalance('wd')">
-        <option value="">-- নির্বাচন করুন --</option>
-      </select>
+      <label>মোবাইল নম্বর দিয়ে সদস্য খুঁজুন <span style="color:red">*</span></label>
+      <input type="number" id="wd-phone-input" placeholder="১১ সংখ্যার মোবাইল নম্বর লিখুন" oninput="onPhoneLookup('wd')" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#ef4444'" onblur="this.style.borderColor='#e5e7eb'"/>
+      <input type="hidden" id="wd-member" value=""/>
+      <div id="wd-phone-status" style="margin-top:6px;font-size:12px;font-weight:600;display:none;"></div>
     </div>
-    <div class="balance-info" id="wd-balance"></div>
+
+    <!-- Wd Member Profile Card -->
+    <div id="wd-profile-card" style="display:none;margin-bottom:14px;">
+      <div style="background:linear-gradient(135deg,#dc2626 0%,#b91c1c 60%,#7f1d1d 100%);border-radius:16px;padding:16px 18px;color:#fff;box-shadow:0 8px 24px rgba(220,38,38,0.35);animation:profileCardIn 0.35s cubic-bezier(.34,1.56,.64,1) both;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div id="wd-card-photo-wrap" style="flex-shrink:0;">
+            <img id="wd-card-photo" src="" alt="" style="width:58px;height:58px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(255,255,255,0.7);background:#fecaca;"/>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div id="wd-card-name" style="font-size:16px;font-weight:700;line-height:1.2;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="wd-card-mid" style="font-size:11px;opacity:0.8;margin-bottom:6px;"></div>
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);border-radius:20px;padding:4px 12px;">
+              <i class="fas fa-wallet" style="font-size:11px;"></i>
+              <span style="font-size:13px;font-weight:700;" id="wd-card-balance"></span>
+            </div>
+          </div>
+          <div style="font-size:20px;"><i class="fas fa-check-circle" style="color:#86efac;"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="balance-info" id="wd-balance" style="display:none;"></div>
     <div class="form-group">
       <label>পরিমাণ (৳) <span style="color:red">*</span></label>
       <input type="number" id="wd-amount" placeholder="0" min="1">
@@ -3142,7 +3249,7 @@ transform:scale(0.96);
       <label>নোট</label>
       <input type="text" id="wd-note" placeholder="জরুরি প্রয়োজন...">
     </div>
-    <button class="btn btn-danger" onclick="doWithdraw()">
+    <button class="btn btn-danger" id="wd-submit-btn" onclick="confirmWithdraw()" disabled style="opacity:0.5;cursor:not-allowed;background:linear-gradient(135deg,#dc2626,#ef4444);box-shadow:0 4px 15px rgba(239,68,68,0.4);transition:all 0.3s ease;">
       <i class="fas fa-arrow-up"></i> উত্তোলন করুন
     </button>
   </div>
@@ -3536,6 +3643,52 @@ transform:scale(0.96);
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeModal()">বাতিল</button>
       <button class="modal-confirm" id="modal-confirm-btn">হ্যাঁ, মুছুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEPOSIT CONFIRM MODAL -->
+<div id="dep-confirm-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.25);animation:profileCardIn 0.3s cubic-bezier(.34,1.56,.64,1) both;text-align:center;">
+    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#d1fae5,#a7f3d0);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 16px rgba(16,185,129,0.3);">
+      <i class="fas fa-arrow-down" style="font-size:28px;color:#059669;"></i>
+    </div>
+    <div style="font-size:19px;font-weight:800;color:#1e293b;margin-bottom:8px;">জমা নিশ্চিত করুন</div>
+    <div id="dep-confirm-msg" style="font-size:14px;color:#64748b;margin-bottom:20px;line-height:1.7;"></div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px;margin-bottom:22px;">
+      <div style="font-size:12px;color:#15803d;font-weight:600;margin-bottom:6px;">লেনদেনের বিবরণ</div>
+      <div id="dep-confirm-details" style="font-size:13px;color:#166534;"></div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button onclick="closeDepConfirmModal()" style="flex:1;padding:13px;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;background:#fff;color:#475569;transition:0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+        <i class="fas fa-times"></i> বাতিল
+      </button>
+      <button onclick="executeDeposit()" style="flex:1;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 4px 15px rgba(16,185,129,0.4);transition:0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+        <i class="fas fa-check"></i> হ্যাঁ, জমা করুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW CONFIRM MODAL -->
+<div id="wd-confirm-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:24px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.25);animation:profileCardIn 0.3s cubic-bezier(.34,1.56,.64,1) both;text-align:center;">
+    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 16px rgba(239,68,68,0.3);">
+      <i class="fas fa-arrow-up" style="font-size:28px;color:#dc2626;"></i>
+    </div>
+    <div style="font-size:19px;font-weight:800;color:#1e293b;margin-bottom:8px;">উত্তোলন নিশ্চিত করুন</div>
+    <div id="wd-confirm-msg" style="font-size:14px;color:#64748b;margin-bottom:20px;line-height:1.7;"></div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:14px;margin-bottom:22px;">
+      <div style="font-size:12px;color:#991b1b;font-weight:600;margin-bottom:6px;">লেনদেনের বিবরণ</div>
+      <div id="wd-confirm-details" style="font-size:13px;color:#7f1d1d;"></div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button onclick="closeWdConfirmModal()" style="flex:1;padding:13px;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;background:#fff;color:#475569;transition:0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+        <i class="fas fa-times"></i> বাতিল
+      </button>
+      <button onclick="executeWithdraw()" style="flex:1;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;box-shadow:0 4px 15px rgba(239,68,68,0.4);transition:0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+        <i class="fas fa-check"></i> হ্যাঁ, উত্তোলন করুন
+      </button>
     </div>
   </div>
 </div>
@@ -4242,12 +4395,28 @@ transform:scale(0.96);
     font-size: 11px !important;
   }
 
+  /* Desktop: the generic .sidebar-item rule forces display:flex which overrides
+     the base .admin-only{display:none}. Re-hide them explicitly here,
+     then admin-mode/staff-mode rules below will show them back as needed. */
+  #somity-module-container .sidebar-item.admin-only {
+    display: none !important;
+  }
+  #somity-module-container .sidebar-lock-item.admin-only {
+    display: none !important;
+  }
+  #somity-module-container .sidebar-divider.admin-only {
+    display: none !important;
+  }
+
   /* Admin-only sidebar items restore flex display in admin mode */
   #somity-module-container.admin-mode .sidebar-item.admin-only {
     display: flex !important;
   }
   #somity-module-container.admin-mode .sidebar-lock-item.admin-only {
     display: flex !important;
+  }
+  #somity-module-container.admin-mode .sidebar-divider.admin-only {
+    display: block !important;
   }
 
   /* Sidebar body */
@@ -5523,13 +5692,127 @@ function deleteMember(mid) {
 // SELECT LOADERS
 function loadSelects() {
   const members=getM();
+  // ln-member is still a dropdown (loan section)
   const opts='<option value="">-- নির্বাচন করুন --</option>'+members.map(m=>`<option value="${m.id}">${m.name} (${m.mobile})</option>`).join('');
-  ['dep-member','wd-member','ln-member'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.innerHTML=opts;
+  const lnEl=document.getElementById('ln-member'); if(lnEl) lnEl.innerHTML=opts;
+  // Reset deposit phone lookup
+  ['dep-member','wd-member'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
   });
   ['dep-balance','wd-balance'].forEach(id=>{
     const el=document.getElementById(id); if(el){el.style.display='none';el.textContent='';}
   });
+  // Reset profile cards and phone inputs
+  ['dep','wd'].forEach(prefix=>{
+    const phoneEl=document.getElementById(prefix+'-phone-input');
+    if(phoneEl) phoneEl.value='';
+    const cardEl=document.getElementById(prefix+'-profile-card');
+    if(cardEl) cardEl.style.display='none';
+    const statusEl=document.getElementById(prefix+'-phone-status');
+    if(statusEl) statusEl.style.display='none';
+    // Reset submit buttons
+    const btn=document.getElementById(prefix+'-submit-btn');
+    if(btn){btn.disabled=true;btn.classList.remove('btn-enabled');btn.classList.add('btn-disabled');btn.style.opacity='0.5';btn.style.cursor='not-allowed';}
+  });
+}
+
+// ===== PHONE NUMBER LOOKUP FOR DEPOSIT & WITHDRAW =====
+function onPhoneLookup(prefix) {
+  const phoneInput = document.getElementById(prefix+'-phone-input');
+  const hiddenMember = document.getElementById(prefix+'-member');
+  const statusEl = document.getElementById(prefix+'-phone-status');
+  const cardEl = document.getElementById(prefix+'-profile-card');
+  const submitBtn = document.getElementById(prefix+'-submit-btn');
+
+  const phone = (phoneInput.value||'').toString().replace(/\D/g,'').trim();
+
+  // Reset state
+  hiddenMember.value = '';
+  cardEl.style.display = 'none';
+  statusEl.style.display = 'none';
+  if(submitBtn){submitBtn.disabled=true;submitBtn.style.opacity='0.5';submitBtn.style.cursor='not-allowed';}
+
+  if(!phone) return;
+
+  if(phone.length < 11) {
+    statusEl.style.display = 'block';
+    statusEl.style.color = '#f59e0b';
+    statusEl.innerHTML = '<i class="fas fa-info-circle"></i> ১১ সংখ্যার নম্বর লিখুন (' + phone.length + '/11)';
+    return;
+  }
+
+  if(phone.length > 11) {
+    statusEl.style.display = 'block';
+    statusEl.style.color = '#ef4444';
+    statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> নম্বর ১১ সংখ্যার বেশি হওয়া উচিত নয়';
+    return;
+  }
+
+  // Exact 11 digits — search member
+  const members = getM();
+  const found = members.find(m => (m.mobile||'').replace(/\D/g,'').trim() === phone);
+
+  if(!found) {
+    statusEl.style.display = 'block';
+    statusEl.style.color = '#ef4444';
+    statusEl.innerHTML = '<i class="fas fa-times-circle"></i> কোনো সদস্য পাওয়া যায়নি';
+    return;
+  }
+
+  // Member found — populate hidden input + profile card
+  hiddenMember.value = found.id;
+
+  // Photo element
+  const photoEl = document.getElementById(prefix+'-card-photo');
+  const photoWrap = document.getElementById(prefix+'-card-photo-wrap');
+  if(found.photo && found.photo.length > 5) {
+    photoEl.src = found.photo;
+    photoEl.style.display = 'block';
+    photoWrap.innerHTML = '<img id="'+prefix+'-card-photo" src="'+found.photo+'" alt="'+found.name+'" style="width:58px;height:58px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(255,255,255,0.7);background:#c7d2fe;"/>';
+  } else {
+    photoWrap.innerHTML = '<div class="member-photo-placeholder"><i class="fas fa-user"></i></div>';
+  }
+
+  document.getElementById(prefix+'-card-name').textContent = found.name;
+  document.getElementById(prefix+'-card-mid').innerHTML = '<i class="fas fa-id-badge" style="margin-right:4px;"></i>ID: ' + (found.memberId||found.id||'—') + ' &nbsp;|&nbsp; <i class="fas fa-phone" style="margin-right:4px;"></i>' + found.mobile;
+
+  const bal = balance(found.id);
+  document.getElementById(prefix+'-card-balance').textContent = taka(bal);
+
+  // Trigger existing balance display
+  if(prefix==='dep') {
+    updateBalance('dep');
+    onDepMemberChange();
+  } else {
+    updateBalance('wd');
+  }
+
+  // Show card with animation (re-trigger animation by replacing element)
+  const innerCard = cardEl.querySelector('div');
+  if(innerCard) {
+    innerCard.style.animation = 'none';
+    void innerCard.offsetWidth;
+    innerCard.style.animation = '';
+  }
+  cardEl.style.display = 'block';
+
+  statusEl.style.display = 'block';
+  statusEl.style.color = '#16a34a';
+  statusEl.innerHTML = '<i class="fas fa-check-circle"></i> সদস্য পাওয়া গেছে!';
+
+  // Enable submit button with vivid gradient
+  if(submitBtn){
+    submitBtn.disabled=false;
+    submitBtn.style.opacity='1';
+    submitBtn.style.cursor='pointer';
+    if(prefix==='dep'){
+      submitBtn.style.background='linear-gradient(135deg,#059669,#10b981)';
+      submitBtn.style.boxShadow='0 4px 18px rgba(16,185,129,0.55)';
+    } else {
+      submitBtn.style.background='linear-gradient(135deg,#dc2626,#ef4444)';
+      submitBtn.style.boxShadow='0 4px 18px rgba(239,68,68,0.55)';
+    }
+  }
 }
 
 function updateBalance(prefix) {
@@ -5551,21 +5834,36 @@ function setDepositType(type) {
   const submitBtn = document.getElementById('dep-submit-btn');
   const noteInput = document.getElementById('dep-note');
 
+  const hasMember = !!document.getElementById('dep-member').value;
   if(type==='savings') {
     sBn.className = 'type-btn active-savings';
     lBn.className = 'type-btn';
     lGrp.style.display = 'none';
     lInfo.style.display = 'none';
-    balInfo.style.display = document.getElementById('dep-member').value ? 'block' : 'none';
+    balInfo.style.display = hasMember ? 'block' : 'none';
     submitBtn.innerHTML = '<i class="fas fa-arrow-down"></i> জমা করুন';
+    submitBtn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
+    submitBtn.style.boxShadow = '0 4px 18px rgba(16,185,129,0.55)';
     noteInput.placeholder = 'মাসিক জমা...';
+    if(!hasMember){
+      submitBtn.disabled=true;submitBtn.style.opacity='0.5';submitBtn.style.cursor='not-allowed';
+    } else {
+      submitBtn.disabled=false;submitBtn.style.opacity='1';submitBtn.style.cursor='pointer';
+    }
   } else {
     sBn.className = 'type-btn';
     lBn.className = 'type-btn active-loan';
     lGrp.style.display = 'block';
     balInfo.style.display = 'none';
     submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> পরিশোধ করুন';
+    submitBtn.style.background = 'linear-gradient(135deg,#d97706,#f59e0b)';
+    submitBtn.style.boxShadow = '0 4px 18px rgba(245,158,11,0.55)';
     noteInput.placeholder = 'ঋণ পরিশোধ...';
+    if(!hasMember){
+      submitBtn.disabled=true;submitBtn.style.opacity='0.5';submitBtn.style.cursor='not-allowed';
+    } else {
+      submitBtn.disabled=false;submitBtn.style.opacity='1';submitBtn.style.cursor='pointer';
+    }
     onDepMemberChange();
   }
 }
@@ -5622,6 +5920,85 @@ function onDepLoanChange() {
   info.textContent = `বাকি পরিশোধ: ${taka(remaining)}`;
 }
 
+// ===== CONFIRM DEPOSIT FLOW =====
+function confirmDeposit() {
+  if(!isAdmin() && !isStaff()) { alert('Access Denied'); return; }
+  const mid = document.getElementById('dep-member').value;
+  const amt = +document.getElementById('dep-amount').value;
+  if(!mid) { showToast('সদস্য নির্বাচন করুন'); return; }
+  if(!amt || amt <= 0) { showToast('সঠিক পরিমাণ দিন'); return; }
+  const isLoan = currentDepositType === 'loan';
+
+  // Loan-specific validations
+  if(isLoan) {
+    const lid = document.getElementById('dep-loan-select').value;
+    if(!lid) { showToast('চলমান কোনো ঋণ নেই বা ঋণ নির্বাচন করুন'); return; }
+    const remaining = getLoanRemaining(lid);
+    if(amt > remaining) { showToast(`সর্বোচ্চ ${(+remaining||0).toLocaleString('en-IN')} টাকা পরিশোধ করা যাবে`); return; }
+  }
+
+  const members = getM();
+  const member = members.find(m => m.id === mid);
+  const memberName = member ? member.name : 'অজানা সদস্য';
+  const depDate = document.getElementById('dep-date').value;
+  const overlay = document.getElementById('dep-confirm-overlay');
+  const msgEl = document.getElementById('dep-confirm-msg');
+  const detailsEl = document.getElementById('dep-confirm-details');
+
+  const fmt = n => (+n||0).toLocaleString('en-IN') + ' টাকা';
+  if(isLoan) {
+    const lid = document.getElementById('dep-loan-select').value;
+    const remaining = getLoanRemaining(lid);
+    msgEl.innerHTML = `আপনি কি <strong>${memberName}</strong> এর ঋণে <strong>${fmt(amt)}</strong> পরিশোধ করতে নিশ্চিত?`;
+    detailsEl.innerHTML = `সদস্য: ${memberName}<br>পরিমাণ: <strong>${fmt(amt)}</strong><br>বাকি ছিল: ${fmt(remaining)}<br>পরিশোধের পর বাকি: ${fmt(remaining - amt)}<br>তারিখ: ${depDate}<br>ধরন: ঋণ পরিশোধ`;
+  } else {
+    msgEl.innerHTML = `আপনি কি <strong>${memberName}</strong> এর অ্যাকাউন্টে <strong>${fmt(amt)}</strong> জমা করতে নিশ্চিত?`;
+    detailsEl.innerHTML = `সদস্য: ${memberName}<br>পরিমাণ: <strong>${fmt(amt)}</strong><br>তারিখ: ${depDate}<br>ধরন: সাধারণ জমা`;
+  }
+  overlay.style.display = 'flex';
+}
+
+function closeDepConfirmModal() {
+  document.getElementById('dep-confirm-overlay').style.display = 'none';
+}
+
+function executeDeposit() {
+  closeDepConfirmModal();
+  doDeposit();
+}
+
+// ===== CONFIRM WITHDRAW FLOW =====
+function confirmWithdraw() {
+  if(!isAdmin() && !isStaff()) { alert('Access Denied'); return; }
+  const mid = document.getElementById('wd-member').value;
+  const amt = +document.getElementById('wd-amount').value;
+  if(!mid) { showToast('সদস্য নির্বাচন করুন'); return; }
+  if(!amt || amt <= 0) { showToast('সঠিক পরিমাণ দিন'); return; }
+  if(amt > balance(mid)) { showToast('অপর্যাপ্ত ব্যালেন্স!'); return; }
+  const members = getM();
+  const member = members.find(m => m.id === mid);
+  const memberName = member ? member.name : 'অজানা সদস্য';
+  const wdDate = document.getElementById('wd-date').value;
+  const currentBal = balance(mid);
+  const overlay = document.getElementById('wd-confirm-overlay');
+  const msgEl = document.getElementById('wd-confirm-msg');
+  const detailsEl = document.getElementById('wd-confirm-details');
+  const fmt = n => (+n||0).toLocaleString('en-IN') + ' টাকা';
+  msgEl.innerHTML = `আপনি কি <strong>${memberName}</strong> এর অ্যাকাউন্ট থেকে <strong>${fmt(amt)}</strong> উত্তোলন করতে নিশ্চিত?`;
+  detailsEl.innerHTML = `সদস্য: ${memberName}<br>পরিমাণ: <strong>${fmt(amt)}</strong><br>তারিখ: ${wdDate}<br>বর্তমান ব্যালেন্স: ${fmt(currentBal)}<br>উত্তোলনের পর: ${fmt(currentBal - amt)}`;
+  overlay.style.display = 'flex';
+}
+
+function closeWdConfirmModal() {
+  document.getElementById('wd-confirm-overlay').style.display = 'none';
+}
+
+function executeWithdraw() {
+  closeWdConfirmModal();
+  doWithdraw();
+}
+
+// ===========================
 function doDeposit() {
   if(!isAdmin() && !isStaff()) {
     alert('Access Denied');
@@ -5671,6 +6048,11 @@ function doDeposit() {
   document.getElementById('dep-note').value='';
   document.getElementById('dep-member').value='';
   document.getElementById('dep-balance').style.display='none';
+  // Reset phone lookup UI
+  const depPhoneInput=document.getElementById('dep-phone-input'); if(depPhoneInput) depPhoneInput.value='';
+  const depProfileCard=document.getElementById('dep-profile-card'); if(depProfileCard) depProfileCard.style.display='none';
+  const depPhoneStatus=document.getElementById('dep-phone-status'); if(depPhoneStatus) depPhoneStatus.style.display='none';
+  const depBtn=document.getElementById('dep-submit-btn'); if(depBtn){depBtn.disabled=true;depBtn.style.opacity='0.5';depBtn.style.cursor='not-allowed';}
   navigateTo('transactions');
 }
 
@@ -5697,6 +6079,11 @@ function doWithdraw() {
   document.getElementById('wd-note').value='';
   document.getElementById('wd-member').value='';
   document.getElementById('wd-balance').style.display='none';
+  // Reset phone lookup UI
+  const wdPhoneInput=document.getElementById('wd-phone-input'); if(wdPhoneInput) wdPhoneInput.value='';
+  const wdProfileCard=document.getElementById('wd-profile-card'); if(wdProfileCard) wdProfileCard.style.display='none';
+  const wdPhoneStatus=document.getElementById('wd-phone-status'); if(wdPhoneStatus) wdPhoneStatus.style.display='none';
+  const wdBtn=document.getElementById('wd-submit-btn'); if(wdBtn){wdBtn.disabled=true;wdBtn.style.opacity='0.5';wdBtn.style.cursor='not-allowed';}
   navigateTo('transactions');
 }
 
